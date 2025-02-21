@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .top-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f4f4f4;
+            border-bottom: 2px solid #ccc;
+        }
+        .button {
+            padding: 8px 12px;
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .input-box {
+            padding: 5px;
+            width: 80px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 20px;
+            background: #ddd;
+            border-radius: 10px;
+            margin: 0 10px;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #007bff;
+            border-radius: 10px;
+        }
+        .layout {
+            display: flex;
+            flex: 1;
+            height: 100%;
+        }
+        .accordion {
+            width: 15%;
+            background: #e9ecef;
+            border-right: 2px solid #ccc;
+            padding: 10px;
+        }
+        .accordion-item {
+            margin-bottom: 10px;
+        }
+        .accordion-header {
+            padding: 8px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+        }
+        .accordion-content {
+            display: none;
+            padding: 5px;
+            background: #f4f4f4;
+        }
+        .accordion-content a {
+            display: block;
+            padding: 5px;
+            text-decoration: none;
+            color: black;
+            cursor: pointer;
+        }
+        .accordion-content a:hover {
+            background: #ddd;
+        }
+        .middle-panels {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 10px;
+        }
+        .panel {
+            flex: 1;
+            border: 2px solid #ccc;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+        }
+        .right-panel {
+            width: 20%;
+            background: #f8f9fa;
+            padding: 10px;
+            border-left: 2px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Control Panel -->
+    <div class="top-panel">
+        <button class="button" id="randomize">Randomize</button>
+        <input type="text" class="input-box" id="customInput" placeholder="Custom">
+        <input type="number" class="input-box" id="listSize" placeholder="Size">
+        <button class="button">&#9658;</button>
+        <button class="button">||</button>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <button class="button">&#9664;</button>
+        <button class="button">&#9654;</button>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="layout">
+        <!-- Left Accordion Menu -->
+        <div class="accordion">
+            <div class="accordion-item">
+                <div class="accordion-header">Brute Force</div>
+                <div class="accordion-content">
+                    <a href="#" onclick="selectAlgorithm('BFS')">BFS Algorithm</a>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Divide and Conquer</div>
+                <div class="accordion-content">
+                    <a href="#" onclick="selectAlgorithm('Quicksort')">Quicksort Algorithm</a>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Dynamic Programming</div>
+                <div class="accordion-content">
+                    <a href="#" onclick="selectAlgorithm('Fibonacci')">Fibonacci Algorithm</a>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">Greedy</div>
+                <div class="accordion-content">
+                    <a href="#" onclick="selectAlgorithm('Dijkstra')">Dijkstra's Algorithm</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Panels -->
+        <div class="middle-panels">
+            <div class="panel" id="graphAnimation">Graph Animation</div>
+            <div class="panel" id="boxListAnimation">Box-List Animation</div>
+            <div class="panel" id="textExplanation">Word explanation of each step taken</div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel" id="algorithmInfo">
+            <h3>Pseudocode & Description of Algorithm</h3>
+            <p>Select an algorithm from the left menu.</p>
+        </div>
+    </div>
+
+    <script>
+        // Accordion Menu Functionality
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                let content = header.nextElementSibling;
+                content.style.display = content.style.display === "block" ? "none" : "block";
+            });
+        });
+
+        // Algorithm Selection Function
+        function selectAlgorithm(name) {
+            document.getElementById("algorithmInfo").innerHTML = `<h3>${name} Algorithm</h3><p>Description and pseudocode here...</p>`;
+            document.getElementById("graphAnimation").textContent = `${name} Graph Animation`;
+            document.getElementById("boxListAnimation").textContent = `${name} Box-List Animation`;
+            document.getElementById("textExplanation").textContent = `${name} explanation here...`;
+        }
+    </script>
+
+</body>
+</html>
