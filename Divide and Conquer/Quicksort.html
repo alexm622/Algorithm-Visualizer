@@ -1,119 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Algorithm Visualizer</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        .top-panel {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px;
-            background: #f4f4f4;
-            border-bottom: 2px solid #ccc;
-        }
-        .button {
-            padding: 8px 12px;
-            border: none;
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-        .button:hover {
-            background: #0056b3;
-        }
-        .input-box {
-            padding: 5px;
-            width: 80px;
-        }
-        .progress-bar {
-            flex: 1;
-            height: 20px;
-            background: #ddd;
-            border-radius: 10px;
-            margin: 0 10px;
-            position: relative;
-        }
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #007bff;
-            border-radius: 10px;
-        }
-        .layout {
-            display: flex;
-            flex: 1;
-            height: 100%;
-        }
-        .accordion {
-            width: 15%;
-            background: #e9ecef;
-            border-right: 2px solid #ccc;
-            padding: 10px;
-        }
-        .accordion-item {
-            margin-bottom: 10px;
-        }
-        .accordion-header {
-            padding: 8px;
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-            text-align: center;
-        }
-        .accordion-content {
-            display: none;
-            padding: 5px;
-            background: #f4f4f4;
-        }
-        .accordion-content a {
-            display: block;
-            padding: 5px;
-            text-decoration: none;
-            color: black;
-            cursor: pointer;
-        }
-        .accordion-content a:hover {
-            background: #ddd;
-        }
-        .middle-panels {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            padding: 10px;
-        }
-        .panel {
-            flex: 1;
-            border: 2px solid #ccc;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5em;
-        }
-        .right-panel {
-            width: 20%;
-            background: #f8f9fa;
-            padding: 10px;
-            border-left: 2px solid #ccc;
-        }
+        @import url("algorithmstyle.css");
     </style>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+        const inputElement = document.getElementById('customInput');
+        const warningMessage = document.getElementById('inputWarningMessage');
+        const listSizeInput = document.getElementById('listSize');
+        const randomizeButton = document.getElementById('randomize');
+        const customInputToggle = document.getElementById('customInputToggle');
+        let customUserInput;
+        let defaultInput;
+        let currentInput; 
+        let listSize = Math.floor(Math.random() * 21) + 2;
+        createRandomInput(listSize);
+
+        /*
+        Creates a randomized list with a length between 2-20 
+        and values between 0-99 
+        */
+        function createRandomInput(size)
+        {
+            defaultInput = new Array(size);
+            for (let i=0; i < size; i++)
+            {
+                defaultInput[i] = Math.floor(Math.random() * 99);
+            }
+        }
+
+        /*
+        Returns true if all the elements in the given list are whole numbers
+        else it returns false
+        */
+        function isWholeNumbers(list) {
+            for (let i = 0; i < list.length; i++) {
+                if (list[i] == NaN || !Number.isInteger(list[i])) {
+                  return false;
+                }
+            }
+            return true;     
+        }
+        
+        function isWhitespace(str)
+        {
+            const regex = /^\s*$/;
+            return regex.test(str);
+        }
+
+        // Prevents the user from typing in their own input in the list size box
+        listSizeInput.addEventListener('keydown', function(event) {
+            event.preventDefault(); 
+          });
+        
+
+        listSizeInput.addEventListener('input', function(event){
+            listSize = event.target.value; 
+            randomizeButton.disabled = false;
+
+        });
+
+        randomizeButton.addEventListener('click', function(event){
+            createRandomInput(listSize);
+        });
+
+        customInputToggle.addEventListener('change', function() 
+        {
+            if (this.checked) 
+            {    
+                if (!inputElement.value)
+                {
+                    warningMessage.textContent = "Invalid Input: Enter an input";
+                    warningMessage.style.color = "red";
+                    warningMessage.style.display = "block";
+                    customInputToggle.checked = false;
+                }
+                else
+                {
+                    let inputList = inputElement.value.trim().split(/\s+/);
+                    inputList = inputList.map(Number);
+                    if (checkCustomInput(inputList) == true)
+                    {
+                        console.log(inputList);
+                        currentInput = inputList;
+                    }
+                    else
+                    {
+                        customInputToggle.checked = false;
+                    }
+                }
+            }
+            else
+            {
+                console.log('false');
+                // Set current input equal to the default input
+            }
+        });
+
+        function checkInputValues(inputList)
+        {
+            for (let i = 0; i < inputList.length; i++)
+            {
+                if (inputList[i] > 99 || inputList[i] < -99)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function checkCustomInput(inputList)
+        {
+            if (inputList == ""){
+                warningMessage.textContent = "Invalid Input: Enter an input";
+                warningMessage.style.color = "red";
+                return false;
+            }
+            else if (inputList.length > 20 && isWholeNumbers(inputList) == false)
+            {
+                warningMessage.textContent = "Invalid Input: Only accepts integers and max 20 total values";
+                warningMessage.style.color = "red";
+                return false;
+            }
+            else if (inputList.length < 2 && isWholeNumbers(inputList) == false){
+                warningMessage.textContent = "Invalid Input: Only accepts integers and a minimum of 2 values";
+                warningMessage.style.color = "red";
+                return false;
+            }
+            else if (inputList.length > 20){
+                warningMessage.textContent = "Invalid Input: Only accepts a maximum of 20 values";
+                warningMessage.style.color = "red";
+                return false;
+            }
+            else if (isWholeNumbers(inputList) == false){
+                warningMessage.textContent = "Invalid Input: Only accepts integers";
+                warningMessage.style.color = "red";
+                return false;
+            }
+            else if (inputList.length < 2){
+                warningMessage.textContent = "Invalid Input: Only accepts a minimum of 2 values";
+                warningMessage.style.color = "red";
+                return false;
+            }
+            else{
+                if (checkInputValues(inputList) == true){
+                    warningMessage.style.color = "#f4f4f4";
+                    return true;
+                }
+                else{
+                    warningMessage.textContent = "Invalid Input: Only accepts integers between -99 and 99";
+                    warningMessage.style.color = "red";
+                    return false;
+                }
+            }
+        }
+
         const canvas = document.getElementById('algorithmCanvas');
 
         // Set the canvas width and height to match its parent element's dimensions
@@ -256,35 +302,42 @@
             box.scrollTop = box.scrollHeight;
         }
         
-        
-        
         let drawInterval;
         drawData(); 
         startQuickSort();
 });
   </script>
-
 </head>
 <body>
-
     <!-- Top Control Panel -->
     <div class="top-panel">
-        <button class="button" id="randomize">Randomize</button>
-        <input type="text" class="input-box" id="customInput" placeholder="Custom">
-        <input type="number" class="input-box" id="listSize" placeholder="Size">
-        <button class="button">&#9658;</button>
-        <button class="button">||</button>
+        <input type="number" max="20" min="2" class="input-box" id="listSize" placeholder="Size" title="Select the size of the randomized list">
+        <button class="button" id="randomize" disabled title="Create a randomized list of selected size">Randomize</button>
+        <div class="customInputLayout">
+            <p id="inputWarningMessage">None</p>
+            <input type="text" title="Custom input to give to algorithm" class="input-box" id="customInput" placeholder="Enter 2-20 integers (value -99-99) separated by spaces">
+        </div>
+        <label id="toggleLayout" class="switch" title="Set or unset the custom input as the default input">
+            <input id="customInputToggle" type="checkbox">
+            <span class="slider round"></span>
+        </label>
+        <button class="button" title="Start the animation">&#9658;</button>
+        <button class="button" title="Pause the animation">||</button>
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
-        <button class="button">&#9664;</button>
-        <button class="button">&#9654;</button>
+        <button class="button" title="Go back 1 frame in the animation">&#9664;</button>
+        <button class="button" title="Go forward 1 frame in the animation">&#9654;</button>
     </div>
 
     <!-- Main Layout -->
     <div class="layout">
         <!-- Left Accordion Menu -->
         <div class="accordion">
+            <div class="topnav">
+                <input type="text" placeholder="Search...">
+                <button type="submit"><i class="fa fa-search"></i></button>
+            </div>
             <div class="accordion-item">
                 <div class="accordion-header">Brute Force</div>
                 <div class="accordion-content">
@@ -319,31 +372,87 @@
             <div class="panel" id="boxListAnimation">Box-List Animation</div>
             <div class="panel" id="textExplanation"></div>
         </div>
+    
+        <div class="left-panel">
+            <div class="tab">
+                <button class="tablinks" onclick="openTab(event, 'description')">Description</button>
+                <button class="tablinks" onclick="openTab(event, 'pseudocode')">Pseudocode</button>
+                <button class="tablinks" onclick="openTab(event, 'references')">References</button>
+            </div>
+            <div class="tabcontent" id="description">
+                <h3 id="descriptionHeader">Quicksort</h3>
+                <p>A divide and conquer sorting algorithm that selects a "pivot"
+                    element from the given array and partitions the remaining elements
+                    into two sub-arrays based on whether they are smaller or larger than 
+                    the pivot. The algorithm recursively repeats this step until the input
+                    is sorted.
+                    <br>
+                    <br>There are mainly three steps in the algorithm:<br>
+                    <br>
+                    1. <strong>Choose a Pivot</strong>: Select an element from the array as the pivot. The choice of pivot can vary (e.g., first element, last element, random element, or median).<br>
+                    <br>
+                    2. <strong>Partition the Array</strong>: Rearrange the array around the pivot. After partitioning, all elements smaller than the pivot will be on its left, and all elements greater than the pivot will be on its right. The pivot is then in its correct position, and we obtain the index of the pivot.<br>
+                    <br>
+                    3. <strong>Recursively Call</strong>: Recursively apply the same process to the two partitioned sub-arrays (left and right of the pivot).<br>
+                    <br>
+                    4. <strong>Base Case</strong>: The recursion stops when there is only one element left in the sub-array, as a single element is already sorted.<br>
+                </p>
+            </div>
+            <div class="tabcontent" id="references">
+                <ol id="referencesList">
+                    <li>https://www.geeksforgeeks.org/quick-sort-algorithm/</li>
+                    <br>
+                    <li>https://www.tutorialspoint.com/data_structures_algorithms/quick_sort_algorithm.htm</li>
+                </ol>
+            </div>
+            <div class="tabcontent" id="pseudocode">
+                <pre><code>
+                    procedure quickSort(left, right)
+                        if right-left <= 0
+                            return
+                        else     
+                            pivot = A[right]
+                            partition = partitionFunc(left, right, pivot)
+                            quickSort(left,partition-1)
+                            quickSort(partition+1,right)    
+                        end if		
+                    end procedure
 
-        <!-- Right Panel -->
-        <div class="right-panel" id="algorithmInfo">
-            <h3>Quicksort</h3>
-            <p>A divide and conquer sorting algorithm that selects a "pivot"
-                element from the given array and partitions the remaining elements
-                into two sub-arrays based on whether they are smaller or larger than 
-                the pivot. The algorithm recursively repeats this step until the input
-                is sorted.
+                    function partitionFunc(left, right, pivot)
+                        leftPointer = left
+                        rightPointer = right - 1
 
-                <br>There are mainly three steps in the algorithm:<br>
-
-                1. <strong>Choose a Pivot</strong>: Select an element from the array as the pivot. The choice of pivot can vary (e.g., first element, last element, random element, or median).<br>
-                2. <strong>Partition the Array</strong>: Rearrange the array around the pivot. After partitioning, all elements smaller than the pivot will be on its left, and all elements greater than the pivot will be on its right. The pivot is then in its correct position, and we obtain the index of the pivot.<br>
-                3. <strong>Recursively Call</strong>: Recursively apply the same process to the two partitioned sub-arrays (left and right of the pivot).<br>
-                4. <strong>Base Case</strong>: The recursion stops when there is only one element left in the sub-array, as a single element is already sorted.<br>
-            </p>
-            <h3><strong>References</strong></h3>
-            <ol>
-                <li id="footnote1">https://www.geeksforgeeks.org/quick-sort-algorithm/</li>
-            </ol>
+                        while True do
+                            while A[++leftPointer] < pivot do
+                            //do-nothing            
+                            end while
+                                
+                            while rightPointer > 0 && A[--rightPointer] > pivot do
+                                //do-nothing         
+                            end while
+                                
+                            if leftPointer >= rightPointer
+                                break
+                            else                
+                                swap leftPointer,rightPointer
+                            end if
+                        end while 
+                                    
+                        swap leftPointer,right
+                        return leftPointer
+                    end function
+                </code></pre>
+            </div>
         </div>
-    </div>
-
     <script>
+        
+        // Set the description tab as the default tab 
+        document.addEventListener("DOMContentLoaded", () => {
+            // Optional: Set the first tab as active on page load
+            document.querySelector(".tablinks").click();
+        });
+    
+
         // Accordion Menu Functionality
         document.querySelectorAll('.accordion-header').forEach(header => {
             header.addEventListener('click', () => {
@@ -351,7 +460,28 @@
                 content.style.display = content.style.display === "block" ? "none" : "block";
             });
         });
-
+        
+        function openTab(evt, tabName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+        
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+            }
+        
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            let elementChosen = document.getElementById(tabName);
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+            
         // Algorithm Selection Function
         function selectAlgorithm(name) {
             document.getElementById("algorithmInfo").innerHTML = `<h3>${name} Algorithm</h3><p>Description and pseudocode here...</p>`;
