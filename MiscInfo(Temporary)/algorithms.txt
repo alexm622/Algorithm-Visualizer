@@ -1,0 +1,11 @@
+Brute Force:
+Binary Tree Traversal, BFS, Bubble Sort, DFS, Heapsort, Insertion Sort, Page Rank, Selection Sort
+
+Divide Conquer:
+Bucket Sort, Counting Sort, Merge Sort, Quicksort, Radix Sort
+
+Dynamic Programming:
+Fibonacci Sequence, Flyod Warshall Shortest Path, Knapsack Problem, Maximum Sum Path, Sliding Window
+
+Greedy:
+Dijikstra's Shortest Path, Prim's Minimum Spanning Tree
