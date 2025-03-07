@@ -1,3 +1,10 @@
+// Opens Home Page by default upon page load
+document.addEventListener("DOMContentLoaded", function () {
+    selectAlgorithm('HomePage');
+});
+
+
+
 // Top Bar Functionality
 document.addEventListener("DOMContentLoaded", () => {
     const inputElement = document.getElementById('customInput');
@@ -14,8 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Creates a randomized list with a length between 2-20 and values between 0-99 
     function createRandomInput(size) {
         defaultInput = new Array(size);
-        for (let i=0; i < size; i++)
-        {
+        for (let i=0; i < size; i++) {
             defaultInput[i] = Math.floor(Math.random() * 99);
         }
     }
@@ -38,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Prevents the user from typing in their own input in the list size box
     listSizeInput.addEventListener('keydown', function(event) {
         event.preventDefault(); 
-      });
+    });
     
 
     listSizeInput.addEventListener('input', function(event) {
@@ -54,38 +60,32 @@ document.addEventListener("DOMContentLoaded", () => {
     customInputToggle.addEventListener('change', function()  {
         if (this.checked) 
         {    
-            if (!inputElement.value)
-            {
+            if (!inputElement.value) {
                 warningMessage.textContent = "Invalid Input: Enter an input";
                 warningMessage.style.color = "red";
                 warningMessage.style.display = "block";
                 customInputToggle.checked = false;
             }
-            else
-            {
+            else {
                 let inputList = inputElement.value.trim().split(/\s+/);
                 inputList = inputList.map(Number);
-                if (checkCustomInput(inputList) == true)
-                {
+                if (checkCustomInput(inputList) == true) {
                     console.log(inputList);
                     currentInput = inputList;
                 }
-                else
-                {
+                else {
                     customInputToggle.checked = false;
                 }
             }
         }
-        else
-        {
+        else {
             console.log('false');
             // Set current input equal to the default input
         }
     });
 
     function checkInputValues(inputList) {
-        for (let i = 0; i < inputList.length; i++)
-        {
+        for (let i = 0; i < inputList.length; i++) {
             if (inputList[i] > 99 || inputList[i] < -99)
             {
                 return false;
@@ -95,43 +95,42 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function checkCustomInput(inputList) {
-        if (inputList == ""){
+        if (inputList == "") {
             warningMessage.textContent = "Invalid Input: Enter an input";
             warningMessage.style.color = "red";
             return false;
         }
-        else if (inputList.length > 20 && isWholeNumbers(inputList) == false)
-        {
+        else if (inputList.length > 20 && isWholeNumbers(inputList) == false) {
             warningMessage.textContent = "Invalid Input: Only accepts integers and max 20 total values";
             warningMessage.style.color = "red";
             return false;
         }
-        else if (inputList.length < 2 && isWholeNumbers(inputList) == false){
+        else if (inputList.length < 2 && isWholeNumbers(inputList) == false) {
             warningMessage.textContent = "Invalid Input: Only accepts integers and a minimum of 2 values";
             warningMessage.style.color = "red";
             return false;
         }
-        else if (inputList.length > 20){
+        else if (inputList.length > 20) {
             warningMessage.textContent = "Invalid Input: Only accepts a maximum of 20 values";
             warningMessage.style.color = "red";
             return false;
         }
-        else if (isWholeNumbers(inputList) == false){
+        else if (isWholeNumbers(inputList) == false) {
             warningMessage.textContent = "Invalid Input: Only accepts integers";
             warningMessage.style.color = "red";
             return false;
         }
-        else if (inputList.length < 2){
+        else if (inputList.length < 2) {
             warningMessage.textContent = "Invalid Input: Only accepts a minimum of 2 values";
             warningMessage.style.color = "red";
             return false;
         }
-        else{
-            if (checkInputValues(inputList) == true){
+        else {
+            if (checkInputValues(inputList) == true) {
                 warningMessage.style.color = "#f4f4f4";
                 return true;
             }
-            else{
+            else {
                 warningMessage.textContent = "Invalid Input: Only accepts integers between -99 and 99";
                 warningMessage.style.color = "red";
                 return false;
@@ -186,15 +185,21 @@ window.previousAlgorithm = null;
 
 // Algorithm Data Fetcher
 function selectAlgorithm(algorithmName) {
-    // Clear the canvas
-    let canvas = document.getElementById("graphCanvas");
-    let ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // Ensure the canvas resizes correctly
-    canvas.width = canvas.parentElement.clientWidth;
-    canvas.height = canvas.parentElement.clientHeight;
-    // Reset text content for other display panels
-    document.getElementById("boxListVisual").textContent = ``;
+    // Clear the graph and boxlist canvases
+    let graphCanvas = document.getElementById("graphCanvas");
+    let boxListCanvas = document.getElementById("boxListCanvas");
+    let graphCtx = graphCanvas.getContext("2d");
+    let boxListCtx = boxListCanvas.getContext("2d");
+    graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+    boxListCtx.clearRect(0, 0, boxListCanvas.width, boxListCanvas.height);
+
+    // Ensure the canvases resize correctly
+    graphCanvas.width = graphCanvas.parentElement.clientWidth;
+    graphCanvas.height = graphCanvas.parentElement.clientHeight;
+    boxListCanvas.width = boxListCanvas.parentElement.clientWidth;
+    boxListCanvas.height = boxListCanvas.parentElement.clientHeight;
+
+    // Reset text content for step log
     document.getElementById("stepLog").textContent = ``;
 
     // Stop previous algorithm animation
@@ -327,7 +332,7 @@ function selectAlgorithm(algorithmName) {
             break;
         default:
             algorithmPath = '../HomePage/HomePage.html';
-            console.error("Error: unknown algorithm selected");
+            console.error("Error: unknown algorithm currently selected");
     }
 
     // Fetch current algorithm right panel content

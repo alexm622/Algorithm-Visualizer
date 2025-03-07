@@ -22,7 +22,7 @@
     <!-- Dynamic Programming -->
     <script src="../AlgorithmPages/DynamicProgramming/FibonacciSequence/FibonacciAnimation.js"></script>
     <script src="../AlgorithmPages/DynamicProgramming/FlyodWarshallShortestPath/FlyodPathAnimation.js"></script>
-    <script src="../AlgorithmPages/DynamicProgramming/KnapsacProblem/KnapsacAnimation.js"></script>
+    <script src="../AlgorithmPages/DynamicProgramming/KnapsackProblem/KnapsackAnimation.js"></script>
     <script src="../AlgorithmPages/DynamicProgramming/MaximumSumPath/MaxSumPathAnimation.js"></script>
     <script src="../AlgorithmPages/DynamicProgramming/SlidingWindow/SlidingWindowAnimation.js"></script>
     <!-- Greedy -->
@@ -45,13 +45,13 @@
             <input id="customInputToggle" type="checkbox">
             <span class="slider round"></span>
         </label>
-        <button class="button" title="Start the animation">&#9658;</button>
-        <button class="button" title="Pause the animation">||</button>
+        <button class="button" id="playButton" title="Start the animation">&#9658;</button>
+        <button class="button" id="pauseButton" title="Pause the animation">||</button>
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
-        <button class="button" title="Go back 1 frame in the animation">&#9664;</button>
-        <button class="button" title="Go forward 1 frame in the animation">&#9654;</button>
+        <button class="button" id="leftArrow" title="Go back 1 frame">&#9664;</button>
+        <button class="button" id="rightArrow" title="Go forward 1 frame">&#9654;</button>
     </div>
 
     <!-- Main Layout -->
@@ -64,9 +64,7 @@
             </div>
 
             <div class="accordion-item">
-                <div class="accordion-header">
-                    <a href="#" onclick="selectAlgorithm('HomePage')">Home Page</a>
-                </div>
+                <div class="accordion-header" onclick="selectAlgorithm('HomePage')">Home Page</div>
             </div>
     
             <div class="accordion-item">
@@ -121,7 +119,9 @@
                 <canvas id="graphCanvas"></canvas>
             </div>
             <!-- Box-List Visual -->
-            <div class="panel" id="boxListVisual"></div>
+            <div class="panel" id="boxListVisual">
+                <canvas id="boxListCanvas"></canvas>
+            </div>
             <!-- Step Log -->
             <div class="panel" id="stepLog"></div>
         </div>
