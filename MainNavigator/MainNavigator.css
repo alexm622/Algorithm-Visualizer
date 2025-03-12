@@ -2,13 +2,18 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: Arial;
 }
 body {
     display: flex;
     flex-direction: column;
     height: 100vh;
 }
+
+
+
+
+/* Top Slideshow Navigator/Customizer */
 .top-panel {
     display: flex;
     align-items: center;
@@ -17,6 +22,7 @@ body {
     background: #f4f4f4;
     border-bottom: 0.125em solid #ccc;
 }
+
 .button {
     border: none;
     background: #007bff;
@@ -29,12 +35,15 @@ body {
 .button:hover {
     background: #0056b3;
 }
+
 .input-box {
     padding: 0.3em;
 }
+
 #randomize{
     margin-right: 2%;
 }
+
 .customInputLayout{
     width: 30%;
     margin-right: 0.2%;
@@ -125,15 +134,24 @@ input:checked + .slider:before {
     background: #007bff;
     border-radius: 0.625em;
 }
+
+
+
+
+/* Left Navigation Panel */
 .layout {
     display: flex;
     flex: 1;
     height: 100%;
 }
+
 .accordion {
     background: #e9ecef;
     border-right: 0.125em solid #ccc;
     padding: 0.625em;
+    width: 250px; /* Fixed width, adjust as needed */
+    height: 100%; /* Take full height of parent */
+    overflow-y: auto; /* Add vertical scrollbar when content exceeds height */
 }
 .accordion-item {
     margin-bottom: 15%;
@@ -160,6 +178,7 @@ input:checked + .slider:before {
 .accordion-content a:hover {
     background: #ddd;
 }
+
 .topnav {
     overflow: hidden;
     width: 100%;
@@ -188,12 +207,18 @@ input:checked + .slider:before {
 .topnav button:hover{
     background: #ccc;
 }
+
+
+
+
+/* Middle and Right Display Panels */
 .middle-panels {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     padding: 0.625em;
+    min-height: 0; /* ⚠️ Critical for scrollable flex children */
 }
 .panel {
     flex: 1;
@@ -202,8 +227,22 @@ input:checked + .slider:before {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.5em;
 }
+.panel-log {
+    flex: 1;
+    border: 0.125em solid #ccc;
+    margin-bottom: 0.625em;
+    padding: 0.625em;
+    text-align: left;
+    font-size: 1em;
+    line-height: 1.5em;
+    word-wrap: break-word;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0; /* Prevents stretching issues */
+}
+
 .right-panel{
     flex: 1;
     display: flex;
@@ -213,7 +252,6 @@ input:checked + .slider:before {
     border: 0.0625em solid #ccc;
     background-color: #f1f1f1;
 }  
-  /* Style the buttons that are used to open the tab content */
 .tab button {
     background-color: inherit;
     float: left;

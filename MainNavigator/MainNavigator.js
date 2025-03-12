@@ -229,7 +229,6 @@ function selectAlgorithm(algorithmName) {
         case "MergeSort":
             break;
         case "Quicksort":
-            window.stopDrawingQuicksort();
             break;
         case "RadixSort":
             break;
