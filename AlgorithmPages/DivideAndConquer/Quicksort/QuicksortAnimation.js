@@ -18,7 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const boxListCtx = boxListCanvas.getContext('2d');
 
     //let originalData = [50, 150, 100, 200, -80, 60, 100, -200, -150, 200, 175, -125, -20, 20, 30, -40, 70, 120, -200];
-    let originalData = getRandomArray(20, 99);
+    const arrLength = getRandomNumber()
+    let originalData = getRandomArray(arrLength, 99);
     let data = [...originalData];
     let frames = [];
     let currentFrame = 0;
@@ -215,9 +216,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function getRandomArray(length, max) {
         return Array.from({ length }, () => Math.floor(Math.random() * max));
-      }
-      
+    }
 
+    function getRandomNumber(){
+        return Math.floor(Math.random() * (20 - 2 + 1)) + 2;
+    }
+      
     playButton.addEventListener("click", playAnimation);
     pauseButton.addEventListener("click", pauseAnimation);
     rightArrow.addEventListener("click", stepForward);
