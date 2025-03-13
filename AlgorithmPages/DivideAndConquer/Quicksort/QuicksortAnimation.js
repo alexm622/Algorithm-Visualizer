@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const leftArrow = document.getElementById("leftArrow");
     const rightArrow = document.getElementById("rightArrow");
     let progressFill = document.getElementById("progressFill");
-    let speedSlider = document.getElementById("speedSlider")
+    let speedSlider = document.getElementById("speedSlider");
     const stepLog = document.getElementById("stepLog");
 
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
@@ -240,7 +240,6 @@ document.addEventListener("DOMContentLoaded", () => {
         customInput.placeholder = "Enter 2-20 integers (value -99-99) separated by spaces";
 
         listSize.addEventListener('input', function(event) {
-            console.log("oh gosh");
             listSize = event.target.value; 
             randomizeButton.disabled = false;
         });
@@ -253,7 +252,6 @@ document.addEventListener("DOMContentLoaded", () => {
         */
         
         inputToggle.addEventListener('change', function()  {
-            console.log("this");
             if (this.checked) 
             {    
                 if (!customInput.value) {
@@ -267,6 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     inputList = inputList.map(Number);
                     if (checkCustomInput(inputList, warningMessage) == true) {
                         currentInput = inputList;
+                        customInput.disabled = true;
                     }
                     else {
                         customInputToggle.checked = false;
@@ -274,8 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
             else {
-                console.log('false');
-                // Set current input equal to the default input
+                customInput.disabled = false;
             }
         });
     }
@@ -303,6 +301,7 @@ function isWholeNumbers(list) {
 }
 
 function checkInputValues(inputList) {
+    console.log(inputList);
     for (let i = 0; i < inputList.length; i++) {
         if (inputList[i] > 99 || inputList[i] < -99)
         {
