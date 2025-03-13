@@ -47,11 +47,15 @@
         </label>
         <button class="button" id="playButton" title="Start the animation">&#9658;</button>
         <button class="button" id="pauseButton" title="Pause the animation">||</button>
+        <button class="button" id="resetButton" title="Reset the animation"><i class="fa fa-refresh"></i></button>
+        <button class="button" id="leftArrow" title="Go back 1 frame">&#9664;</button>
+        <button class="button" id="rightArrow" title="Go forward 1 frame">&#9654;</button>
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
-        <button class="button" id="leftArrow" title="Go back 1 frame">&#9664;</button>
-        <button class="button" id="rightArrow" title="Go forward 1 frame">&#9654;</button>
+        <div class="slider-container">
+            <input id="speed-slider" title="Change speed of animation" type="range" id="slider" min="0" max="100" value="50">
+        </div>
     </div>
 
     <!-- Main Layout -->

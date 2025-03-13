@@ -10,10 +10,8 @@ body {
     height: 100vh;
 }
 
-
-
-
 /* Top Slideshow Navigator/Customizer */
+
 .top-panel {
     display: flex;
     align-items: center;
@@ -32,6 +30,11 @@ body {
     margin-top: 0.8%;
     padding: 0.6em 0.8em;
 }
+
+#resetButton{
+    margin-right: 2em;
+}
+
 .button:hover {
     background: #0056b3;
 }
@@ -46,7 +49,6 @@ body {
 
 .customInputLayout{
     width: 30%;
-    margin-right: 0.2%;
 }
 #customInput{
     width: 100%;
@@ -118,6 +120,7 @@ input:checked + .slider:before {
     margin-right: 0.5%;
     margin-top: 0.8%;
 }
+
 .progress-bar {
     flex: 1;
     height: 1.5625em;
@@ -135,8 +138,12 @@ input:checked + .slider:before {
     border-radius: 0.625em;
 }
 
-
-
+.slider-container {
+    display: flex;
+    align-items: center;
+    margin-top: 0.7%;
+    gap: 0.625em;
+}
 
 /* Left Navigation Panel */
 .layout {
