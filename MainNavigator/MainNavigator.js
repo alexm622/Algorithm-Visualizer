@@ -1,145 +1,14 @@
 // Opens Home Page by default upon page load
 document.addEventListener("DOMContentLoaded", function () {
     selectAlgorithm('HomePage');
-});
 
-
-
-// Top Bar Functionality
-document.addEventListener("DOMContentLoaded", () => {
-    const inputElement = document.getElementById('customInput');
-    const warningMessage = document.getElementById('inputWarningMessage');
     const listSizeInput = document.getElementById('listSize');
-    const randomizeButton = document.getElementById('randomize');
-    const customInputToggle = document.getElementById('customInputToggle');
-    let customUserInput;
-    let defaultInput;
-    let currentInput; 
-    let listSize = Math.floor(Math.random() * 21) + 2;
-    createRandomInput(listSize);
-
-    // Creates a randomized list with a length between 2-20 and values between 0-99 
-    function createRandomInput(size) {
-        defaultInput = new Array(size);
-        for (let i=0; i < size; i++) {
-            defaultInput[i] = Math.floor(Math.random() * 99);
-        }
-    }
-
-    // Returns true if all the elements in the given list are whole numbers, else it returns false
-    function isWholeNumbers(list) {
-        for (let i = 0; i < list.length; i++) {
-            if (list[i] == NaN || !Number.isInteger(list[i])) {
-              return false;
-            }
-        }
-        return true;     
-    }
-    
-    function isWhitespace(str) {
-        const regex = /^\s*$/;
-        return regex.test(str);
-    }
 
     // Prevents the user from typing in their own input in the list size box
     listSizeInput.addEventListener('keydown', function(event) {
         event.preventDefault(); 
     });
-    
-
-    listSizeInput.addEventListener('input', function(event) {
-        listSize = event.target.value; 
-        randomizeButton.disabled = false;
-
-    });
-
-    randomizeButton.addEventListener('click', function(event) {
-        createRandomInput(listSize);
-    });
-
-    customInputToggle.addEventListener('change', function()  {
-        if (this.checked) 
-        {    
-            if (!inputElement.value) {
-                warningMessage.textContent = "Invalid Input: Enter an input";
-                warningMessage.style.color = "red";
-                warningMessage.style.display = "block";
-                customInputToggle.checked = false;
-            }
-            else {
-                let inputList = inputElement.value.trim().split(/\s+/);
-                inputList = inputList.map(Number);
-                if (checkCustomInput(inputList) == true) {
-                    console.log(inputList);
-                    currentInput = inputList;
-                }
-                else {
-                    customInputToggle.checked = false;
-                }
-            }
-        }
-        else {
-            console.log('false');
-            // Set current input equal to the default input
-        }
-    });
-
-    function checkInputValues(inputList) {
-        for (let i = 0; i < inputList.length; i++) {
-            if (inputList[i] > 99 || inputList[i] < -99)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function checkCustomInput(inputList) {
-        if (inputList == "") {
-            warningMessage.textContent = "Invalid Input: Enter an input";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else if (inputList.length > 20 && isWholeNumbers(inputList) == false) {
-            warningMessage.textContent = "Invalid Input: Only accepts integers and max 20 total values";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else if (inputList.length < 2 && isWholeNumbers(inputList) == false) {
-            warningMessage.textContent = "Invalid Input: Only accepts integers and a minimum of 2 values";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else if (inputList.length > 20) {
-            warningMessage.textContent = "Invalid Input: Only accepts a maximum of 20 values";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else if (isWholeNumbers(inputList) == false) {
-            warningMessage.textContent = "Invalid Input: Only accepts integers";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else if (inputList.length < 2) {
-            warningMessage.textContent = "Invalid Input: Only accepts a minimum of 2 values";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else {
-            if (checkInputValues(inputList) == true) {
-                warningMessage.style.color = "#f4f4f4";
-                return true;
-            }
-            else {
-                warningMessage.textContent = "Invalid Input: Only accepts integers between -99 and 99";
-                warningMessage.style.color = "red";
-                return false;
-            }
-        }
-    }
 });
-
-
 
 // Left Accordion Menu Functionality
 window.onload = function () {
@@ -152,8 +21,6 @@ window.onload = function () {
         });
     });
 }
-
-
 
 // Right Info Panel Functionality
 function openTab(evt, tabName) {
@@ -177,8 +44,6 @@ function openTab(evt, tabName) {
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 }
-
-
 
 // Global variable to track the last selected algorithm
 window.previousAlgorithm = null;
@@ -257,6 +122,9 @@ function selectAlgorithm(algorithmName) {
     document.getElementById('pseudocode').innerHTML = '';
     document.getElementById('references').innerHTML = '';
 
+    // Clear the top panel
+    resetTopPanel();
+
     // Start current algorithm animation
     var algorithmPath;
     switch(algorithmName) {
@@ -302,6 +170,7 @@ function selectAlgorithm(algorithmName) {
         case "Quicksort":
             algorithmPath = '../AlgorithmPages/DivideAndConquer/Quicksort/' + algorithmName + 'Info.html';
             window.startQuicksort();
+            window.setupQuicksort();
             break;
         case "RadixSort":
             algorithmPath = '../AlgorithmPages/DivideAndConquer/RadixSort/' + algorithmName + 'Info.html';
@@ -361,6 +230,21 @@ function selectAlgorithm(algorithmName) {
     window.previousAlgorithm = algorithmName;
 }
 
+function resetTopPanel(){
+    const inputElement = document.getElementById('customInput');
+    const warningMessage = document.getElementById('inputWarningMessage');
+    const listSize = document.getElementById('listSize');
+    const randomizeButton = document.getElementById('randomizeButton');
+    const inputToggle = document.getElementById('customInputToggle');
+    const speedSlider = document.getElementById("speedSlider");
+
+    inputElement.value = "";
+    randomizeButton.disabled = true;
+    listSize.value = NaN;
+    inputToggle.checked = false;
+    speedSlider.value = 0;
+    warningMessage.style.color = "#f4f4f4";
+}
 
 // document.getElementById("algorithmInfo").innerHTML = `<h3>${name} Algorithm</h3><p>Description and pseudocode here...</p>`;
 

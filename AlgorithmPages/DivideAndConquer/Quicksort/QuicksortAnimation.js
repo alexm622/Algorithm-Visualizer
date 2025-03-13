@@ -2,11 +2,18 @@
 document.addEventListener("DOMContentLoaded", () => {
     const graphCanvas = document.getElementById('graphCanvas');
     const boxListCanvas = document.getElementById('boxListCanvas');
+    let listSize = document.getElementById("listSize");
+    let randomizeButton = document.getElementById("randomizeButton");
+    let customInput = document.getElementById("customInput");
+    let warningMessage = document.getElementById("inputWarningMessage");
+    let inputToggle = document.getElementById("customInputToggle");
     const playButton = document.getElementById("playButton");
     const pauseButton = document.getElementById("pauseButton");
+    const resetButton = document.getElementById("resetButton");
     const leftArrow = document.getElementById("leftArrow");
     const rightArrow = document.getElementById("rightArrow");
-    const progressFill = document.getElementById("progressFill");
+    let progressFill = document.getElementById("progressFill");
+    let speedSlider = document.getElementById("speedSlider")
     const stepLog = document.getElementById("stepLog");
 
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
@@ -17,9 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const graphCtx = graphCanvas.getContext('2d');
     const boxListCtx = boxListCanvas.getContext('2d');
 
-    //let originalData = [50, 150, 100, 200, -80, 60, 100, -200, -150, 200, 175, -125, -20, 20, 30, -40, 70, 120, -200];
-    const arrLength = getRandomNumber()
-    let originalData = getRandomArray(arrLength, 99);
+    let originalData = getRandomArray(getRandomNumber(), 99);
     let data = [...originalData];
     let frames = [];
     let currentFrame = 0;
@@ -227,6 +232,54 @@ document.addEventListener("DOMContentLoaded", () => {
     rightArrow.addEventListener("click", stepForward);
     leftArrow.addEventListener("click", stepBackward);
 
+
+    function setupQuicksort(){
+    
+        listSize.min = 2;
+        listSize.max = 20;
+        customInput.placeholder = "Enter 2-20 integers (value -99-99) separated by spaces";
+
+        listSize.addEventListener('input', function(event) {
+            console.log("oh gosh");
+            listSize = event.target.value; 
+            randomizeButton.disabled = false;
+        });
+
+        /*
+        
+        randomizeButton.addEventListener('click', function(event) {
+            createRandomInput(listSize);
+        });
+        */
+        
+        inputToggle.addEventListener('change', function()  {
+            console.log("this");
+            if (this.checked) 
+            {    
+                if (!customInput.value) {
+                    warningMessage.textContent = "Invalid Input: Enter an input";
+                    warningMessage.style.color = "red";
+                    warningMessage.style.display = "block";
+                    customInputToggle.checked = false;
+                }
+                else {
+                    let inputList = customInput.value.trim().split(/\s+/);
+                    inputList = inputList.map(Number);
+                    if (checkCustomInput(inputList, warningMessage) == true) {
+                        currentInput = inputList;
+                    }
+                    else {
+                        customInputToggle.checked = false;
+                    }
+                }
+            }
+            else {
+                console.log('false');
+                // Set current input equal to the default input
+            }
+        });
+    }
+
     async function startQuickSort() {
         frames = [];
         currentFrame = 0;
@@ -236,4 +289,78 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.startQuicksort = startQuickSort;
+    window.setupQuicksort = setupQuicksort;
 });
+
+// Returns true if all the elements in the given list are whole numbers, else it returns false
+function isWholeNumbers(list) {
+    for (let i = 0; i < list.length; i++) {
+        if (list[i] == NaN || !Number.isInteger(list[i])) {
+            return false;
+        }
+    }
+    return true;     
+}
+
+function checkInputValues(inputList) {
+    for (let i = 0; i < inputList.length; i++) {
+        if (inputList[i] > 99 || inputList[i] < -99)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+function checkCustomInput(inputList, warningMessage) {
+    if (inputList == "") {
+        warningMessage.textContent = "Invalid Input: Enter an input";
+        warningMessage.style.color = "red";
+        return false;
+    }
+    else if (inputList.length > 20 && isWholeNumbers(inputList) == false) {
+        warningMessage.textContent = "Invalid Input: Only accepts integers and max 20 total values";
+        warningMessage.style.color = "red";
+        return false;
+    }
+    else if (inputList.length < 2 && isWholeNumbers(inputList) == false) {
+        warningMessage.textContent = "Invalid Input: Only accepts integers and a minimum of 2 values";
+        warningMessage.style.color = "red";
+        return false;
+    }
+    else if (inputList.length > 20) {
+        warningMessage.textContent = "Invalid Input: Only accepts a maximum of 20 values";
+        warningMessage.style.color = "red";
+        return false;
+    }
+    else if (isWholeNumbers(inputList) == false) {
+        warningMessage.textContent = "Invalid Input: Only accepts integers";
+        warningMessage.style.color = "red";
+        return false;
+    }
+    else if (inputList.length < 2) {
+        warningMessage.textContent = "Invalid Input: Only accepts a minimum of 2 values";
+        warningMessage.style.color = "red";
+        return false;
+    }
+    else {
+        if (checkInputValues(inputList) == true) {
+            warningMessage.style.color = "#f4f4f4";
+            return true;
+        }
+        else {
+            warningMessage.textContent = "Invalid Input: Only accepts integers between -99 and 99";
+            warningMessage.style.color = "red";
+            return false;
+        }
+    }
+}
+
+// Creates a randomized list with a length between 2-20 and values between 0-99 
+function createRandomInput() {
+    let listSize = Math.floor(Math.random() * 21) + 2;
+    let defaultInput = new Array(listSize);
+    for (let i=0; i < listSize; i++) {
+        defaultInput[i] = Math.floor(Math.random() * 99);
+    }
+}

@@ -35,11 +35,11 @@
 <body>
     <!-- Top Control Panel -->
     <div class="top-panel">
-        <input type="number" max="20" min="2" class="input-box" id="listSize" placeholder="Size" title="Select the size of the randomized list">
-        <button class="button" id="randomize" disabled title="Create a randomized list of selected size">Randomize</button>
+        <input type="number"class="input-box" id="listSize" placeholder="Size" title="Select the size of the randomized list">
+        <button class="button" id="randomizeButton" disabled title="Create a randomized list of selected size">Randomize</button>
         <div class="customInputLayout">
             <p id="inputWarningMessage">None</p>
-            <input type="text" title="Custom input to give to algorithm" class="input-box" id="customInput" placeholder="Enter 2-20 integers (value -99-99) separated by spaces">
+            <input type="text" title="Custom input to give to algorithm" class="input-box" id="customInput">
         </div>
         <label id="toggleLayout" class="switch" title="Set or unset the custom input as the default input">
             <input id="customInputToggle" type="checkbox">
@@ -54,7 +54,7 @@
             <div class="progress-fill" id="progressFill"></div>
         </div>
         <div class="slider-container">
-            <input id="speed-slider" title="Change speed of animation" type="range" id="slider" min="0" max="100" value="50">
+            <input id="speedSlider" title="Change speed of animation" type="range" id="slider" min="0" max="100" value="50">
         </div>
     </div>
 
