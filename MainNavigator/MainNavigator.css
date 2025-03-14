@@ -22,7 +22,6 @@ body {
     background: #f4f4f4;
     border-bottom: 0.125em solid #ccc;
 }
-
 .button {
     border: none;
     background: #007bff;
@@ -32,21 +31,20 @@ body {
     margin-top: 0.8%;
     padding: 0.6em 0.8em;
 }
+#resetButton{
+    margin-right: 2em;
+}
 .button:hover {
     background: #0056b3;
 }
-
 .input-box {
     padding: 0.3em;
 }
-
 #randomize{
     margin-right: 2%;
 }
-
 .customInputLayout{
     width: 30%;
-    margin-right: 0.2%;
 }
 #customInput{
     width: 100%;
@@ -134,24 +132,34 @@ input:checked + .slider:before {
     background: #007bff;
     border-radius: 0.625em;
 }
+.slider-container {
+    display: flex;
+    align-items: center;
+    margin-top: 0.7%;
+    gap: 0.625em;
+}
 
 
 
 
-/* Left Navigation Panel */
+/* Container for Left, Middle, and Right Panels */
 .layout {
     display: flex;
     flex: 1;
     height: 100%;
 }
 
+
+
+
+/* Left Navigation Panel */
 .accordion {
     background: #e9ecef;
     border-right: 0.125em solid #ccc;
     padding: 0.625em;
-    width: 250px; /* Fixed width, adjust as needed */
-    height: 100%; /* Take full height of parent */
-    overflow-y: auto; /* Add vertical scrollbar when content exceeds height */
+    width: 250px;
+    height: 100%;
+    overflow-y: auto;
 }
 .accordion-item {
     margin-bottom: 15%;
@@ -218,7 +226,7 @@ input:checked + .slider:before {
     flex-direction: column;
     justify-content: space-around;
     padding: 0.625em;
-    min-height: 0; /* ⚠️ Critical for scrollable flex children */
+    min-height: 0;
 }
 .panel {
     flex: 1;
@@ -242,7 +250,6 @@ input:checked + .slider:before {
     overflow-x: hidden;
     min-height: 0; /* Prevents stretching issues */
 }
-
 .right-panel{
     flex: 1;
     display: flex;

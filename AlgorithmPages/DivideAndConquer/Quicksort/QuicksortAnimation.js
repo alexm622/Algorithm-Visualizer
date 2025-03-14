@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const boxListCtx = boxListCanvas.getContext('2d');
 
     let originalData = [50, 150, 100, 200, -80, 60, 100, -200, -150, 200, 175, -125, -20, 20, 30, -40, 70, 120, -200];
+    // const arrLength = getRandomNumber()
+    // let originalData = getRandomArray(arrLength, 99);
     let data = [...originalData];
     let frames = [];
     let currentFrame = 0;
@@ -166,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
         stepLog.innerHTML = ""; // Reset log
         stepLog.innerHTML += `Initial List: ${originalData.join(", ")}<br>`; // Initial list
 
-        for (let i = 0; i <= currentFrame; i++) {
+        for (let i = 1; i <= currentFrame; i++) {
             if (frames[i].explanation) {
                 stepLog.innerHTML += frames[i].explanation + "<br>";
             }
@@ -189,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             currentFrame++;
             drawFrame(frames[currentFrame]);
-            setTimeout(step, 200);
+            setTimeout(step, 100);
         }
         step();
     }
@@ -212,6 +214,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function getRandomArray(length, max) {
+        return Array.from({ length }, () => Math.floor(Math.random() * max));
+    }
+
+    function getRandomNumber(){
+        return Math.floor(Math.random() * (20 - 2 + 1)) + 2;
+    }
+      
     playButton.addEventListener("click", playAnimation);
     pauseButton.addEventListener("click", pauseAnimation);
     rightArrow.addEventListener("click", stepForward);
@@ -221,7 +231,28 @@ document.addEventListener("DOMContentLoaded", () => {
         frames = [];
         currentFrame = 0;
         data = [...originalData];
+
+        // First frame: initial array, no highlights
+        frames.push({
+            data: [...data],
+            currentIndex: -1,
+            pivotIndex: -1,
+            swapIndices: [],
+            explanation: ""
+        });
+
+        // Middle frames: will have highlights
         await quickSort(data, 0, data.length - 1);
+
+        // Last frame: final sorted array, no highlights
+        frames.push({
+            data: [...data],
+            currentIndex: -1,
+            pivotIndex: -1,
+            swapIndices: [],
+            explanation: ""
+        });
+
         drawFrame(frames[currentFrame]);
     }
 

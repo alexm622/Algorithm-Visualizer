@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+
 // Top Bar Functionality
 document.addEventListener("DOMContentLoaded", () => {
     const inputElement = document.getElementById('customInput');
@@ -141,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+
 // Left Accordion Menu Functionality
 window.onload = function () {
     document.querySelectorAll('.accordion-header').forEach(header => {
@@ -152,6 +154,7 @@ window.onload = function () {
         });
     });
 }
+
 
 
 
@@ -177,6 +180,7 @@ function openTab(evt, tabName) {
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 }
+
 
 
 
