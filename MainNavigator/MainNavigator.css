@@ -1,3 +1,4 @@
+/* --- ENTIRE PAGE --- */
 * {
     margin: 0;
     padding: 0;
@@ -13,7 +14,7 @@ body {
 
 
 
-/* Top Slideshow Navigator/Customizer */
+/* --- TOP BAR ANIMATION CONTROLLER --- */
 .top-panel {
     display: flex;
     align-items: center;
@@ -40,8 +41,24 @@ body {
 .input-box {
     padding: 0.3em;
 }
-#randomize{
-    margin-right: 2%;
+.randomizeSizeLayout{
+    width: 4em;
+    margin-right: 0.3em;
+}
+#randListSize{
+    width: 100%;
+    height: 2.25em;
+    margin-top: 0.8%;
+}
+#sizeWarningMessage{
+    font-size: 0.600em;
+    color: #f4f4f4;
+    align-items: top;
+    margin-left: .1em;
+}
+#randomizeButton{
+    height: 2.25em;
+    margin-right: 1.5em;
 }
 .customInputLayout{
     width: 30%;
@@ -111,11 +128,6 @@ input:checked + .slider:before {
 .slider.round:before {
     border-radius: 50%;
 }      
-#listSize{
-    width: 4%;
-    margin-right: 0.5%;
-    margin-top: 0.8%;
-}
 .progress-bar {
     flex: 1;
     height: 1.5625em;
@@ -142,7 +154,7 @@ input:checked + .slider:before {
 
 
 
-/* Container for Left, Middle, and Right Panels */
+/* --- CONTAINER FOR LEFT, MIDDLE, & RIGHT PANELS --- */
 .layout {
     display: flex;
     flex: 1;
@@ -152,7 +164,7 @@ input:checked + .slider:before {
 
 
 
-/* Left Navigation Panel */
+/* --- LEFT NAVIGATION PANEL --- */
 .accordion {
     background: #e9ecef;
     border-right: 0.125em solid #ccc;
@@ -219,7 +231,7 @@ input:checked + .slider:before {
 
 
 
-/* Middle and Right Display Panels */
+/* --- MIDDLE DISPLAY PANELS --- */
 .middle-panels {
     flex: 1;
     display: flex;
@@ -250,6 +262,11 @@ input:checked + .slider:before {
     overflow-x: hidden;
     min-height: 0; /* Prevents stretching issues */
 }
+
+
+
+
+/* --- RIGHT INFO PANEL --- */
 .right-panel{
     flex: 1;
     display: flex;

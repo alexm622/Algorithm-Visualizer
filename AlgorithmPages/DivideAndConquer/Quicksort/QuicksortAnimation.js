@@ -1,12 +1,13 @@
 // Middle Display Panels Animation - Quicksort 
-document.addEventListener("DOMContentLoaded", () => {
+window.loadQuicksort = function () {
+    const randListSize = document.getElementById('randListSize');
+    const sizeWarningMessage = document.getElementById('sizeWarningMessage');
+    const inputElement = document.getElementById('customInput');
+    const inputWarningMessage = document.getElementById('inputWarningMessage');
+    const customInputToggle = document.getElementById('customInputToggle');
+    const progressFill = document.getElementById("progressFill");
     const graphCanvas = document.getElementById('graphCanvas');
     const boxListCanvas = document.getElementById('boxListCanvas');
-    const playButton = document.getElementById("playButton");
-    const pauseButton = document.getElementById("pauseButton");
-    const leftArrow = document.getElementById("leftArrow");
-    const rightArrow = document.getElementById("rightArrow");
-    const progressFill = document.getElementById("progressFill");
     const stepLog = document.getElementById("stepLog");
 
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
@@ -17,10 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const graphCtx = graphCanvas.getContext('2d');
     const boxListCtx = boxListCanvas.getContext('2d');
 
-    let originalData = [50, 150, 100, 200, -80, 60, 100, -200, -150, 200, 175, -125, -20, 20, 30, -40, 70, 120, -200];
-    // const arrLength = getRandomNumber()
-    // let originalData = getRandomArray(arrLength, 99);
-    let data = [...originalData];
+    let randomDataSize = 0;
+    let defaultData = [50, 150, 100, 200, -80, 60, 100, -200, -150, 200, 175, -125, -20, 20, 30, -40, 70, 120, -200, -90];
+    let currentData = [...defaultData];
+    let data = [...currentData];
     let frames = [];
     let currentFrame = 0;
     let isPlaying = false;
@@ -166,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateStepLog() {
         stepLog.innerHTML = ""; // Reset log
-        stepLog.innerHTML += `Initial List: ${originalData.join(", ")}<br>`; // Initial list
+        stepLog.innerHTML += `Initial List: ${currentData.join(", ")}<br>`; // Initial list
 
         for (let i = 1; i <= currentFrame; i++) {
             if (frames[i].explanation) {
@@ -214,23 +215,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function getRandomArray(length, max) {
-        return Array.from({ length }, () => Math.floor(Math.random() * max));
-    }
-
-    function getRandomNumber(){
-        return Math.floor(Math.random() * (20 - 2 + 1)) + 2;
-    }
-      
-    playButton.addEventListener("click", playAnimation);
-    pauseButton.addEventListener("click", pauseAnimation);
-    rightArrow.addEventListener("click", stepForward);
-    leftArrow.addEventListener("click", stepBackward);
-
-    async function startQuickSort() {
+    async function loadAnimation() {
         frames = [];
         currentFrame = 0;
-        data = [...originalData];
+        data = [...currentData];
 
         // First frame: initial array, no highlights
         frames.push({
@@ -241,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
             explanation: ""
         });
 
-        // Middle frames: will have highlights
+        // Middle frames: has highlights
         await quickSort(data, 0, data.length - 1);
 
         // Last frame: final sorted array, no highlights
@@ -256,5 +244,164 @@ document.addEventListener("DOMContentLoaded", () => {
         drawFrame(frames[currentFrame]);
     }
 
-    window.startQuicksort = startQuickSort;
-});
+    function resetAnimation() {
+        pauseAnimation();
+        currentFrame = 0;
+        drawFrame(frames[currentFrame]);
+    }
+
+    function randomizeInput() {
+        if (!randListSize.value) {
+            sizeWarningMessage.textContent = "Invalid Input: Enter an input";
+            sizeWarningMessage.style.color = "red";
+        }
+        else {
+            let inputList = randListSize.value.trim().split(/\s+/);
+            inputList = inputList.map(Number);
+            if (checkRandomizeInput(inputList)) {
+                pauseAnimation();
+                randomDataSize = inputList;
+                currentData = new Array(randomDataSize);
+                for (let i = 0; i < randomDataSize; i++) {
+                    if (Math.random() > 0.5) {
+                        currentData[i] = Math.round(Math.random() * 200)
+                    }
+                    else {
+                        currentData[i] = Math.round(Math.random() * -200); 
+                    }
+                }
+                loadAnimation();
+            }
+        }
+    }
+
+    function checkRandomizeInput(inputList) {
+        if (inputList == "") {
+            sizeWarningMessage.textContent = "Invalid Input: Enter an input";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        else if (!isWholeNumbers(inputList)) {
+            sizeWarningMessage.textContent = "Invalid Input: Enter only integer values";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        else if (inputList.length > 1) {
+            sizeWarningMessage.textContent = "Invalid Input: Enter only 1 integer value";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        else if (inputList[0] < 2 || inputList[0] > 20) {
+            sizeWarningMessage.textContent = "Invalid Input: Enter an integer between 2-20";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        else {
+            sizeWarningMessage.textContent = "---";
+            sizeWarningMessage.style.color = "#f4f4f4";
+            return true;
+        }
+    }
+
+    function toggleCustomInput() {
+        if (customInputToggle.checked) {  
+            if (!inputElement.value) {
+                inputWarningMessage.textContent = "Invalid Input: Enter an input";
+                inputWarningMessage.style.color = "red";
+                customInputToggle.checked = false;
+            }
+            else {
+                let inputList = inputElement.value.trim().split(/\s+/);
+                inputList = inputList.map(Number);
+                if (checkCustomInput(inputList)) {
+                    inputElement.disabled = true;
+                    pauseAnimation();
+                    currentData = inputList;
+                    loadAnimation();
+                }
+                else {
+                    customInputToggle.checked = false;
+                }
+            }
+        }
+        else {
+            pauseAnimation();
+            currentData = [...defaultData];
+            loadAnimation();
+            inputElement.disabled = false;
+        }
+    }
+
+    // Returns true if all the elements in the given list are whole numbers, else it returns false
+    function isWholeNumbers(list) {
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] == NaN || !Number.isInteger(list[i])) {
+              return false;
+            }
+        }
+        return true;     
+    }
+    
+    function isWhitespace(str) {
+        const regex = /^\s*$/;
+        return regex.test(str);
+    }
+
+    function checkInputValues(inputList) {
+        for (let i = 0; i < inputList.length; i++) {
+            if (inputList[i] > 200 || inputList[i] < -200)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function checkCustomInput(inputList) {
+        if (inputList == "") {
+            inputWarningMessage.textContent = "Invalid Input: Enter an input";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        else if (inputList.length > 20 && isWholeNumbers(inputList)) {
+            inputWarningMessage.textContent = "Invalid Input: Only accepts integers and max 20 total values";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        else if (inputList.length < 2 && !isWholeNumbers(inputList)) {
+            inputWarningMessage.textContent = "Invalid Input: Only accepts integers and a minimum of 2 values";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        else if (inputList.length > 20) {
+            inputWarningMessage.textContent = "Invalid Input: Only accepts a maximum of 20 values";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        else if (!isWholeNumbers(inputList)) {
+            inputWarningMessage.textContent = "Invalid Input: Only accepts integers";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        else if (inputList.length < 2) {
+            inputWarningMessage.textContent = "Invalid Input: Only accepts a minimum of 2 values";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        else {
+            if (checkInputValues(inputList)) {
+                inputWarningMessage.style.color = "#f4f4f4";
+                return true;
+            }
+            else {
+                inputWarningMessage.textContent = "Invalid Input: Only accepts integers between -200 and 200";
+                inputWarningMessage.style.color = "red";
+                return false;
+            }
+        }
+    }
+
+    window.activeController = new AnimationController(loadAnimation, playAnimation, pauseAnimation, stepForward, stepBackward, 
+        resetAnimation, randomizeInput, toggleCustomInput);
+    
+};

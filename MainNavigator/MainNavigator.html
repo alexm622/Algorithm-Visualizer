@@ -4,7 +4,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="MainNavigator.css">
     <script src="MainNavigator.js"></script> 
-    <!-- Brute Force -->
+    <!-- HOME PAGE -->
+    <script src="../HomePage/HomePage.js"></script>
+    <!-- BRUTE FORCE -->
     <script src="../AlgorithmPages/BruteForce/BinaryTreeTraversal/BinaryTreeAnimation.js"></script>
     <script src="../AlgorithmPages/BruteForce/BreadthFirstSearch/BFSAnimation.js"></script>
     <script src="../AlgorithmPages/BruteForce/BubbleSort/BubbleSortAnimation.js"></script>
@@ -13,19 +15,19 @@
     <script src="../AlgorithmPages/BruteForce/InsertionSort/InsertionSortAnimation.js"></script>
     <script src="../AlgorithmPages/BruteForce/PageRank/PageRankAnimation.js"></script>
     <script src="../AlgorithmPages/BruteForce/SelectionSort/SelectionSortAnimation.js"></script>
-    <!-- Divide and Conquer -->
+    <!-- DIVIDE AND CONQUER -->
     <script src="../AlgorithmPages/DivideAndConquer/BucketSort/BucketSortAnimation.js"></script>
     <script src="../AlgorithmPages/DivideAndConquer/CountingSort/CountingSortAnimation.js"></script>
     <script src="../AlgorithmPages/DivideAndConquer/MergeSort/MergeSortAnimation.js"></script>
     <script src="../AlgorithmPages/DivideAndConquer/Quicksort/QuicksortAnimation.js"></script>
     <script src="../AlgorithmPages/DivideAndConquer/RadixSort/RadixSortAnimation.js"></script>
-    <!-- Dynamic Programming -->
+    <!-- DYNAMIC PROGRAMMING -->
     <script src="../AlgorithmPages/DynamicProgramming/FibonacciSequence/FibonacciAnimation.js"></script>
     <script src="../AlgorithmPages/DynamicProgramming/FlyodWarshallShortestPath/FlyodPathAnimation.js"></script>
     <script src="../AlgorithmPages/DynamicProgramming/KnapsackProblem/KnapsackAnimation.js"></script>
     <script src="../AlgorithmPages/DynamicProgramming/MaximumSumPath/MaxSumPathAnimation.js"></script>
     <script src="../AlgorithmPages/DynamicProgramming/SlidingWindow/SlidingWindowAnimation.js"></script>
-    <!-- Greedy -->
+    <!-- GREEDY -->
     <script src="../AlgorithmPages/Greedy/DijkstraShortestPath/DijkstraPathAnimation.js"></script>
     <script src="../AlgorithmPages/Greedy/PrimMinimumSpanningTree/PrimMinTreeAnimation.js"></script>
     <meta charset="UTF-8">
@@ -33,13 +35,16 @@
     <title>Algorithm Visualizer</title>
 </head>
 <body>
-    <!-- Top Control Panel -->
+    <!-- TOP CONTROL BAR -->
     <div class="top-panel">
-        <input type="number" max="20" min="2" class="input-box" id="listSize" placeholder="Size" title="Select the size of the randomized list">
-        <button class="button" id="randomize" disabled title="Create a randomized list of selected size">Randomize</button>
+        <div class="randomizeSizeLayout">
+            <p id="sizeWarningMessage">---</p>
+            <input type="number" class="input-box" id="randListSize" placeholder="Size" title="Select the size of the randomized list">
+        </div>
+        <button class="button" id="randomizeButton" title="Create a randomized list of selected size">Randomize</button>
         <div class="customInputLayout">
-            <p id="inputWarningMessage">None</p>
-            <input type="text" title="Custom input to give to algorithm" class="input-box" id="customInput" placeholder="Enter 2-20 integers (value -99-99) separated by spaces">
+            <p id="inputWarningMessage">---</p>
+            <input type="text" title="Custom input to give to algorithm" class="input-box" id="customInput">
         </div>
         <label id="toggleLayout" class="switch" title="Set or unset the custom input as the default input">
             <input id="customInputToggle" type="checkbox">
@@ -47,16 +52,20 @@
         </label>
         <button class="button" id="playButton" title="Start the animation">&#9658;</button>
         <button class="button" id="pauseButton" title="Pause the animation">||</button>
+        <button class="button" id="resetButton" title="Reset the animation"><i class="fa fa-refresh"></i></button>
+        <button class="button" id="leftArrow" title="Go back 1 frame">&#9664;</button>
+        <button class="button" id="rightArrow" title="Go forward 1 frame">&#9654;</button>
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
-        <button class="button" id="leftArrow" title="Go back 1 frame">&#9664;</button>
-        <button class="button" id="rightArrow" title="Go forward 1 frame">&#9654;</button>
+        <div class="slider-container">
+            <input id="speedSlider" title="Change speed of animation" type="range" id="slider" min="0" max="100" value="50">
+        </div>
     </div>
 
-    <!-- Main Layout -->
+    <!-- MAIN LAYOUT -->
     <div class="layout">
-        <!-- Left Accordion Menu -->
+        <!-- LEFT ALGORITHM NAVIGATOR -->
         <div class="accordion">
             <div class="topnav">
                 <input type="text" placeholder="Search..." id="searchInput">
@@ -112,7 +121,7 @@
             </div>
         </div>
 
-        <!-- Middle Panels -->
+        <!-- MIDDLE ANIMATION DISPLAY PANELS -->
         <div class="middle-panels">
             <!-- Graph Visual -->
             <div class="panel" id="graphVisual">
@@ -126,7 +135,7 @@
             <div class="panel-log" id="stepLog"></div>
         </div>
     
-        <!-- Right Info Panel -->
+        <!-- RIGHT INFO PANEL -->
         <div class="right-panel">
             <div class="tab">
                 <button class="tablinks" onclick="openTab(event, 'description')">Description</button>

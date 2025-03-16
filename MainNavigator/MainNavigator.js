@@ -1,149 +1,77 @@
-// Opens Home Page by default upon page load
+// --- GLOBAL ANIMATION CONTROLLER ---
+class AnimationController {
+    constructor(loadAnimation, playAnimation, pauseAnimation, stepForward, stepBackward, resetAnimation, 
+    randomizeInput, toggleCustomInput) {
+        this.loadAlgorithmAnimation = loadAnimation ?? this.emptyFunction;
+        this.playAlgorithmAnimation = playAnimation ?? this.emptyFunction;
+        this.pauseAlgorithmAnimation = pauseAnimation ?? this.emptyFunction;
+        this.stepForwardOneFrame = stepForward ?? this.emptyFunction;
+        this.stepBackwardOneFrame = stepBackward ?? this.emptyFunction;
+        this.resetAlgorithmAnimation = resetAnimation ?? this.emptyFunction;
+        this.randomizeAlgorithmInput = randomizeInput ?? this.emptyFunction;
+        this.toggleCustomAlgorithmInput = toggleCustomInput ?? this.emptyFunction;
+    }
+
+    emptyFunction() {}
+
+    loadAnimation() {
+        this.loadAlgorithmAnimation();
+    }
+
+    playAnimation() {
+        this.playAlgorithmAnimation();
+    }
+
+    pauseAnimation() {
+        this.pauseAlgorithmAnimation();
+    }
+
+    stepForward() {
+        this.stepForwardOneFrame();
+    }
+
+    stepBackward() {
+        this.stepBackwardOneFrame();
+    }
+
+    resetAnimation() {
+        this.resetAlgorithmAnimation();
+    }
+
+    randomizeInput() {
+        this.randomizeAlgorithmInput();
+    }
+
+    toggleCustomInput() {
+        this.toggleCustomAlgorithmInput();
+    }
+}
+
+// --- GLOBAL CONTROLLER INSTANCE ---
+window.activeController;
+
+
+
+
+// --- HOME PAGE OPEN BY DEFAULT ---
 document.addEventListener("DOMContentLoaded", function () {
+    // initialize activeController & open to home page
+    window.loadHomePage();
     selectAlgorithm('HomePage');
+    // --- TOP CONTROLLER BAR FUNCTIONALITIES ---
+    document.getElementById("randomizeButton").addEventListener("click", () => window.activeController.randomizeInput());
+    document.getElementById("customInputToggle").addEventListener("change", () => window.activeController.toggleCustomInput());
+    document.getElementById("playButton").addEventListener("click", () => window.activeController.playAnimation());
+    document.getElementById("pauseButton").addEventListener("click", () => window.activeController.pauseAnimation());
+    document.getElementById("resetButton").addEventListener("click", () => window.activeController.resetAnimation());
+    document.getElementById("rightArrow").addEventListener("click", () => window.activeController.stepForward());
+    document.getElementById("leftArrow").addEventListener("click", () => window.activeController.stepBackward());
 });
 
 
 
 
-// Top Bar Functionality
-document.addEventListener("DOMContentLoaded", () => {
-    const inputElement = document.getElementById('customInput');
-    const warningMessage = document.getElementById('inputWarningMessage');
-    const listSizeInput = document.getElementById('listSize');
-    const randomizeButton = document.getElementById('randomize');
-    const customInputToggle = document.getElementById('customInputToggle');
-    let customUserInput;
-    let defaultInput;
-    let currentInput; 
-    let listSize = Math.floor(Math.random() * 21) + 2;
-    createRandomInput(listSize);
-
-    // Creates a randomized list with a length between 2-20 and values between 0-99 
-    function createRandomInput(size) {
-        defaultInput = new Array(size);
-        for (let i=0; i < size; i++) {
-            defaultInput[i] = Math.floor(Math.random() * 99);
-        }
-    }
-
-    // Returns true if all the elements in the given list are whole numbers, else it returns false
-    function isWholeNumbers(list) {
-        for (let i = 0; i < list.length; i++) {
-            if (list[i] == NaN || !Number.isInteger(list[i])) {
-              return false;
-            }
-        }
-        return true;     
-    }
-    
-    function isWhitespace(str) {
-        const regex = /^\s*$/;
-        return regex.test(str);
-    }
-
-    // Prevents the user from typing in their own input in the list size box
-    listSizeInput.addEventListener('keydown', function(event) {
-        event.preventDefault(); 
-    });
-    
-
-    listSizeInput.addEventListener('input', function(event) {
-        listSize = event.target.value; 
-        randomizeButton.disabled = false;
-
-    });
-
-    randomizeButton.addEventListener('click', function(event) {
-        createRandomInput(listSize);
-    });
-
-    customInputToggle.addEventListener('change', function()  {
-        if (this.checked) 
-        {    
-            if (!inputElement.value) {
-                warningMessage.textContent = "Invalid Input: Enter an input";
-                warningMessage.style.color = "red";
-                warningMessage.style.display = "block";
-                customInputToggle.checked = false;
-            }
-            else {
-                let inputList = inputElement.value.trim().split(/\s+/);
-                inputList = inputList.map(Number);
-                if (checkCustomInput(inputList) == true) {
-                    console.log(inputList);
-                    currentInput = inputList;
-                }
-                else {
-                    customInputToggle.checked = false;
-                }
-            }
-        }
-        else {
-            console.log('false');
-            // Set current input equal to the default input
-        }
-    });
-
-    function checkInputValues(inputList) {
-        for (let i = 0; i < inputList.length; i++) {
-            if (inputList[i] > 99 || inputList[i] < -99)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function checkCustomInput(inputList) {
-        if (inputList == "") {
-            warningMessage.textContent = "Invalid Input: Enter an input";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else if (inputList.length > 20 && isWholeNumbers(inputList) == false) {
-            warningMessage.textContent = "Invalid Input: Only accepts integers and max 20 total values";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else if (inputList.length < 2 && isWholeNumbers(inputList) == false) {
-            warningMessage.textContent = "Invalid Input: Only accepts integers and a minimum of 2 values";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else if (inputList.length > 20) {
-            warningMessage.textContent = "Invalid Input: Only accepts a maximum of 20 values";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else if (isWholeNumbers(inputList) == false) {
-            warningMessage.textContent = "Invalid Input: Only accepts integers";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else if (inputList.length < 2) {
-            warningMessage.textContent = "Invalid Input: Only accepts a minimum of 2 values";
-            warningMessage.style.color = "red";
-            return false;
-        }
-        else {
-            if (checkInputValues(inputList) == true) {
-                warningMessage.style.color = "#f4f4f4";
-                return true;
-            }
-            else {
-                warningMessage.textContent = "Invalid Input: Only accepts integers between -99 and 99";
-                warningMessage.style.color = "red";
-                return false;
-            }
-        }
-    }
-});
-
-
-
-
-// Left Accordion Menu Functionality
+// --- LEFT ACCORDION MENU TAB SELECTING/OPENING ---
 window.onload = function () {
     document.querySelectorAll('.accordion-header').forEach(header => {
         header.addEventListener('click', () => {
@@ -158,7 +86,7 @@ window.onload = function () {
 
 
 
-// Right Info Panel Functionality
+// --- RIGHT INFO PANEL TAB SWITCHING  ---
 function openTab(evt, tabName) {
     // Declare all variables
     var i, tabcontent, tablinks;
@@ -184,6 +112,141 @@ function openTab(evt, tabName) {
 
 
 
+// --- ALGORITHM SELECTOR (cleans up previous content, loads current algorithm content) ---
+function selectAlgorithm(algorithmName) {
+    // Stop playing previous animation
+    window.activeController.pauseAnimation();
+
+    // Clear the graph and boxlist canvases
+    const graphCanvas = document.getElementById("graphCanvas");
+    const boxListCanvas = document.getElementById("boxListCanvas");
+    [graphCanvas, boxListCanvas].forEach(canvas => {
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+    });
+    // Reset text content for step-log
+    document.getElementById("stepLog").textContent = ``;
+    // Clear previous algorithm right info-panel content
+    document.getElementById('description').innerHTML = '';
+    document.getElementById('pseudocode').innerHTML = '';
+    document.getElementById('references').innerHTML = '';
+
+    // Tie top control-bar and right info-panel to current algorithm
+    var algorithmPath;
+    switch(algorithmName) {
+        // ** Home Page ** //
+        case "HomePage":
+            algorithmPath = '../HomePage/HomePage.html';
+            window.loadHomePage();            
+            break;
+        // ** Brute Force ** //
+        case "BinaryTree":
+            algorithmPath = '../AlgorithmPages/BruteForce/BinaryTreeTraversal/' + algorithmName + 'Info.html';
+            break;
+        case "BFS":
+            algorithmPath = '../AlgorithmPages/BruteForce/BreadthFirstSearch/' + algorithmName + 'Info.html';
+            break;
+        case "BubbleSort":
+            algorithmPath = '../AlgorithmPages/BruteForce/BubbleSort/' + algorithmName + 'Info.html';
+            break;
+        case "DFS":
+            algorithmPath = '../AlgorithmPages/BruteForce/DepthFirstSearch/' + algorithmName + 'Info.html';
+            break;
+        case "Heapsort":
+            algorithmPath = '../AlgorithmPages/BruteForce/Heapsort/' + algorithmName + 'Info.html';
+            break;
+        case "InsertionSort":
+            algorithmPath = '../AlgorithmPages/BruteForce/InsertionSort/' + algorithmName + 'Info.html';
+            break;
+        case "PageRank":
+            algorithmPath = '../AlgorithmPages/BruteForce/PageRank/' + algorithmName + 'Info.html';
+            break;
+        case "SelectionSort":
+            algorithmPath = '../AlgorithmPages/BruteForce/SelectionSort/' + algorithmName + 'Info.html';
+            break;
+        // ** Divide and Conquer ** // 
+        case "BucketSort":
+            algorithmPath = '../AlgorithmPages/DivideAndConquer/BucketSort/' + algorithmName + 'Info.html';
+            break;
+        case "CountingSort":
+            algorithmPath = '../AlgorithmPages/DivideAndConquer/CountingSort/' + algorithmName + 'Info.html';
+            break;
+        case "MergeSort":
+            algorithmPath = '../AlgorithmPages/DivideAndConquer/MergeSort/' + algorithmName + 'Info.html';
+            break;
+        case "Quicksort":
+            algorithmPath = '../AlgorithmPages/DivideAndConquer/Quicksort/' + algorithmName + 'Info.html';
+            window.loadQuicksort();
+            break;
+        case "RadixSort":
+            algorithmPath = '../AlgorithmPages/DivideAndConquer/RadixSort/' + algorithmName + 'Info.html';
+            break;
+        // ** Dynamic Programming ** //
+        case "Fibonacci":
+            algorithmPath = '../AlgorithmPages/DynamicProgramming/FibonacciSequence/' + algorithmName + 'Info.html';
+            break;
+        case "FlyodPath":
+            algorithmPath = '../AlgorithmPages/DynamicProgramming/FlyodWarshallShortestPath/' + algorithmName + 'Info.html';
+            break;
+        case "Knapsack":
+            algorithmPath = '../AlgorithmPages/DynamicProgramming/KnapsackProblem/' + algorithmName + 'Info.html';
+            break;
+        case "MaxSumPath":
+            algorithmPath = '../AlgorithmPages/DynamicProgramming/MaximumSumPath/' + algorithmName + 'Info.html';
+            break;
+        case "SlidingWindow":
+            algorithmPath = '../AlgorithmPages/DynamicProgramming/SlidingWindow/' + algorithmName + 'Info.html';
+            break;
+        // ** Greedy ** //
+        case "DijkstraPath":
+            algorithmPath = '../AlgorithmPages/Greedy/DijkstraShortestPath/' + algorithmName + 'Info.html';
+            break;
+        case "PrimMinTree":
+            algorithmPath = '../AlgorithmPages/Greedy/PrimMinimumSpanningTree/' + algorithmName + 'Info.html';
+            break;
+        default:
+            algorithmPath = '../HomePage/HomePage.html';
+            window.loadHomePage();
+            console.error(`Error - Unknown Algorithm: ${algorithmName}`);
+    }
+
+    // Load middle display-panels content for current algorithm
+    window.activeController.loadAnimation();
+
+    // Load right info-panel content for current algorithm
+    fetch(algorithmPath)
+        .then(response => response.text())
+        .then(html => {
+            // Create a temporary div to hold the fetched HTML content
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            // Extract the specific sections (description, references, pseudocode) from the fetched HTML
+            var descriptionContent = tempDiv.querySelector('#description');
+            var pseudocodeContent = tempDiv.querySelector('#pseudocode');
+            var referencesContent = tempDiv.querySelector('#references');
+
+            // Populate the content into the appropriate tabs
+            document.getElementById('description').appendChild(descriptionContent);
+            document.getElementById('references').appendChild(referencesContent);
+            document.getElementById('pseudocode').appendChild(pseudocodeContent);
+
+            // Open first tab by default (description tab)
+            document.querySelector(".tablinks").click();
+        })
+        .catch(error => {
+            console.error('Error fetching right panel content:', error);
+        });
+}
+
+
+
+
+
+
+/*
 // Global variable to track the last selected algorithm
 window.previousAlgorithm = null;
 
@@ -364,7 +427,7 @@ function selectAlgorithm(algorithmName) {
 
     window.previousAlgorithm = algorithmName;
 }
-
+*/
 
 // document.getElementById("algorithmInfo").innerHTML = `<h3>${name} Algorithm</h3><p>Description and pseudocode here...</p>`;
 
