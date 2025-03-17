@@ -2,9 +2,10 @@
 window.loadQuicksort = function () {
     const randListSize = document.getElementById('randListSize');
     const sizeWarningMessage = document.getElementById('sizeWarningMessage');
+    const randomizeButton = document.getElementById('randomizeButton');
     const inputElement = document.getElementById('customInput');
-    const inputWarningMessage = document.getElementById('inputWarningMessage');
     const customInputToggle = document.getElementById('customInputToggle');
+    const inputWarningMessage = document.getElementById('inputWarningMessage');
     const progressFill = document.getElementById("progressFill");
     const graphCanvas = document.getElementById('graphCanvas');
     const boxListCanvas = document.getElementById('boxListCanvas');
@@ -48,7 +49,7 @@ window.loadQuicksort = function () {
 
     function drawGraphVisualization() {
         const barWidth = graphCanvas.width / data.length;
-        const fontSize = Math.max(12, barWidth * 0.3);
+        const fontSize = Math.min(24, Math.max(12, barWidth * 0.3));
         graphCtx.font = `${fontSize}px Arial`;
         graphCtx.textAlign = 'center';
         graphCtx.textBaseline = 'middle';
@@ -244,6 +245,14 @@ window.loadQuicksort = function () {
         drawFrame(frames[currentFrame]);
     }
 
+    function loadControlBar() {
+        randListSize.disabled = false;
+        randomizeButton.disabled = false;
+        inputElement.placeholder = "Enter a list of integers (ex. 184 -23 14 -75 198)";
+        inputElement.disabled = false;
+        customInputToggle.disabled = false;
+    }
+
     function resetAnimation() {
         pauseAnimation();
         currentFrame = 0;
@@ -252,7 +261,7 @@ window.loadQuicksort = function () {
 
     function randomizeInput() {
         if (!randListSize.value) {
-            sizeWarningMessage.textContent = "Invalid Input: Enter an input";
+            sizeWarningMessage.textContent = "Error: Enter an integer";
             sizeWarningMessage.style.color = "red";
         }
         else {
@@ -261,15 +270,16 @@ window.loadQuicksort = function () {
             if (checkRandomizeInput(inputList)) {
                 pauseAnimation();
                 randomDataSize = inputList;
-                currentData = new Array(randomDataSize);
+                defaultData = new Array(randomDataSize);
                 for (let i = 0; i < randomDataSize; i++) {
                     if (Math.random() > 0.5) {
-                        currentData[i] = Math.round(Math.random() * 200)
+                        defaultData[i] = Math.round(Math.random() * 200)
                     }
                     else {
-                        currentData[i] = Math.round(Math.random() * -200); 
+                        defaultData[i] = Math.round(Math.random() * -200); 
                     }
                 }
+                currentData = [...defaultData];
                 loadAnimation();
             }
         }
@@ -277,30 +287,28 @@ window.loadQuicksort = function () {
 
     function checkRandomizeInput(inputList) {
         if (inputList == "") {
-            sizeWarningMessage.textContent = "Invalid Input: Enter an input";
+            sizeWarningMessage.textContent = "Error: Enter an integer";
             sizeWarningMessage.style.color = "red";
             return false;
         }
-        else if (!isWholeNumbers(inputList)) {
-            sizeWarningMessage.textContent = "Invalid Input: Enter only integer values";
+        if (!isWholeNumbers(inputList)) {
+            sizeWarningMessage.textContent = "Error: Enter integers only";
             sizeWarningMessage.style.color = "red";
             return false;
         }
-        else if (inputList.length > 1) {
-            sizeWarningMessage.textContent = "Invalid Input: Enter only 1 integer value";
+        if (inputList.length > 1) {
+            sizeWarningMessage.textContent = "Error: Enter only 1 integer";
             sizeWarningMessage.style.color = "red";
             return false;
         }
-        else if (inputList[0] < 2 || inputList[0] > 20) {
-            sizeWarningMessage.textContent = "Invalid Input: Enter an integer between 2-20";
+        if (inputList[0] < 2 || inputList[0] > 20) {
+            sizeWarningMessage.textContent = "Error: Enter an integer between 2-20";
             sizeWarningMessage.style.color = "red";
             return false;
         }
-        else {
-            sizeWarningMessage.textContent = "---";
-            sizeWarningMessage.style.color = "#f4f4f4";
-            return true;
-        }
+        sizeWarningMessage.textContent = "---";
+        sizeWarningMessage.style.color = "#f4f4f4";
+        return true;
     }
 
     function toggleCustomInput() {
@@ -314,6 +322,8 @@ window.loadQuicksort = function () {
                 let inputList = inputElement.value.trim().split(/\s+/);
                 inputList = inputList.map(Number);
                 if (checkCustomInput(inputList)) {
+                    randListSize.disabled = true;
+                    randomizeButton.disabled = true;
                     inputElement.disabled = true;
                     pauseAnimation();
                     currentData = inputList;
@@ -328,6 +338,8 @@ window.loadQuicksort = function () {
             pauseAnimation();
             currentData = [...defaultData];
             loadAnimation();
+            randListSize.disabled = false;
+            randomizeButton.disabled = false;
             inputElement.disabled = false;
         }
     }
@@ -401,7 +413,7 @@ window.loadQuicksort = function () {
         }
     }
 
-    window.activeController = new AnimationController(loadAnimation, playAnimation, pauseAnimation, stepForward, stepBackward, 
+    window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, 
         resetAnimation, randomizeInput, toggleCustomInput);
     
 };

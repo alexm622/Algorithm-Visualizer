@@ -1,10 +1,9 @@
 // Middle Display Panels Animation - Algorithm Name
+window.loadBinaryTree = function () {
+    // TODO:
+    // Implement algorithm logic
+    // Implement top bar controls
+    // Implement AnimationController functions
 
-
-// TODO:
-
-// Algorithm Logic
-
-// Expose functions for external triggering
-// window.startAlgorithmName = startAlgorithmName;
-// window.stopDrawingAlgorithmName = stopDrawing;
+    window.activeController = new AnimationController(null, null, null, null, null, null, null, null, null);
+}

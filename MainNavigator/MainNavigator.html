@@ -39,27 +39,27 @@
     <div class="top-panel">
         <div class="randomizeSizeLayout">
             <p id="sizeWarningMessage">---</p>
-            <input type="number" class="input-box" id="randListSize" placeholder="Size" title="Select the size of the randomized list">
+            <input type="number" class="input-box" id="randListSize" placeholder="Size" title="Set size of random list">
+            <button class="button" id="randomizeButton" title="Generate new random list">Randomize</button>
         </div>
-        <button class="button" id="randomizeButton" title="Create a randomized list of selected size">Randomize</button>
         <div class="customInputLayout">
             <p id="inputWarningMessage">---</p>
-            <input type="text" title="Custom input to give to algorithm" class="input-box" id="customInput">
+            <input type="text" class="input-box" id="customInput" title="Enter custom input">
         </div>
-        <label id="toggleLayout" class="switch" title="Set or unset the custom input as the default input">
+        <label id="toggleLayout" class="switch" title="Set or unset custom input">
             <input id="customInputToggle" type="checkbox">
             <span class="slider round"></span>
         </label>
-        <button class="button" id="playButton" title="Start the animation">&#9658;</button>
-        <button class="button" id="pauseButton" title="Pause the animation">||</button>
-        <button class="button" id="resetButton" title="Reset the animation"><i class="fa fa-refresh"></i></button>
+        <button class="button" id="playButton" title="Start animation">&#9658;</button>
+        <button class="button" id="pauseButton" title="Pause animation">||</button>
+        <button class="button" id="resetButton" title="Reset animation"><i class="fa fa-refresh"></i></button>
         <button class="button" id="leftArrow" title="Go back 1 frame">&#9664;</button>
         <button class="button" id="rightArrow" title="Go forward 1 frame">&#9654;</button>
-        <div class="progress-bar">
+        <div class="progress-bar" title="Progress bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
         <div class="slider-container">
-            <input id="speedSlider" title="Change speed of animation" type="range" id="slider" min="0" max="100" value="50">
+            <input id="speedSlider" title="Change animation speed" type="range" id="slider" min="0" max="100" value="50">
         </div>
     </div>
 

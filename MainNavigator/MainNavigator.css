@@ -42,15 +42,15 @@ body {
     padding: 0.3em;
 }
 .randomizeSizeLayout{
-    width: 4em;
-    margin-right: 0.3em;
+    width: 11em;
+    margin-right: 0.5em;
 }
 #randListSize{
-    width: 100%;
+    width: 5em;
     height: 2.25em;
-    margin-top: 0.8%;
 }
 #sizeWarningMessage{
+    width: 100%;
     font-size: 0.600em;
     color: #f4f4f4;
     align-items: top;
@@ -58,7 +58,6 @@ body {
 }
 #randomizeButton{
     height: 2.25em;
-    margin-right: 1.5em;
 }
 .customInputLayout{
     width: 30%;
