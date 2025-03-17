@@ -153,6 +153,7 @@ function selectAlgorithm(algorithmName) {
     document.getElementById('customInputToggle').disabled = true;
     document.getElementById('inputWarningMessage').textContent= "-";
     document.getElementById('inputWarningMessage').style.color = "#f4f4f4";
+    document.getElementById("progressFill").style.width = "0%";
     document.getElementById("speedSlider").value = 50;
 
     // Tie top control bar, middle display panels, and right info panel to current algorithm
