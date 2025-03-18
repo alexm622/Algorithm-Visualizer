@@ -20,7 +20,7 @@ window.loadQuicksort = function () {
     const boxListCtx = boxListCanvas.getContext('2d');
 
     let randomDataSize = 0;
-    let defaultData = [50, 150, 100, 200, -80, 60, 100, -200, -150, 200, 175, -125, -20, 20, 30, -40, 70, 120, -200, -90];
+    let defaultData = randomizeDefaultInput();
     let currentData = [...defaultData];
     let data = [...currentData];
     let frames = [];
@@ -31,6 +31,16 @@ window.loadQuicksort = function () {
     let swapIndices = [];
 
     const VERTICAL_PADDING = 30; // Spacing from top and bottom
+
+    function randomizeDefaultInput(){
+        const defaultSize = Math.floor(Math.random() * (20 - 2 + 1) + 2);
+        let defaultArray = new Array(defaultSize);
+        for (let i = 0; i < defaultSize; i++){
+            defaultArray[i] = Math.floor(Math.random() * 199) - 99;
+        }
+
+        return defaultArray
+    }
 
     function drawFrame(frame) {
         if (!frame) return;
@@ -354,11 +364,6 @@ window.loadQuicksort = function () {
         return true;     
     }
     
-    function isWhitespace(str) {
-        const regex = /^\s*$/;
-        return regex.test(str);
-    }
-
     function checkInputValues(inputList) {
         for (let i = 0; i < inputList.length; i++) {
             if (inputList[i] > 200 || inputList[i] < -200)
