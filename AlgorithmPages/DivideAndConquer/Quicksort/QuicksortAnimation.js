@@ -7,7 +7,9 @@ window.loadQuicksort = function () {
     const inputElement = document.getElementById('customInput');
     const customInputToggle = document.getElementById('customInputToggle');
     const inputWarningMessage = document.getElementById('inputWarningMessage');
+    const progressBar = document.getElementById("progressBar");
     const progressFill = document.getElementById("progressFill");
+    const speedSlider = document.getElementById("speedSlider");
     const graphCanvas = document.getElementById('graphCanvas');
     const boxListCanvas = document.getElementById('boxListCanvas');
     const stepLog = document.getElementById("stepLog");
@@ -34,7 +36,7 @@ window.loadQuicksort = function () {
     let pivotIndex = -1;
     let swapIndices = [];
 
-    const VERTICAL_PADDING = 30; // Spacing from top and bottom
+    const VERTICAL_PADDING = 30; // Minimum spacing of graph bars from top and bottom of container
 
     // Draws the current animation frame based on the stored frame data
     function drawFrame(frame) {
@@ -169,7 +171,7 @@ window.loadQuicksort = function () {
         })));
     }
 
-    // Adds frame with given text for the step log
+    // Adds new frame, step log explanation is given as text parameter
     function appendToExplanation(text) {
         recordFrame(text);
     }
@@ -202,6 +204,15 @@ window.loadQuicksort = function () {
     function playAnimation() {
         if (isPlaying) return;
         isPlaying = true;
+
+        // Sets animation play speed based on speedSlider value
+        function getAnimationSpeed() {
+            const fastestSpeed = 20;  // (ms)
+            const slowestSpeed = 2000; // (ms)
+            return slowestSpeed - (speedSlider.value / 100) * (slowestSpeed - fastestSpeed);
+        }
+
+        // Replaces current frame with the next frame at a set speed
         function step() {
             if (!isPlaying || currentFrame >= frames.length - 1) {
                 isPlaying = false;
@@ -209,7 +220,7 @@ window.loadQuicksort = function () {
             }
             currentFrame++;
             drawFrame(frames[currentFrame]);
-            setTimeout(step, 100);
+            setTimeout(step, getAnimationSpeed()); // Recursively calls step function
         }
         step();
     }
@@ -219,7 +230,7 @@ window.loadQuicksort = function () {
         isPlaying = false;
     }
 
-    // Moves forward 1 frame in animation
+    // Moves forward 1 frame
     function stepForward() {
         if (currentFrame < frames.length - 1) {
             currentFrame++;
@@ -227,12 +238,21 @@ window.loadQuicksort = function () {
         }
     }
 
-    // Moves backward 1 frame in animation
+    // Moves backward 1 frame
     function stepBackward() {
         if (currentFrame > 0) {
             currentFrame--;
             drawFrame(frames[currentFrame]);
         }
+    }
+
+    // Moves to specific frame based on where in the progress bar the user clicks
+    function moveToFrame(event) {
+        const rect = progressBar.getBoundingClientRect(); // Get position & size
+        const clickX = event.clientX - rect.left; // Click position within bar
+        const progressPercent = clickX / rect.width; // Convert to percentage
+        currentFrame = Math.round(progressPercent * (frames.length - 1)); // Map to frame
+        drawFrame(frames[currentFrame]); // Update animation state
     }
 
     // Creates animation and displays first frame
@@ -272,6 +292,8 @@ window.loadQuicksort = function () {
         inputElement.placeholder = "Enter a list of integers (ex. 184 -23 14 -75 198)";
         inputElement.disabled = false;
         customInputToggle.disabled = false;
+        progressBar.disabled = false;
+        speedSlider.disabled = false;
     }
 
     // Pauses animation and goes back to frame 1
@@ -437,6 +459,6 @@ window.loadQuicksort = function () {
 
     // Ties Quicksort animation functionality to main page
     window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, 
-        resetAnimation, randomizeInput, toggleCustomInput);
+        moveToFrame, resetAnimation, randomizeInput, toggleCustomInput);
     
 };

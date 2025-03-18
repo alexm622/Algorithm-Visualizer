@@ -1,13 +1,14 @@
 // --- GLOBAL ANIMATION CONTROLLER ---
 class AnimationController {
-    constructor(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, resetAnimation, 
-    randomizeInput, toggleCustomInput) {
+    constructor(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, moveToFrame, 
+    resetAnimation, randomizeInput, toggleCustomInput) {
         this.loadAlgorithmAnimation = loadAnimation ?? this.emptyFunction;
         this.loadAlgorithmControlBar = loadControlBar ?? this.emptyFunction;
         this.playAlgorithmAnimation = playAnimation ?? this.emptyFunction;
         this.pauseAlgorithmAnimation = pauseAnimation ?? this.emptyFunction;
         this.stepForwardOneFrame = stepForward ?? this.emptyFunction;
         this.stepBackwardOneFrame = stepBackward ?? this.emptyFunction;
+        this.moveToAlgorithmFrame = moveToFrame ?? this.emptyFunction;
         this.resetAlgorithmAnimation = resetAnimation ?? this.emptyFunction;
         this.randomizeAlgorithmInput = randomizeInput ?? this.emptyFunction;
         this.toggleCustomAlgorithmInput = toggleCustomInput ?? this.emptyFunction;
@@ -37,6 +38,10 @@ class AnimationController {
 
     stepBackward() {
         this.stepBackwardOneFrame();
+    }
+
+    moveToFrame(event) {
+        this.moveToAlgorithmFrame(event);
     }
 
     resetAnimation() {
@@ -71,6 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("resetButton").addEventListener("click", () => window.activeController.resetAnimation());
     document.getElementById("rightArrow").addEventListener("click", () => window.activeController.stepForward());
     document.getElementById("leftArrow").addEventListener("click", () => window.activeController.stepBackward());
+    document.getElementById("progressBar").addEventListener("click", (event) => window.activeController.moveToFrame(event));
 });
 
 
@@ -153,7 +159,9 @@ function selectAlgorithm(algorithmName) {
     document.getElementById('customInputToggle').disabled = true;
     document.getElementById('inputWarningMessage').textContent= "-";
     document.getElementById('inputWarningMessage').style.color = "#f4f4f4";
+    document.getElementById("progressBar").disabled = true;
     document.getElementById("progressFill").style.width = "0%";
+    document.getElementById("speedSlider").disabled = true;
     document.getElementById("speedSlider").value = 50;
 
     // Tie top control bar, middle display panels, and right info panel to current algorithm
