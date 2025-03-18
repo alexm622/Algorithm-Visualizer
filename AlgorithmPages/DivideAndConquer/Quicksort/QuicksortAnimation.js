@@ -1,5 +1,6 @@
 // Middle Display Panels Animation - Quicksort 
 window.loadQuicksort = function () {
+    // Get references to various DOM elements used for user input, warnings, and animation rendering
     const randListSize = document.getElementById('randListSize');
     const sizeWarningMessage = document.getElementById('sizeWarningMessage');
     const randomizeButton = document.getElementById('randomizeButton');
@@ -11,19 +12,22 @@ window.loadQuicksort = function () {
     const boxListCanvas = document.getElementById('boxListCanvas');
     const stepLog = document.getElementById("stepLog");
 
+    // Set canvas dimensions dynamically to fit their parent containers
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
     graphCanvas.height = graphCanvas.parentElement.clientHeight;
     boxListCanvas.width = boxListCanvas.parentElement.clientWidth;
     boxListCanvas.height = boxListCanvas.parentElement.clientHeight;
 
+    // Get 2D drawing contexts for rendering animations
     const graphCtx = graphCanvas.getContext('2d');
     const boxListCtx = boxListCanvas.getContext('2d');
 
+    // Initialize data for sorting visualization
     let randomDataSize = 0;
     let defaultData = [50, 150, 100, 200, -80, 60, 100, -200, -150, 200, 175, -125, -20, 20, 30, -40, 70, 120, -200, -90];
     let currentData = [...defaultData];
     let data = [...currentData];
-    let frames = [];
+    let frames = []; // Stores animation frames for step-by-step playback
     let currentFrame = 0;
     let isPlaying = false;
     let currentIndex = -1;
@@ -32,6 +36,7 @@ window.loadQuicksort = function () {
 
     const VERTICAL_PADDING = 30; // Spacing from top and bottom
 
+    // Draws the current animation frame based on the stored frame data
     function drawFrame(frame) {
         if (!frame) return;
         ({ data, currentIndex, pivotIndex, swapIndices } = frame);
@@ -40,6 +45,7 @@ window.loadQuicksort = function () {
         updateStepLog();
     }
 
+    // Clears and redraws both visualization canvases
     function drawData() {
         graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
         boxListCtx.clearRect(0, 0, boxListCanvas.width, boxListCanvas.height);
@@ -47,6 +53,7 @@ window.loadQuicksort = function () {
         drawBoxListVisualization();
     }
 
+    // Draws the bar graph representation of the data array
     function drawGraphVisualization() {
         const barWidth = graphCanvas.width / data.length;
         const fontSize = Math.min(24, Math.max(12, barWidth * 0.3));
@@ -85,6 +92,7 @@ window.loadQuicksort = function () {
         }
     }
 
+    // Draws the box-list representation of the data array
     function drawBoxListVisualization() {
         const numBoxes = data.length;
         const boxSize = Math.min(boxListCanvas.width / numBoxes, boxListCanvas.height);
@@ -110,12 +118,14 @@ window.loadQuicksort = function () {
         }
     }
 
+     // Determines the color of elements in the visualization
     function getColor(index) {
         if (swapIndices.includes(index)) return 'red';
         if (index === currentIndex || index === pivotIndex) return 'blue';
         return 'lightblue';
     }
 
+    // Controls the execution of the Quicksort algorithm while recording frames for animation
     async function quickSort(arr, left, right) {
         if (left < right) {
             let partitionIndex = await partition(arr, left, right);
@@ -124,6 +134,7 @@ window.loadQuicksort = function () {
         }
     }
 
+    // Partitions the array and records sorting steps for visualization
     async function partition(arr, left, right) {
         let pivot = arr[right];
         pivotIndex = right;
@@ -147,6 +158,7 @@ window.loadQuicksort = function () {
         return i + 1;
     }
 
+    // Records a snapshot of the current sorting step
     function recordFrame(explanation = "") {
         frames.push(JSON.parse(JSON.stringify({
             data: [...data],
@@ -157,15 +169,18 @@ window.loadQuicksort = function () {
         })));
     }
 
+    // Adds frame with given text for the step log
     function appendToExplanation(text) {
         recordFrame(text);
     }
 
+    // Increases or decreases fill of progress bar based on how far into animation the user is
     function updateProgressBar() {
         const progress = (currentFrame / (frames.length - 1)) * 100;
         progressFill.style.width = `${progress}%`;
     }
 
+    // Adds, into step log, all steps up to current frame
     function updateStepLog() {
         stepLog.innerHTML = ""; // Reset log
         stepLog.innerHTML += `Initial List: ${currentData.join(", ")}<br>`; // Initial list
@@ -183,6 +198,7 @@ window.loadQuicksort = function () {
         stepLog.scrollTop = stepLog.scrollHeight;
     }
 
+    // Initializes and controls animation playback
     function playAnimation() {
         if (isPlaying) return;
         isPlaying = true;
@@ -198,10 +214,12 @@ window.loadQuicksort = function () {
         step();
     }
 
+    // Pauses animation
     function pauseAnimation() {
         isPlaying = false;
     }
 
+    // Moves forward 1 frame in animation
     function stepForward() {
         if (currentFrame < frames.length - 1) {
             currentFrame++;
@@ -209,6 +227,7 @@ window.loadQuicksort = function () {
         }
     }
 
+    // Moves backward 1 frame in animation
     function stepBackward() {
         if (currentFrame > 0) {
             currentFrame--;
@@ -216,6 +235,7 @@ window.loadQuicksort = function () {
         }
     }
 
+    // Creates animation and displays first frame
     async function loadAnimation() {
         frames = [];
         currentFrame = 0;
@@ -245,6 +265,7 @@ window.loadQuicksort = function () {
         drawFrame(frames[currentFrame]);
     }
 
+    // Enables and contextualizes parts of top control bar relevant to Quicksort
     function loadControlBar() {
         randListSize.disabled = false;
         randomizeButton.disabled = false;
@@ -253,12 +274,14 @@ window.loadQuicksort = function () {
         customInputToggle.disabled = false;
     }
 
+    // Pauses animation and goes back to frame 1
     function resetAnimation() {
         pauseAnimation();
         currentFrame = 0;
         drawFrame(frames[currentFrame]);
     }
 
+    // Generates new list to sort with user given size, loads animation for new random list
     function randomizeInput() {
         if (!randListSize.value) {
             sizeWarningMessage.textContent = "Error: Enter an integer";
@@ -285,6 +308,7 @@ window.loadQuicksort = function () {
         }
     }
 
+    // Validates user input for new random list size
     function checkRandomizeInput(inputList) {
         if (inputList == "") {
             sizeWarningMessage.textContent = "Error: Enter an integer";
@@ -311,6 +335,8 @@ window.loadQuicksort = function () {
         return true;
     }
 
+    // Generates custom user-given list to sort, loads animation for new custom list
+    // Loads back animation for default list when toggled off
     function toggleCustomInput() {
         if (customInputToggle.checked) {  
             if (!inputElement.value) {
@@ -344,7 +370,7 @@ window.loadQuicksort = function () {
         }
     }
 
-    // Returns true if all the elements in the given list are whole numbers, else it returns false
+    // Returns true if all the elements in the given list are whole numbers, else returns false
     function isWholeNumbers(list) {
         for (let i = 0; i < list.length; i++) {
             if (list[i] == NaN || !Number.isInteger(list[i])) {
@@ -353,22 +379,18 @@ window.loadQuicksort = function () {
         }
         return true;     
     }
-    
-    function isWhitespace(str) {
-        const regex = /^\s*$/;
-        return regex.test(str);
-    }
 
+    // Returns true if all the elements in the given list are between -200 & 200, else returns false
     function checkInputValues(inputList) {
         for (let i = 0; i < inputList.length; i++) {
-            if (inputList[i] > 200 || inputList[i] < -200)
-            {
+            if (inputList[i] > 200 || inputList[i] < -200) {
                 return false;
             }
         }
         return true;
     }
 
+    // Validates user input for new custom list
     function checkCustomInput(inputList) {
         if (inputList == "") {
             inputWarningMessage.textContent = "Invalid Input: Enter an input";
@@ -413,6 +435,7 @@ window.loadQuicksort = function () {
         }
     }
 
+    // Ties Quicksort animation functionality to main page
     window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, 
         resetAnimation, randomizeInput, toggleCustomInput);
     
