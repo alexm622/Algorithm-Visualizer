@@ -26,7 +26,7 @@ window.loadQuicksort = function () {
 
     // Initialize data for sorting visualization
     let randomDataSize = 0;
-    let defaultData = [50, 150, 100, 200, -80, 60, 100, -200, -150, 200, 175, -125, -20, 20, 30, -40, 70, 120, -200, -90];
+    let defaultData = randomizeDefaultInput();
     let currentData = [...defaultData];
     let data = [...currentData];
     let frames = []; // Stores animation frames for step-by-step playback
@@ -36,7 +36,17 @@ window.loadQuicksort = function () {
     let pivotIndex = -1;
     let swapIndices = [];
 
-    const VERTICAL_PADDING = 30; // Minimum spacing of graph bars from top and bottom of container
+    const VERTICAL_PADDING = 30; // Spacing from top and bottom
+
+    function randomizeDefaultInput(){
+        const defaultSize = Math.floor(Math.random() * (20 - 2 + 1) + 2);
+        let defaultArray = new Array(defaultSize);
+        for (let i = 0; i < defaultSize; i++){
+            defaultArray[i] = Math.floor(Math.random() * 199) - 99;
+        }
+
+        return defaultArray
+    }
 
     // Draws the current animation frame based on the stored frame data
     function drawFrame(frame) {

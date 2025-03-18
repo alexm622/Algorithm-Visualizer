@@ -1,22 +1,41 @@
 <!-- Algorithm Description -->
 <div id="description">
     <h3 id="descriptionHeader">Selection Sort</h3>
+    <p>
+      A comparison-based algorithm. Sorts an array be repeatedly selecting the smallest or largest
+      element from the unsorted section of the given list and swapping it with the first
+      unsorted element. 
+      <br>
+      <br>
+      Selection Sort Steps:
+      <br>
+      <br>
+      1. Find the smallest element and swap it with the first element.
+      <br>
+      <br>
+      2. Find the smallest element among the remaining elements and swap it with the second element
+      <br>
+      <br>
+      3. Repeat until the list is sorted. 
+    </p>
   </div>
   
   <!-- AlgorithmName Psuedocode -->
   <div id="pseudocode">
     <pre>
       <code>
-      EXAMPLE CODE:
-      procedure quickSort(left, right)
-        if right-left <= 0
-          return
-        else
-          pivot = A[right]
-          partition = partitionFunc(left, right, pivot)
-          quickSort(left, partition-1)
-          quickSort(partition+1, right)
-        end if
+      procedure selectionSort(array)
+        for i <- 0; i < length(array); i++ do
+          min_index <- i
+
+          for j <- i + 1; j  < length(array); j++ do
+            if array[j] < arr[min_index] then
+              min_index <- j
+            end if
+          end for
+
+          swap array[i] with array[min_index]
+        end for
       end procedure
       </code>
     </pre>
@@ -25,6 +44,6 @@
   <!-- AlgorithmName References -->
   <div id="references">
     <ol id="referencesList">
-      <li><a href="https://www.examplelink.com" target="_blank">Example Link</a></li>
+      <li><a href="https://www.geeksforgeeks.org/selection-sort-algorithm-2/" target="_blank">GeeksforGeeks: Selection Sort Algorithm</a></li>
     </ol>
   </div>
