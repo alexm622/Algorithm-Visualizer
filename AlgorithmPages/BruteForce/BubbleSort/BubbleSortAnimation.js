@@ -25,7 +25,7 @@ window.loadBubbleSort = function () {
     const boxListCtx = boxListCanvas.getContext('2d');
 
     // Initialize data for visualization
-    let defaultData = generateRandomList(Math.round(Math.random() * 10 + 10)); // Generates random list of at least size 10
+    let defaultData = generateRandomList(); 
     let currentData = [...defaultData];
     let data = [...currentData];
     let frames = []; // Stores animation frames for step-by-step playback
@@ -415,14 +415,15 @@ window.loadBubbleSort = function () {
         return true;
     }
 
-    // Generates random list of given size
-    function generateRandomList(size) {
-        let randomArray = new Array(size);
-        for (let i = 0; i < size; i++) {
-            const randomSeed = 0.5 - Math.random(); // used to generate random signage
-            randomArray[i] = Math.round(randomSeed / Math.abs(randomSeed) * Math.random() * 200);
+    // Randomizes the size and values of the default input list on initialization of the webpage
+    function generateRandomList(){
+        const defaultSize = Math.floor(Math.random() * (20 - 8 + 1) + 8);
+        let defaultArray = new Array(defaultSize);
+        for (let i = 0; i < defaultSize; i++){
+            defaultArray[i] = Math.floor(Math.random() * 30) - 30;
         }
-        return randomArray;
+
+        return defaultArray
     }
 
     // Ties Bubble Sort animation functionality to main page

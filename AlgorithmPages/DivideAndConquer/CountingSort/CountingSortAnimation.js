@@ -5,7 +5,9 @@ window.loadCountingSort = function () {
     const inputElement = document.getElementById('customInput');
     const customInputToggle = document.getElementById('customInputToggle');
     const inputWarningMessage = document.getElementById('inputWarningMessage');
+    const progressBar = document.getElementById("progressBar");
     const progressFill = document.getElementById("progressFill");
+    const speedSlider = document.getElementById("speedSlider");
     const graphCanvas = document.getElementById('graphCanvas');
     const boxListCanvas = document.getElementById('boxListCanvas');
     const stepLog = document.getElementById('stepLog');
@@ -32,13 +34,7 @@ window.loadCountingSort = function () {
     const boxListCtx = boxListCanvas.getContext('2d');
     const outputArrayCtx = outputArrayCanvas.getContext('2d');
 
-    /*
-    Goal is to set graphCtx or graphCanvas equal to a list like boxListCanvas
-    */
-
-    let randomDataSize = 0;
-    //let defaultData = randomizeDefaultInput();
-    let defaultData = [6, 3, 2, 4, 7, 9, 5, 2, 3, 2, 5, 1, 7, 1, 9, 7, 3, 4, 3, 7];
+    let defaultData = generateRandomList();
     let currentData = [...defaultData];
     //let data = [...currentData];
     let defaultCountData = createCountingList();
@@ -55,9 +51,7 @@ window.loadCountingSort = function () {
     let countIndex = -1;
     let prevCountIndex = -1;
  
-
-    const VERTICAL_PADDING = 30; // Spacing from top and bottom
-
+    const VERTICAL_PADDING = 60; // Minimum spacing of graph bars from top and bottom of container
 
     /*
     Creates the counting array by finding the max value in the input list and setting
@@ -75,12 +69,9 @@ window.loadCountingSort = function () {
         return initialArray;
     }
 
-    /*
-    Randomizes the size and values of the default input
-    list on initialization of the webpage
-    */
-    function randomizeDefaultInput(){
-        const defaultSize = Math.floor(Math.random() * (20 - 2 + 1) + 2);
+    // Randomizes the size and values of the default input list on initialization of the webpage
+    function generateRandomList(){
+        const defaultSize = Math.floor(Math.random() * (20 - 8 + 1) + 8);
         let defaultArray = new Array(defaultSize);
         for (let i = 0; i < defaultSize; i++){
             defaultArray[i] = Math.floor(Math.random() * 30) - 30;
@@ -244,6 +235,7 @@ window.loadCountingSort = function () {
         })));
     }
 
+    // Adds new frame, step log explanation is given as text parameter
     function appendToExplanation(text) {
         recordFrame(text);
     }
@@ -277,6 +269,14 @@ window.loadCountingSort = function () {
     function playAnimation() {
         if (isPlaying) return;
         isPlaying = true;
+
+        // Sets animation play speed based on speedSlider value
+        function getAnimationSpeed() {
+            const fastestSpeed = 20;  // (ms)
+            const slowestSpeed = 2000; // (ms)
+            return slowestSpeed - (speedSlider.value / 100) * (slowestSpeed - fastestSpeed);
+        }
+
         function step() {
             if (!isPlaying || currentFrame >= frames.length - 1) {
                 isPlaying = false;
@@ -284,7 +284,7 @@ window.loadCountingSort = function () {
             }
             currentFrame++;
             drawFrame(frames[currentFrame]);
-            setTimeout(step, 100);
+            setTimeout(step, getAnimationSpeed()); // Recursively calls step function
         }
         step();
     }
@@ -293,6 +293,7 @@ window.loadCountingSort = function () {
         isPlaying = false;
     }
 
+    // Moves forward 1 frame
     function stepForward() {
         if (currentFrame < frames.length - 1) {
             currentFrame++;
@@ -300,11 +301,21 @@ window.loadCountingSort = function () {
         }
     }
 
+    // Moves backward 1 frame
     function stepBackward() {
         if (currentFrame > 0) {
             currentFrame--;
             drawFrame(frames[currentFrame]);
         }
+    }
+
+    // Moves to specific frame based on where in the progress bar the user clicks
+    function moveToFrame(event) {
+        const rect = progressBar.getBoundingClientRect(); // Get position & size
+        const clickX = event.clientX - rect.left; // Click position within bar
+        const progressPercent = clickX / rect.width; // Convert to percentage
+        currentFrame = Math.round(progressPercent * (frames.length - 1)); // Map to frame
+        drawFrame(frames[currentFrame]); // Update animation state
     }
 
     async function loadAnimation() {
@@ -350,6 +361,8 @@ window.loadCountingSort = function () {
         inputElement.placeholder = "Enter a list of integers (ex. 184 -23 14 -75 198)";
         inputElement.disabled = false;
         customInputToggle.disabled = false;
+        progressBar.disabled = false;
+        speedSlider.disabled = false;
     }
 
     function resetAnimation() {
@@ -516,7 +529,7 @@ window.loadCountingSort = function () {
     }
 
     window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, 
-        resetAnimation, randomizeInput, toggleCustomInput);
+        moveToFrame, resetAnimation, randomizeInput, toggleCustomInput);
     
 };
 
