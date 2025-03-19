@@ -1,13 +1,14 @@
 // --- GLOBAL ANIMATION CONTROLLER ---
 class AnimationController {
-    constructor(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, resetAnimation, 
-    randomizeInput, toggleCustomInput) {
+    constructor(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, moveToFrame, 
+    resetAnimation, randomizeInput, toggleCustomInput) {
         this.loadAlgorithmAnimation = loadAnimation ?? this.emptyFunction;
         this.loadAlgorithmControlBar = loadControlBar ?? this.emptyFunction;
         this.playAlgorithmAnimation = playAnimation ?? this.emptyFunction;
         this.pauseAlgorithmAnimation = pauseAnimation ?? this.emptyFunction;
         this.stepForwardOneFrame = stepForward ?? this.emptyFunction;
         this.stepBackwardOneFrame = stepBackward ?? this.emptyFunction;
+        this.moveToAlgorithmFrame = moveToFrame ?? this.emptyFunction;
         this.resetAlgorithmAnimation = resetAnimation ?? this.emptyFunction;
         this.randomizeAlgorithmInput = randomizeInput ?? this.emptyFunction;
         this.toggleCustomAlgorithmInput = toggleCustomInput ?? this.emptyFunction;
@@ -37,6 +38,10 @@ class AnimationController {
 
     stepBackward() {
         this.stepBackwardOneFrame();
+    }
+
+    moveToFrame(event) {
+        this.moveToAlgorithmFrame(event);
     }
 
     resetAnimation() {
@@ -71,13 +76,58 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("resetButton").addEventListener("click", () => window.activeController.resetAnimation());
     document.getElementById("rightArrow").addEventListener("click", () => window.activeController.stepForward());
     document.getElementById("leftArrow").addEventListener("click", () => window.activeController.stepBackward());
+    document.getElementById("progressBar").addEventListener("click", (event) => window.activeController.moveToFrame(event));
 });
 
 
 
 
-// --- LEFT ACCORDION MENU TAB SELECTING/OPENING ---
+// --- LEFT NAVIGATOR DROPDOWN SELECTING/OPENING & SEARCH FUNCTIONALITY ---
 window.onload = function () {
+    // search functionality
+    document.getElementById('searchInput').addEventListener('input', function () {
+        let filter = this.value.toLowerCase();
+        let accordionItems = document.querySelectorAll('.accordion-item');
+    
+        accordionItems.forEach(item => {
+            let header = item.querySelector('.accordion-header');
+            let content = item.querySelector('.accordion-content');
+            let links = content ? content.querySelectorAll('a') : [];
+            let headerText = header.textContent.toLowerCase();
+            let matchFound = false;
+    
+            // Check if the header matches the search
+            let headerMatches = headerText.includes(filter);
+    
+            // Check if any links (algorithms) match the search
+            let matchingLinks = [];
+            links.forEach(link => {
+                if (link.textContent.toLowerCase().includes(filter)) {
+                    matchingLinks.push(link);
+                }
+            });
+    
+            // If header matches but no algorithms do, show but collapse
+            if (headerMatches && matchingLinks.length === 0) {
+                item.style.display = "block";
+                content.style.display = "none"; // Keep collapsed
+            } 
+            // If some algorithms match, show and expand the section
+            else if (matchingLinks.length > 0) {
+                item.style.display = "block";
+                content.style.display = "block"; // Expand section
+                links.forEach(link => {
+                    link.style.display = matchingLinks.includes(link) ? "block" : "none";
+                });
+            } 
+            // If nothing matches, hide the whole section
+            else {
+                item.style.display = "none";
+            }
+        });
+    });
+    
+    // dropdown functionality
     document.querySelectorAll('.accordion-header').forEach(header => {
         header.addEventListener('click', () => {
             let content = header.nextElementSibling;
@@ -159,7 +209,9 @@ function selectAlgorithm(algorithmName) {
     document.getElementById('customInputToggle').disabled = true;
     document.getElementById('inputWarningMessage').textContent= "-";
     document.getElementById('inputWarningMessage').style.color = "#f4f4f4";
+    document.getElementById("progressBar").disabled = true;
     document.getElementById("progressFill").style.width = "0%";
+    document.getElementById("speedSlider").disabled = true;
     document.getElementById("speedSlider").value = 50;
 
     checkPanels();

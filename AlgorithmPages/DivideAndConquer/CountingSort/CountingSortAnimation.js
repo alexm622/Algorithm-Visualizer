@@ -519,3 +519,4 @@ window.loadCountingSort = function () {
         resetAnimation, randomizeInput, toggleCustomInput);
     
 };
+
