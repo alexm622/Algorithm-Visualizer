@@ -114,8 +114,14 @@ function openTab(evt, tabName) {
     evt.currentTarget.className += " active";
 }
 
-
-
+function checkPanels(){
+    const middlePanel = document.querySelector('.middle-panels');
+    const divCount = middlePanel.querySelectorAll('div').length;
+    if (divCount != 3){
+        outputArrayPanel = document.getElementById('outputArrayPanel');
+        middlePanel.removeChild(outputArrayPanel);
+    }
+}
 
 // --- ALGORITHM SELECTOR (cleans up previous content, loads current algorithm content) ---
 function selectAlgorithm(algorithmName) {
@@ -155,6 +161,8 @@ function selectAlgorithm(algorithmName) {
     document.getElementById('inputWarningMessage').style.color = "#f4f4f4";
     document.getElementById("progressFill").style.width = "0%";
     document.getElementById("speedSlider").value = 50;
+
+    checkPanels();
 
     // Tie top control bar, middle display panels, and right info panel to current algorithm
     // activeController is tied to current algorithm too
