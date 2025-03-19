@@ -82,8 +82,52 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-// --- LEFT ACCORDION MENU TAB SELECTING/OPENING ---
+// --- LEFT NAVIGATOR DROPDOWN SELECTING/OPENING & SEARCH FUNCTIONALITY ---
 window.onload = function () {
+    // search functionality
+    document.getElementById('searchInput').addEventListener('input', function () {
+        let filter = this.value.toLowerCase();
+        let accordionItems = document.querySelectorAll('.accordion-item');
+    
+        accordionItems.forEach(item => {
+            let header = item.querySelector('.accordion-header');
+            let content = item.querySelector('.accordion-content');
+            let links = content ? content.querySelectorAll('a') : [];
+            let headerText = header.textContent.toLowerCase();
+            let matchFound = false;
+    
+            // Check if the header matches the search
+            let headerMatches = headerText.includes(filter);
+    
+            // Check if any links (algorithms) match the search
+            let matchingLinks = [];
+            links.forEach(link => {
+                if (link.textContent.toLowerCase().includes(filter)) {
+                    matchingLinks.push(link);
+                }
+            });
+    
+            // If header matches but no algorithms do, show but collapse
+            if (headerMatches && matchingLinks.length === 0) {
+                item.style.display = "block";
+                content.style.display = "none"; // Keep collapsed
+            } 
+            // If some algorithms match, show and expand the section
+            else if (matchingLinks.length > 0) {
+                item.style.display = "block";
+                content.style.display = "block"; // Expand section
+                links.forEach(link => {
+                    link.style.display = matchingLinks.includes(link) ? "block" : "none";
+                });
+            } 
+            // If nothing matches, hide the whole section
+            else {
+                item.style.display = "none";
+            }
+        });
+    });
+    
+    // dropdown functionality
     document.querySelectorAll('.accordion-header').forEach(header => {
         header.addEventListener('click', () => {
             let content = header.nextElementSibling;
