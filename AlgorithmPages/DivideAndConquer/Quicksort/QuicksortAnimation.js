@@ -24,9 +24,8 @@ window.loadQuicksort = function () {
     const graphCtx = graphCanvas.getContext('2d');
     const boxListCtx = boxListCanvas.getContext('2d');
 
-    // Initialize data for sorting visualization
-    let randomDataSize = 0;
-    let defaultData = randomizeDefaultInput();
+    // Initialize data for visualization
+    let defaultData = generateRandomList(Math.round(Math.random() * 10 + 10)); // Generates random list of at least size 10
     let currentData = [...defaultData];
     let data = [...currentData];
     let frames = []; // Stores animation frames for step-by-step playback
@@ -36,19 +35,9 @@ window.loadQuicksort = function () {
     let pivotIndex = -1;
     let swapIndices = [];
 
-    const VERTICAL_PADDING = 30; // Spacing from top and bottom
+    const VERTICAL_PADDING = 60; // Minimum spacing of graph bars from top and bottom of container
 
-    function randomizeDefaultInput(){
-        const defaultSize = Math.floor(Math.random() * (20 - 2 + 1) + 2);
-        let defaultArray = new Array(defaultSize);
-        for (let i = 0; i < defaultSize; i++){
-            defaultArray[i] = Math.floor(Math.random() * 199) - 99;
-        }
-
-        return defaultArray
-    }
-
-    // Draws the current animation frame based on the stored frame data
+    // Draws current animation frame based on stored frame data
     function drawFrame(frame) {
         if (!frame) return;
         ({ data, currentIndex, pivotIndex, swapIndices } = frame);
@@ -65,7 +54,7 @@ window.loadQuicksort = function () {
         drawBoxListVisualization();
     }
 
-    // Draws the bar graph representation of the data array
+    // Draws the bar-graph representation of the data array
     function drawGraphVisualization() {
         const barWidth = graphCanvas.width / data.length;
         const fontSize = Math.min(24, Math.max(12, barWidth * 0.3));
@@ -75,7 +64,7 @@ window.loadQuicksort = function () {
 
         const maxAbsValue = Math.max(...data.map(Math.abs));
         const centerY = graphCanvas.height / 2;
-        const graphHeight = graphCanvas.height - VERTICAL_PADDING * 2;
+        const graphHeight = graphCanvas.height - VERTICAL_PADDING;
 
         for (let i = 0; i < data.length; i++) {
             const value = data[i];
@@ -130,14 +119,14 @@ window.loadQuicksort = function () {
         }
     }
 
-     // Determines the color of elements in the visualization
+    // Determines the color of elements in the visualization
     function getColor(index) {
         if (swapIndices.includes(index)) return 'red';
         if (index === currentIndex || index === pivotIndex) return 'blue';
         return 'lightblue';
     }
 
-    // Controls the execution of the Quicksort algorithm while recording frames for animation
+    // Controls the execution of the Quicksort algorithm
     async function quickSort(arr, left, right) {
         if (left < right) {
             let partitionIndex = await partition(arr, left, right);
@@ -170,7 +159,7 @@ window.loadQuicksort = function () {
         return i + 1;
     }
 
-    // Records a snapshot of the current sorting step
+    // Records a snapshot of the current sorting step, adds frame to animation
     function recordFrame(explanation = "") {
         frames.push(JSON.parse(JSON.stringify({
             data: [...data],
@@ -181,7 +170,7 @@ window.loadQuicksort = function () {
         })));
     }
 
-    // Adds new frame, step log explanation is given as text parameter
+    // Adds a new frame to animation with given step log explanation
     function appendToExplanation(text) {
         recordFrame(text);
     }
@@ -192,7 +181,7 @@ window.loadQuicksort = function () {
         progressFill.style.width = `${progress}%`;
     }
 
-    // Adds, into step log, all steps up to current frame
+    // Adds, into step log, all steps up to current frame (clears before adding)
     function updateStepLog() {
         stepLog.innerHTML = ""; // Reset log
         stepLog.innerHTML += `Initial List: ${currentData.join(", ")}<br>`; // Initial list
@@ -210,15 +199,15 @@ window.loadQuicksort = function () {
         stepLog.scrollTop = stepLog.scrollHeight;
     }
 
-    // Initializes and controls animation playback
+    // Initializes and starts animation playback
     function playAnimation() {
         if (isPlaying) return;
         isPlaying = true;
 
         // Sets animation play speed based on speedSlider value
         function getAnimationSpeed() {
-            const fastestSpeed = 20;  // (ms)
-            const slowestSpeed = 2000; // (ms)
+            const fastestSpeed = 50;  // (ms)
+            const slowestSpeed = 3000; // (ms)
             return slowestSpeed - (speedSlider.value / 100) * (slowestSpeed - fastestSpeed);
         }
 
@@ -258,11 +247,11 @@ window.loadQuicksort = function () {
 
     // Moves to specific frame based on where in the progress bar the user clicks
     function moveToFrame(event) {
-        const rect = progressBar.getBoundingClientRect(); // Get position & size
-        const clickX = event.clientX - rect.left; // Click position within bar
-        const progressPercent = clickX / rect.width; // Convert to percentage
-        currentFrame = Math.round(progressPercent * (frames.length - 1)); // Map to frame
-        drawFrame(frames[currentFrame]); // Update animation state
+        const rect = progressBar.getBoundingClientRect(); // Get progress bar dimensions
+        const clickX = event.clientX - rect.left; // Click-position within progress bar
+        const progressPercent = clickX / rect.width; // Determine how far in the progress bar the user clicked
+        currentFrame = Math.round(progressPercent * (frames.length - 1)); // Determine which frame to move to
+        drawFrame(frames[currentFrame]); // Move to frame
     }
 
     // Creates animation and displays first frame
@@ -299,7 +288,7 @@ window.loadQuicksort = function () {
     function loadControlBar() {
         randListSize.disabled = false;
         randomizeButton.disabled = false;
-        inputElement.placeholder = "Enter a list of integers (ex. 184 -23 14 -75 198)";
+        inputElement.placeholder = "Enter a list of 2-20 integers between -200 & 200 (ex. 184 -23 14 -75 198)";
         inputElement.disabled = false;
         customInputToggle.disabled = false;
         progressBar.disabled = false;
@@ -313,61 +302,25 @@ window.loadQuicksort = function () {
         drawFrame(frames[currentFrame]);
     }
 
-    // Generates new list to sort with user given size, loads animation for new random list
+    // Generates new list with user given size, loads animation for new random list
     function randomizeInput() {
         if (!randListSize.value) {
             sizeWarningMessage.textContent = "Error: Enter an integer";
             sizeWarningMessage.style.color = "red";
         }
         else {
-            let inputList = randListSize.value.trim().split(/\s+/);
-            inputList = inputList.map(Number);
+            let inputList = randListSize.value.trim().split(/\s+/); // turns input into a string list
+            inputList = inputList.map(Number); // turns string list into a number list
             if (checkRandomizeInput(inputList)) {
                 pauseAnimation();
-                randomDataSize = inputList;
-                defaultData = new Array(randomDataSize);
-                for (let i = 0; i < randomDataSize; i++) {
-                    if (Math.random() > 0.5) {
-                        defaultData[i] = Math.round(Math.random() * 200)
-                    }
-                    else {
-                        defaultData[i] = Math.round(Math.random() * -200); 
-                    }
-                }
+                defaultData = generateRandomList(inputList[0]);
                 currentData = [...defaultData];
                 loadAnimation();
             }
         }
     }
 
-    // Validates user input for new random list size
-    function checkRandomizeInput(inputList) {
-        if (inputList == "") {
-            sizeWarningMessage.textContent = "Error: Enter an integer";
-            sizeWarningMessage.style.color = "red";
-            return false;
-        }
-        if (!isWholeNumbers(inputList)) {
-            sizeWarningMessage.textContent = "Error: Enter integers only";
-            sizeWarningMessage.style.color = "red";
-            return false;
-        }
-        if (inputList.length > 1) {
-            sizeWarningMessage.textContent = "Error: Enter only 1 integer";
-            sizeWarningMessage.style.color = "red";
-            return false;
-        }
-        if (inputList[0] < 2 || inputList[0] > 20) {
-            sizeWarningMessage.textContent = "Error: Enter an integer between 2-20";
-            sizeWarningMessage.style.color = "red";
-            return false;
-        }
-        sizeWarningMessage.textContent = "---";
-        sizeWarningMessage.style.color = "#f4f4f4";
-        return true;
-    }
-
-    // Generates custom user-given list to sort, loads animation for new custom list
+    // Generates custom user-given list, loads animation for new custom list
     // Loads back animation for default list when toggled off
     function toggleCustomInput() {
         if (customInputToggle.checked) {  
@@ -402,6 +355,60 @@ window.loadQuicksort = function () {
         }
     }
 
+    // Validates user input for random list size
+    function checkRandomizeInput(inputList) {
+        if (inputList == "") {
+            sizeWarningMessage.textContent = "Error: Enter an integer";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        if (!isWholeNumbers(inputList)) {
+            sizeWarningMessage.textContent = "Error: Enter integers only";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        if (inputList.length > 1) {
+            sizeWarningMessage.textContent = "Error: Enter 1 integer only";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        if (inputList[0] < 2 || inputList[0] > 20) {
+            sizeWarningMessage.textContent = "Error: Enter an integer between 2-20";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        sizeWarningMessage.textContent = "---";
+        sizeWarningMessage.style.color = "#f4f4f4";
+        return true;
+    }
+
+    // Validates user input for custom list
+    function checkCustomInput(inputList) {
+        if (inputList == "") {
+            inputWarningMessage.textContent = "Error: Enter an input";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        if (!isWholeNumbers(inputList)) {
+            inputWarningMessage.textContent = "Error: Enter integers only";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        if (inputList.length > 20 || inputList.length < 2) {
+            inputWarningMessage.textContent = "Error: Enter 2 to 20 integers only";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        if (checkInputValues(inputList)) {
+            inputWarningMessage.style.color = "#f4f4f4";
+            return true;
+        } else {
+            inputWarningMessage.textContent = "Error: Enter integer values between -200 and 200 only";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+    }
+
     // Returns true if all the elements in the given list are whole numbers, else returns false
     function isWholeNumbers(list) {
         for (let i = 0; i < list.length; i++) {
@@ -422,49 +429,14 @@ window.loadQuicksort = function () {
         return true;
     }
 
-    // Validates user input for new custom list
-    function checkCustomInput(inputList) {
-        if (inputList == "") {
-            inputWarningMessage.textContent = "Invalid Input: Enter an input";
-            inputWarningMessage.style.color = "red";
-            return false;
+    // Generates random list of given size
+    function generateRandomList(size) {
+        let randomArray = new Array(size);
+        for (let i = 0; i < size; i++) {
+            const randomSeed = 0.5 - Math.random(); // used to generate random signage
+            randomArray[i] = Math.round(randomSeed / Math.abs(randomSeed) * Math.random() * 200);
         }
-        else if (inputList.length > 20 && isWholeNumbers(inputList)) {
-            inputWarningMessage.textContent = "Invalid Input: Only accepts integers and max 20 total values";
-            inputWarningMessage.style.color = "red";
-            return false;
-        }
-        else if (inputList.length < 2 && !isWholeNumbers(inputList)) {
-            inputWarningMessage.textContent = "Invalid Input: Only accepts integers and a minimum of 2 values";
-            inputWarningMessage.style.color = "red";
-            return false;
-        }
-        else if (inputList.length > 20) {
-            inputWarningMessage.textContent = "Invalid Input: Only accepts a maximum of 20 values";
-            inputWarningMessage.style.color = "red";
-            return false;
-        }
-        else if (!isWholeNumbers(inputList)) {
-            inputWarningMessage.textContent = "Invalid Input: Only accepts integers";
-            inputWarningMessage.style.color = "red";
-            return false;
-        }
-        else if (inputList.length < 2) {
-            inputWarningMessage.textContent = "Invalid Input: Only accepts a minimum of 2 values";
-            inputWarningMessage.style.color = "red";
-            return false;
-        }
-        else {
-            if (checkInputValues(inputList)) {
-                inputWarningMessage.style.color = "#f4f4f4";
-                return true;
-            }
-            else {
-                inputWarningMessage.textContent = "Invalid Input: Only accepts integers between -200 and 200";
-                inputWarningMessage.style.color = "red";
-                return false;
-            }
-        }
+        return randomArray;
     }
 
     // Ties Quicksort animation functionality to main page
