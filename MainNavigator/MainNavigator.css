@@ -243,13 +243,23 @@ input:checked + .slider:before {
     padding: 0.625em;
     min-height: 0;
 }
-.panel {
+#graphVisual{
+    flex: 2;
+    border: 0.125em solid #ccc;
+    margin-bottom: 0.625em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40%;
+}
+#boxListVisual{
     flex: 1;
     border: 0.125em solid #ccc;
     margin-bottom: 0.625em;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 30%;
 }
 .panel-log {
     flex: 1;
@@ -264,6 +274,7 @@ input:checked + .slider:before {
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 0; /* Prevents stretching issues */
+    height: 30%;
 }
 
 

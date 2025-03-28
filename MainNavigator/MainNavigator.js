@@ -158,12 +158,24 @@ function openTab(evt, tabName) {
 }
 
 function checkPanels(){
-    const middlePanel = document.querySelector('.middle-panels');
-    const divCount = middlePanel.querySelectorAll('div').length;
-    if (divCount != 3){
+    const divCount = middlePanels.querySelectorAll('div').length;
+    if (divCount === 4){
         outputArrayPanel = document.getElementById('outputArrayPanel');
-        middlePanel.removeChild(outputArrayPanel);
+        middlePanels.removeChild(outputArrayPanel);
     }
+    if (divCount === 2){
+        addBoxList();
+    }
+}
+
+function addBoxList(){
+    const boxListVisual = document.createElement('div');
+    const boxListCanvas = document.createElement('canvas');
+    boxListVisual.classList.add('panel');
+    boxListVisual.id = 'boxListVisual';
+    boxListCanvas.id = 'boxListCanvas';
+    boxListVisual.appendChild(boxListCanvas);
+    middlePanels.insertBefore(boxListVisual, stepLog);
 }
 
 // --- ALGORITHM SELECTOR (cleans up previous content, loads current algorithm content) ---
@@ -171,6 +183,8 @@ function selectAlgorithm(algorithmName) {
     
     // Stop playing previous animation
     window.activeController.pauseAnimation();
+
+    checkPanels();
 
     // Clear the graph and boxlist canvases
     const graphCanvas = document.getElementById("graphCanvas");
@@ -206,8 +220,6 @@ function selectAlgorithm(algorithmName) {
     document.getElementById("progressFill").style.width = "0%";
     document.getElementById("speedSlider").disabled = true;
     document.getElementById("speedSlider").value = 50;
-
-    checkPanels();
 
     // Tie top control bar, middle display panels, and right info panel to current algorithm
     // activeController is tied to current algorithm too

@@ -18,7 +18,7 @@ window.loadCountingSort = function () {
     outputArrayPanel.classList.add('panel');
     outputArrayPanel.id = 'outputArrayPanel';
     const outputArrayCanvas = document.createElement('canvas');
-    outputArrayCanvas.id = "outputArrayCanvas";
+    outputArrayCanvas.id = 'outputArrayCanvas';
     outputArrayPanel.appendChild(outputArrayCanvas);
 
     middlePanels.insertBefore(outputArrayPanel, stepLog);
@@ -34,7 +34,7 @@ window.loadCountingSort = function () {
     const boxListCtx = boxListCanvas.getContext('2d');
     const outputArrayCtx = outputArrayCanvas.getContext('2d');
 
-    let defaultData = generateRandomList();
+    let defaultData = generateRandomList(Math.floor(Math.random() * (20 - 8 + 1) + 8));
     let currentData = [...defaultData];
     //let data = [...currentData];
     let defaultCountData = createCountingList();
@@ -67,17 +67,6 @@ window.loadCountingSort = function () {
         let initialArray = new Array(maxVal + 1).fill(0);
 
         return initialArray;
-    }
-
-    // Randomizes the size and values of the default input list on initialization of the webpage
-    function generateRandomList(){
-        const defaultSize = Math.floor(Math.random() * (20 - 8 + 1) + 8);
-        let defaultArray = new Array(defaultSize);
-        for (let i = 0; i < defaultSize; i++){
-            defaultArray[i] = Math.floor(Math.random() * 30) - 30;
-        }
-
-        return defaultArray
     }
 
     function drawFrame(frame) {
@@ -381,16 +370,7 @@ window.loadCountingSort = function () {
             inputList = inputList.map(Number);
             if (checkRandomizeInput(inputList)) {
                 pauseAnimation();
-                randomDataSize = inputList;
-                defaultData = new Array(randomDataSize);
-                for (let i = 0; i < randomDataSize; i++) {
-                    if (Math.random() > 0.5) {
-                        defaultData[i] = Math.round(Math.random() * 30)
-                    }
-                    else {
-                        defaultData[i] = Math.round(Math.random() * -30); 
-                    }
-                }
+                defaultData = generateRandomList(inputList[0]);
                 currentData = [...defaultData];
                 defaultCountData = createCountingList();
                 defaultOutputData = Array(currentData.length).fill(0);
@@ -476,7 +456,7 @@ window.loadCountingSort = function () {
     
     function checkInputValues(inputList) {
         for (let i = 0; i < inputList.length; i++) {
-            if (inputList[i] > 30 || inputList[i] < -30)
+            if (inputList[i] > 30 || inputList[i] < 0)
             {
                 return false;
             }
@@ -521,11 +501,21 @@ window.loadCountingSort = function () {
                 return true;
             }
             else {
-                inputWarningMessage.textContent = "Invalid Input: Only accepts integers between -30 and 30";
+                inputWarningMessage.textContent = "Invalid Input: Only accepts integers between 0 and 30";
                 inputWarningMessage.style.color = "red";
                 return false;
             }
         }
+    }
+
+    // Randomizes the size and values of the default input list on initialization of the webpage
+    function generateRandomList(size){
+        let defaultArray = new Array(size);
+        for (let i = 0; i < size; i++){
+            defaultArray[i] = Math.floor(Math.random() * 30);
+        }
+
+        return defaultArray
     }
 
     window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, 

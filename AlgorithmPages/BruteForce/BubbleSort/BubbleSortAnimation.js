@@ -25,7 +25,8 @@ window.loadBubbleSort = function () {
     const boxListCtx = boxListCanvas.getContext('2d');
 
     // Initialize data for visualization
-    let defaultData = generateRandomList(); 
+    const defaultSize = Math.floor(Math.random() * (20 - 8 + 1) + 8);
+    let defaultData = generateRandomList(defaultSize); 
     let currentData = [...defaultData];
     let data = [...currentData];
     let frames = []; // Stores animation frames for step-by-step playback
@@ -416,11 +417,10 @@ window.loadBubbleSort = function () {
     }
 
     // Randomizes the size and values of the default input list on initialization of the webpage
-    function generateRandomList(){
-        const defaultSize = Math.floor(Math.random() * (20 - 8 + 1) + 8);
-        let defaultArray = new Array(defaultSize);
-        for (let i = 0; i < defaultSize; i++){
-            defaultArray[i] = Math.floor(Math.random() * 30) - 30;
+    function generateRandomList(size){
+        let defaultArray = new Array(size);
+        for (let i = 0; i < size; i++){
+            defaultArray[i] =  Math.floor(Math.random() * (200 + 200 + 1)) - 200;
         }
 
         return defaultArray
