@@ -1,30 +1,57 @@
-<!-- Algorithm Description -->
+<!-- Heap Sort Description -->
 <div id="description">
-    <h3 id="descriptionHeader">Heapsort</h3>
-  </div>
-  
-  <!-- AlgorithmName Psuedocode -->
-  <div id="pseudocode">
-    <pre>
-      <code>
-      EXAMPLE CODE:
-      procedure quickSort(left, right)
-        if right-left <= 0
-          return
-        else
-          pivot = A[right]
-          partition = partitionFunc(left, right, pivot)
-          quickSort(left, partition-1)
-          quickSort(partition+1, right)
-        end if
+  <h3 id="descriptionHeader">Heap Sort</h3>
+  <p>
+    Heap Sort is a comparison-based sorting algorithm that uses a binary heap data structure. The algorithm works by first building a max heap from the given array, and then repeatedly extracting the maximum element from the heap and placing it at the end of the array. The process continues until the heap is empty and the array is sorted.
+    <br>
+    <br>There are mainly two steps in the algorithm:<br>
+    <br>
+    1. <strong>Build a Max Heap</strong>: Convert the given array into a binary heap, where the value of each parent node is greater than the values of its children.<br>
+    <br>
+    2. <strong>Extract Maximum</strong>: Remove the root (maximum element) from the heap, place it at the end of the array, and then reheapify the remaining heap.<br>
+    <br>
+    3. <strong>Repeat</strong>: Repeat the extraction and reheapify process for the remaining elements until the entire array is sorted.<br>
+  </p>
+</div>
+
+<!-- Heap Sort Pseudocode -->
+<div id="pseudocode">
+  <pre>
+    <code>
+      procedure heapSort(A)
+        n = length(A)
+        for i = floor(n/2) downto 0
+          heapify(A, n, i)
+        end for
+        for i = n-1 downto 1
+          swap A[0] with A[i]
+          heapify(A, i, 0)
+        end for
       end procedure
-      </code>
-    </pre>
-  </div>
-  
-  <!-- AlgorithmName References -->
-  <div id="references">
-    <ol id="referencesList">
-      <li><a href="https://www.examplelink.com" target="_blank">Example Link</a></li>
-    </ol>
-  </div>
+
+      function heapify(A, n, i)
+        largest = i
+        left = 2*i + 1
+        right = 2*i + 2
+        if left < n and A[left] > A[largest]
+          largest = left
+        end if
+        if right < n and A[right] > A[largest]
+          largest = right
+        end if
+        if largest != i
+          swap A[i] with A[largest]
+          heapify(A, n, largest)
+        end if
+      end function
+    </code>
+  </pre>
+</div>
+
+<!-- Heap Sort References -->
+<div id="references">
+  <ol id="referencesList">
+    <li><a href="https://www.geeksforgeeks.org/heap-sort/" target="_blank">GeeksforGeeks: Heap Sort Algorithm</a></li>
+    <li><a href="https://www.tutorialspoint.com/data_structures_algorithms/heap_sort_algorithm.htm" target="_blank">TutorialsPoint: Heap Sort</a></li>
+  </ol>
+</div>
