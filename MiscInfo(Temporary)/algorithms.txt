@@ -9,3 +9,9 @@ Fibonacci Sequence, Flyod Warshall Shortest Path, Knapsack Problem, Maximum Sum 
 
 Greedy:
 Dijikstra's Shortest Path, Prim's Minimum Spanning Tree
+
+
+
+Andrew:  Insertion, Heap, Bubble, Selection, BFS, DFS, Counting, Knapsack (8)
+Jonny:  Quicksort, Radix Sort, Flyod Warshall Shortest Path, Maximum Sum Path, Dijikstra's Shortest Path (5)
+Aditi/Alex:  Binary Tree Traversal, Page Rank, Bucket Sort, Merge Sort, Sliding Window, Prim's Minimum Spanning Tree, Fibonacci Sequence (7)
