@@ -68,8 +68,8 @@
         <!-- LEFT ALGORITHM NAVIGATOR -->
         <div class="accordion">
             <div class="topnav">
-                <input type="text" placeholder="Search..." id="searchInput">
-                <button type="submit"><i class="fa fa-search"></i></button>
+                <input type="text" placeholder="Search..." id="searchInput" onkeyup="filterSearchInput()">
+                <div class="dropdown" id="dropdown"></div>
             </div>
 
             <div class="accordion-item">
@@ -122,7 +122,7 @@
         </div>
 
         <!-- MIDDLE ANIMATION DISPLAY PANELS -->
-        <div class="middle-panels">
+        <div class="middle-panels" id="middlePanels">
             <!-- Graph Visual -->
             <div class="panel" id="graphVisual">
                 <canvas id="graphCanvas"></canvas>

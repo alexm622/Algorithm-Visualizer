@@ -134,10 +134,13 @@ window.loadHeapsort = function () {
         }
 
         for (let i = n - 1; i > 0; i--){
-            appendToExplanation(`Swapped ${arr[0]} and ${arr[i]}`);
             let temp = arr[0];
             arr[0] = arr[i];
             arr[i] = temp;
+            swapIndices = [0, i];
+            appendToExplanation(`Swapped ${arr[0]} and ${arr[i]}`);
+            swapIndices = [];
+
             heapify(arr, i, 0);
         }
     }

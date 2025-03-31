@@ -60,9 +60,6 @@ class AnimationController {
 // --- GLOBAL CONTROLLER INSTANCE ---
 window.activeController;
 
-
-
-
 // --- HOME PAGE OPEN BY DEFAULT ---
 document.addEventListener("DOMContentLoaded", function () {
     // initialize activeController & open to home page
@@ -79,54 +76,31 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("progressBar").addEventListener("click", (event) => window.activeController.moveToFrame(event));
 });
 
-
-
+const options = [
+    { name: 'Bubble Sort', algorithmName: 'BubbleSort'},
+    { name: 'Breadth First Search', algorithmName: 'BFS'},
+    { name: 'Depth First Search', algorithmName: 'DFS'},
+    { name: 'Insertion Sort', algorithmName: 'InsertionSort'},
+    { name: 'Selection Sort', algorithmName: 'SelectionSort'},
+    { name: 'Heap Sort', algorithmName: 'Heapsort'},
+    { name: 'Binary Tree Traversal', algorithmName: 'BinaryTree'}, 
+    { name: 'Counting Sort', algorithmName: 'CountingSort'},
+    { name: 'Merge Sort', algorithmName: 'MergeSort'},
+    { name: 'Bucket Sort', algorithmName: 'BucketSort'},
+    { name: 'Page Rank', algorithmName: 'PageRank'},
+    { name: 'Quick Sort', algorithmName: 'Quicksort'},
+    { name: 'Radix Sort', algorithmName: 'RadixSort'},
+    { name: 'Fibonacci', algorithmName: 'Fibonacci'},
+    { name: "Floyd Warshall's Shortest Path", algorithmName: 'FlyodPath'},
+    { name: 'Knapsack', algorithmName: 'Knapsack'},
+    { name: 'Sliding Window', algorithmName: 'SlidingWindow'},
+    { name: "Dijkstra's Shortest Path", algorithmName: 'DijkstraPath'},
+    { name: "Prim's Minimum Spanning Tree", algorithmName: 'PrimMinTree'},
+    { name: 'Maximum Sum Path', algorithmName: 'MaxSumPath'}
+];
 
 // --- LEFT NAVIGATOR DROPDOWN SELECTING/OPENING & SEARCH FUNCTIONALITY ---
 window.onload = function () {
-    // search functionality
-    document.getElementById('searchInput').addEventListener('input', function () {
-        let filter = this.value.toLowerCase();
-        let accordionItems = document.querySelectorAll('.accordion-item');
-    
-        accordionItems.forEach(item => {
-            let header = item.querySelector('.accordion-header');
-            let content = item.querySelector('.accordion-content');
-            let links = content ? content.querySelectorAll('a') : [];
-            let headerText = header.textContent.toLowerCase();
-            let matchFound = false;
-    
-            // Check if the header matches the search
-            let headerMatches = headerText.includes(filter);
-    
-            // Check if any links (algorithms) match the search
-            let matchingLinks = [];
-            links.forEach(link => {
-                if (link.textContent.toLowerCase().includes(filter)) {
-                    matchingLinks.push(link);
-                }
-            });
-    
-            // If header matches but no algorithms do, show but collapse
-            if (headerMatches && matchingLinks.length === 0) {
-                item.style.display = "block";
-                content.style.display = "none"; // Keep collapsed
-            } 
-            // If some algorithms match, show and expand the section
-            else if (matchingLinks.length > 0) {
-                item.style.display = "block";
-                content.style.display = "block"; // Expand section
-                links.forEach(link => {
-                    link.style.display = matchingLinks.includes(link) ? "block" : "none";
-                });
-            } 
-            // If nothing matches, hide the whole section
-            else {
-                item.style.display = "none";
-            }
-        });
-    });
-    
     // dropdown functionality
     document.querySelectorAll('.accordion-header').forEach(header => {
         header.addEventListener('click', () => {
@@ -138,8 +112,27 @@ window.onload = function () {
     });
 }
 
-
-
+// Search Bar Functionality
+function filterSearchInput(){
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const dropdown =  document.getElementById('dropdown');
+    dropdown.innerHTML = '';
+    const filtered = options.filter(option => option.name.toLowerCase().includes(input));
+    if (filtered.length > 0 && input !== "") {
+        dropdown.style.display = "block";
+        filtered.forEach(option => {
+            const div = document.createElement("div");
+            div.textContent = option.name;
+            div.onclick = () => {
+                window.selectAlgorithm(option.algorithmName);
+                dropdown.style.display = 'none';
+            };
+            dropdown.appendChild(div);
+        });
+    } else {
+        dropdown.style.display = "none";
+    }
+}
 
 // --- RIGHT INFO PANEL TAB SWITCHING  ---
 function openTab(evt, tabName) {
@@ -165,12 +158,24 @@ function openTab(evt, tabName) {
 }
 
 function checkPanels(){
-    const middlePanel = document.querySelector('.middle-panels');
-    const divCount = middlePanel.querySelectorAll('div').length;
-    if (divCount != 3){
+    const divCount = middlePanels.querySelectorAll('div').length;
+    if (divCount === 4){
         outputArrayPanel = document.getElementById('outputArrayPanel');
-        middlePanel.removeChild(outputArrayPanel);
+        middlePanels.removeChild(outputArrayPanel);
     }
+    if (divCount === 2){
+        addBoxList();
+    }
+}
+
+function addBoxList(){
+    const boxListVisual = document.createElement('div');
+    const boxListCanvas = document.createElement('canvas');
+    boxListVisual.classList.add('panel');
+    boxListVisual.id = 'boxListVisual';
+    boxListCanvas.id = 'boxListCanvas';
+    boxListVisual.appendChild(boxListCanvas);
+    middlePanels.insertBefore(boxListVisual, stepLog);
 }
 
 // --- ALGORITHM SELECTOR (cleans up previous content, loads current algorithm content) ---
@@ -178,6 +183,8 @@ function selectAlgorithm(algorithmName) {
     
     // Stop playing previous animation
     window.activeController.pauseAnimation();
+
+    checkPanels();
 
     // Clear the graph and boxlist canvases
     const graphCanvas = document.getElementById("graphCanvas");
@@ -213,8 +220,6 @@ function selectAlgorithm(algorithmName) {
     document.getElementById("progressFill").style.width = "0%";
     document.getElementById("speedSlider").disabled = true;
     document.getElementById("speedSlider").value = 50;
-
-    checkPanels();
 
     // Tie top control bar, middle display panels, and right info panel to current algorithm
     // activeController is tied to current algorithm too
