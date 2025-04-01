@@ -16,20 +16,20 @@
 table represents the best value for each item at each capacity, 
 W is capacity, v is values, w is weights, and n is number of items
 /*
-procedure knapsack(table, W, v, w, n,)
-    for i <- 0; i <= n; i++ do
-        for j <-0; j <= W; j++ do
-            if i == 0 or j == 0 then
-                table[i][j] <- 0
-            else then
-                pick <- 0
-                if w[i - 1] <= j then
-                    pick <- v[i - 1] + table[i - 1][j - w[i - 1]]
-                
-                notPick <- table[i - 1][j]
-                table[i][j] <- max(pick, notPick)
-    
-    return table[table.length - 1][table[0].length - 1]
+procedure knapsack(table, W, v, w, n)
+  for i <- 0; i <= n; i++ do
+      for j <-0; j <= W; j++ do
+          if i == 0 or j == 0 then
+              table[i][j] <- 0
+          else then
+              pick <- 0
+              if w[i - 1] <= j then
+                  pick <- v[i - 1] + table[i - 1][j - w[i - 1]]
+              
+              notPick <- table[i - 1][j]
+              table[i][j] <- max(pick, notPick)
+  
+  return table[table.length - 1][table[0].length - 1]
 end procedure
       </code>
     </pre>

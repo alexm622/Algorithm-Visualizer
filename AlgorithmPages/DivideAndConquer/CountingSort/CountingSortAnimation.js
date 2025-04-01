@@ -36,7 +36,6 @@ window.loadCountingSort = function () {
 
     let defaultData = generateRandomList(Math.floor(Math.random() * (20 - 8 + 1) + 8));
     let currentData = [...defaultData];
-    //let data = [...currentData];
     let defaultCountData = createCountingList();
     let currentCountData = [...defaultCountData];
     // Creates a copy of the count array
