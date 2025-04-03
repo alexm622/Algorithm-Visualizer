@@ -310,6 +310,7 @@ input:checked + .slider:before {
     padding: 0.375em 0.75em;
     border: 0.0625em solid #ccc;
     border-top: none;
+    overflow: scroll;
 } 
 #referencesList{
     padding-left: 3%;
