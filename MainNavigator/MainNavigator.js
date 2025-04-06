@@ -363,9 +363,9 @@ function selectAlgorithm(algorithmName) {
             algorithmPath = '../AlgorithmPages/DynamicProgramming/FibonacciSequence/' + algorithmName + 'Info.html';
             window.loadFibonacci();
             break;
-        case "FlyodPath":
-            algorithmPath = '../AlgorithmPages/DynamicProgramming/FlyodWarshallShortestPath/' + algorithmName + 'Info.html';
-            window.loadFlyodPath();
+        case "FloydPath":
+            algorithmPath = '../AlgorithmPages/DynamicProgramming/FloydWarshallShortestPath/' + algorithmName + 'Info.html';
+            window.loadFloydPath();
             break;
         case "Knapsack":
             algorithmPath = '../AlgorithmPages/DynamicProgramming/KnapsackProblem/' + algorithmName + 'Info.html';
