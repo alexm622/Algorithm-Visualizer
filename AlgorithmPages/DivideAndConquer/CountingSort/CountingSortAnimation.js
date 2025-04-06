@@ -15,6 +15,9 @@ window.loadCountingSort = function () {
     // Add a new panel to display the output list
     const middlePanels = document.querySelector('.middle-panels');
     const outputArrayPanel = document.createElement('div');
+    outputArrayPanel.style.border = '0.125em solid #ccc';
+    outputArrayPanel.style.borderStyle = 'solid';
+    outputArrayPanel.style.paddingBottom = '1%';
     outputArrayPanel.classList.add('panel');
     outputArrayPanel.id = 'outputArrayPanel';
     const outputArrayCanvas = document.createElement('canvas');

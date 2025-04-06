@@ -14,6 +14,9 @@ window.loadKnapsack = function () {
     // Add a new panel to display the output list
     const middlePanels = document.querySelector('.middle-panels');
     const outputArrayPanel = document.createElement('div');
+    outputArrayPanel.style.border = '0.125em solid #ccc';
+    outputArrayPanel.style.borderStyle = 'solid';
+    outputArrayPanel.style.paddingBottom = '1%';
     outputArrayPanel.classList.add('panel');
     outputArrayPanel.id = 'outputArrayPanel';
     const outputArrayCanvas = document.createElement('canvas');
@@ -71,7 +74,7 @@ window.loadKnapsack = function () {
         const boxSize = Math.min(graphCanvas.width / numColumns, graphCanvas.height / numRows);
         const totalWidth = numColumns * boxSize;
         const totalHeight = numRows * boxSize;
-    
+
         // Centering the grid on the canvas
         const startX = (graphCanvas.width - totalWidth) / 2;
         const startY = (graphCanvas.height - totalHeight) / 2;

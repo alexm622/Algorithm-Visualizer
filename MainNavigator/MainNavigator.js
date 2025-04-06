@@ -166,7 +166,7 @@ function checkPanels(){
         middlePanels.removeChild(outputArrayPanel);
     }
     if (divCount === 2){
-        addBoxList();
+        addBoxList();    
     }
     if (divCount === 1){
         addStepLog();
@@ -243,6 +243,7 @@ function removeElement(parentElement, elementId){
 function selectAlgorithm(algorithmName) {   
     // Stop playing previous animation
     window.activeController.pauseAnimation();
+
 
     if (graphVisual.innerHTML.trim().startsWith('<div')){
         graphVisual.innerHTML = '';

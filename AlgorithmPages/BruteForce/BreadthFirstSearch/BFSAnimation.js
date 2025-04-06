@@ -9,6 +9,7 @@ window.loadBFS = function () {
     const progressBar = document.getElementById("progressBar");
     const progressFill = document.getElementById("progressFill");
     const speedSlider = document.getElementById("speedSlider");
+    const graphVisual = document.getElementById('graphVisual');
     const graphCanvas = document.getElementById('graphCanvas');
     const stepLog = document.getElementById("stepLog");
 
