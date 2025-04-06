@@ -1,30 +1,48 @@
-<!-- Algorithm Description -->
+<!-- Maximum Sum Path Description -->
 <div id="description">
-    <h3 id="descriptionHeader">Maximum Sum Path</h3>
-  </div>
-  
-  <!-- AlgorithmName Psuedocode -->
-  <div id="pseudocode">
-    <pre>
-      <code>
-      EXAMPLE CODE:
-      procedure quickSort(left, right)
-        if right-left <= 0
-          return
-        else
-          pivot = A[right]
-          partition = partitionFunc(left, right, pivot)
-          quickSort(left, partition-1)
-          quickSort(partition+1, right)
-        end if
-      end procedure
-      </code>
-    </pre>
-  </div>
-  
-  <!-- AlgorithmName References -->
-  <div id="references">
-    <ol id="referencesList">
-      <li><a href="https://www.examplelink.com" target="_blank">Example Link</a></li>
-    </ol>
-  </div>
+  <h3 id="descriptionHeader">Maximum Sum Path</h3>
+  <p>
+    The Maximum Sum Path algorithm is most often used in the context of binary trees and 
+    aims to find the path with the largest sum of node values, where a path can start and end at any node.
+    <br><br>
+
+    <u>Maximum Sum Path Steps:</u>
+    <br><br>
+
+    <strong>1. </strong>
+    <br><br>
+
+    <strong>2. </strong>
+    <br><br>
+
+    <strong>3. </strong>
+    <br>
+  </p>
+</div>
+
+<!-- Maximum Sum Path Pseudocode -->
+<div id="pseudocode">
+  <pre>
+    <code>
+      Floyd-Warshall(w, n)  // w: weights, n: number of vertices
+        for i = 1 to n do  // initialize, D (0) = [wij]
+          for j = 1 to n do 
+            d[i, j] = w[i, j];
+          for k = 1 to n do  // Compute D (k) from D (k-1)
+            for i = 1 to n do
+              for j = 1 to n do
+                if (d[i, k] + d[k, j] < d[i, j])
+                  d[i, j] = d[i, k] + d[k, j];
+        return d[1..n, 1..n];
+    </code>
+  </pre>
+</div>
+
+<!-- Maximum Sum Path References -->
+<div id="references">
+  <ol id="referencesList">
+    <li><a href="https://blog.devgenius.io/floyd-warshall-algorithm-f004a01ae40e" target="_blank">DevGenius: Floyd Warshall Algorithm</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm" target="_blank">Wikipedia: Floyd-Warshall algorithm</a></li>
+    <li><a href="https://www.tutorialspoint.com/data_structures_algorithms/floyd_warshall_algorithm.htm" target="_blank">TutorialPoint: Floyd Warshall Algorithm</a></li>
+  </ol>
+</div>

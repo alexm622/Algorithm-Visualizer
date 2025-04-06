@@ -2,11 +2,17 @@
 <div id="description">
   <h3 id="descriptionHeader">Floyd-Warshall Shortest Path</h3>
   <p>
-    An algorithm used to find the shortest paths between all pairs of vertices in a weighted graph, 
-    even those with negative edge weights (excluding negative cycles). works by iteratively 
-    considering each vertex as an intermediate point in paths between other vertices, updating the 
-    shortest path distances in the graph-derived adjacency matrix. The Floyd-Warshall algorithm 
-    is also sometimes abbreviated as the WFI algorithm.
+    The Floyd-Warshall algorithm is sometimes abbreviated as the WFI algorithm and is used 
+    to find the shortest paths between all pairs of vertices in a weighted graph, even those 
+    with negative edge weights (excluding negative cycles). It works by iteratively considering 
+    each vertex as an intermediate point in paths between other vertices, updating the shortest 
+    path distances in the graph-derived adjacency matrix.
+    <br><br>
+
+    The psuedocode and middle animation panels depict an undirected, positive, integers-only 
+    Floyd-Warshall algorithm, however, with a few modifications, the Floyd-Warshall algorithm
+    can work with negative edge weights (assuming there's no negetive cycles), as well as with
+    directed edges.
     <br><br>
 
     <u>Floyd-Warshall Shortest Path Steps:</u>
@@ -16,10 +22,11 @@
     present in the graph. If there is no path between two vertices, mark the value as ∞ (infinity).
     <br><br>
 
-    <strong>2. :</strong> Derive another adjacency matrix A1 from A0, keeping the first row and 
+    <strong>2. Update Shortest Distance:</strong> Derive another adjacency matrix A1 from A0, keeping the first row and 
     first column of the original adjacency matrix intact in A1. For the remaining values, say A1[i,j], 
     if A[i,j] > A[i,k] + A[k,j] then replace A1[i,j] with A[i,k] + A[k,j]. Otherwise, do not change the values. 
     In this step, k = 1 (first vertex acting as pivot).
+    <br><br>
 
     <strong>3. Check All Vertices:</strong> Repeat Step 2 for all the vertices in the graph by changing the k 
     value for every pivot vertex until the final matrix is achieved. The final adjacency matrix obtained is 

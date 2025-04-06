@@ -277,7 +277,7 @@ window.loadDijkstraPath = function () {
             inputList = inputList.map(Number); // turns string list into a number list
             if (checkRandomizeInput(inputList)) {
                 pauseAnimation();
-                graphSize = Math.round(Math.random() * 7 + 3); // Random graph size of at least 3
+                graphSize = inputList[0];
                 currentEdges = createWeightedEdges(graphSize);
                 startingNode = selectStartingNode(graphSize);
                 loadAnimation();

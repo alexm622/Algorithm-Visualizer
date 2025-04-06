@@ -1,76 +1,83 @@
-class MinPriorityQueue {
-    constructor({ priority }) {
-        this.priority = priority;
-        this.items = [];
-    }
-
-    enqueue(element) {
-        this.items.push(element);
-        this.items.sort((a, b) => this.priority(a) - this.priority(b));
-    }
-
-    dequeue() {
-        const element = this.items.shift();
-        return { element, priority: this.priority(element) };
-    }
-
-    isEmpty() {
-        return this.items.length === 0;
-    }
-}
-
-window.loadDijkstraPath = function () {
+window.loadFloydPath = function () {
     const progressBar = document.getElementById("progressBar");
     const progressFill = document.getElementById("progressFill");
     const speedSlider = document.getElementById("speedSlider");
-    const graphCanvas = document.getElementById('graphCanvas');
+    const graphCanvas = document.getElementById("graphCanvas");
     const stepLog = document.getElementById("stepLog");
 
-    const boxListVisual = document.getElementById('boxListVisual');
-    const middlePanel = document.querySelector('.middle-panels');
+    const boxListVisual = document.getElementById("boxListVisual");
+    const middlePanel = document.querySelector(".middle-panels");
     middlePanel.removeChild(boxListVisual);
 
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
     graphCanvas.height = graphCanvas.parentElement.clientHeight;
+    const graphCtx = graphCanvas.getContext("2d");
 
-    const graphCtx = graphCanvas.getContext('2d');
-
-    let graphSize = Math.round(Math.random() * 7 + 3); // Random graph size of at least 3
+    const radius = 30;
+    let graphSize = Math.round(Math.random() * 7 + 3);
     let currentEdges = createWeightedEdges(graphSize);
-    let startingNode = selectStartingNode(graphSize);
-    let distances = Array(graphSize).fill(Infinity);
-    distances[startingNode] = 0;
-    let visited = new Set();
+    let dist = Array.from({ length: graphSize }, () => Array(graphSize).fill(Infinity));
+    let next = Array.from({ length: graphSize }, () => Array(graphSize).fill(null));
     let frames = [];
     let currentFrame = 0;
     let isPlaying = false;
 
-    const radius = 30;
+    let highlightedEdges = [];
+    let highlightedNodes = [];
+    let highlightMiddle = null;
+    let nodePositions = [];
 
-    function drawFrame(frame) {
-        if (!frame) return;
-        ({ distances, visited } = frame);
-        drawData();
-        updateProgressBar();
-        updateStepLog();
+    function createWeightedEdges(n) {
+        const adj = Array.from({ length: n }, () => []);
+        for (let i = 0; i < n; i++) {
+            for (let j = i + 1; j < n; j++) {
+                if (Math.random() > 0.5) {
+                    const weight = Math.round(Math.random() * 10) + 1;
+                    adj[i].push({ node: j, weight });
+                    adj[j].push({ node: i, weight });
+                }
+            }
+        }
+        return adj;
     }
 
-    function drawData() {
-        graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
-        drawGraphVisualization();
+    function reconstructPath(from, to) {
+        if (next[from][to] === null) return [];
+        const path = [from];
+        while (from !== to) {
+            from = next[from][to];
+            if (from === null) return [];
+            path.push(from);
+        }
+        return path;
+    }
+
+    function getPathEdges(from, to, via) {
+        const edges = [];
+        const firstLeg = reconstructPath(from, via);
+        const secondLeg = reconstructPath(via, to);
+
+        for (let i = 0; i < firstLeg.length - 1; i++) {
+            edges.push([firstLeg[i], firstLeg[i + 1]]);
+        }
+        for (let i = 0; i < secondLeg.length - 1; i++) {
+            edges.push([secondLeg[i], secondLeg[i + 1]]);
+        }
+
+        return edges;
     }
 
     function drawGraphVisualization() {
+        graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
         const numNodes = graphSize;
         const centerX = graphCanvas.width / 2;
         const centerY = graphCanvas.height / 2;
         const graphRadius = Math.min(graphCanvas.width, graphCanvas.height) / 2 - radius * 2;
 
-        const nodePositions = [];
-
-        graphCtx.font = `16px Arial`;
-        graphCtx.textAlign = 'center';
-        graphCtx.textBaseline = 'middle';
+        nodePositions = [];
+        graphCtx.font = "16px Arial";
+        graphCtx.textAlign = "center";
+        graphCtx.textBaseline = "middle";
 
         for (let i = 0; i < numNodes; i++) {
             const angle = (i / numNodes) * (2 * Math.PI);
@@ -81,63 +88,73 @@ window.loadDijkstraPath = function () {
 
         // Draw edges
         for (let i = 0; i < currentEdges.length; i++) {
-            for (let j = 0; j < currentEdges[i].length; j++) {
-                const { node, weight } = currentEdges[i][j];
-                const start = nodePositions[i];
-                const end = nodePositions[node];
-                graphCtx.beginPath();
-                graphCtx.moveTo(start.x, start.y);
-                graphCtx.lineTo(end.x, end.y);
-                graphCtx.strokeStyle = 'black';
-                graphCtx.stroke();
+            for (let { node: j, weight } of currentEdges[i]) {
+                if (i < j) {
+                    const start = nodePositions[i];
+                    const end = nodePositions[j];
+                    const edgeColor = highlightedEdges.some(
+                        ([a, b]) =>
+                            (a === i && b === j) || (a === j && b === i)
+                    )
+                        ? "yellow"
+                        : "black";
 
-                const midX = (start.x + end.x) / 2;
-                const midY = (start.y + end.y) / 2;
-                graphCtx.fillStyle = 'black';
-                graphCtx.fillText(weight, midX, midY);
+                    graphCtx.beginPath();
+                    graphCtx.moveTo(start.x, start.y);
+                    graphCtx.lineTo(end.x, end.y);
+                    graphCtx.strokeStyle = edgeColor;
+                    graphCtx.stroke();
+
+                    const midX = (start.x + end.x) / 2;
+                    const midY = (start.y + end.y) / 2;
+                    graphCtx.fillStyle = "black";
+                    graphCtx.fillText(weight, midX, midY);
+                }
             }
         }
 
         // Draw nodes
         for (let i = 0; i < numNodes; i++) {
             const { x, y } = nodePositions[i];
+            let color = "lightblue";
+            if (highlightedNodes.includes(i)) {
+                color = i === highlightMiddle ? "orange" : "yellow";
+            }
 
-            graphCtx.fillStyle = getColorNode(i);
+            graphCtx.fillStyle = color;
             graphCtx.beginPath();
             graphCtx.arc(x, y, radius, 0, 2 * Math.PI);
             graphCtx.fill();
-            graphCtx.strokeStyle = 'black';
+            graphCtx.strokeStyle = "black";
             graphCtx.stroke();
 
-            // Label inside node: distance
-            graphCtx.fillStyle = 'black';
-            const distText = distances[i] === Infinity ? 'INF' : distances[i];
-            graphCtx.fillText(distText, x, y);
-
-            // Label below node: index
-            graphCtx.fillText(`(${i})`, x, y + radius + 12);
+            // Label inside node
+            graphCtx.fillStyle = "black";
+            graphCtx.fillText(`${i}`, x, y);
         }
     }
 
-    function getColorNode(index) {
-        const log = `Updating distance of node ${index} to ${distances[index]}`;
-        if (frames[currentFrame].explanation.includes(log)) {
-            return 'yellow';
-        } 
-        return visited.has(index) ? 'lightgreen' : 'lightblue';
+    function recordFrame(explanation = "") {
+        frames.push({
+            dist: dist.map((row) => [...row]),
+            next: next.map((row) => [...row]),
+            explanation,
+            highlightedEdges: [...highlightedEdges],
+            highlightedNodes: [...highlightedNodes],
+            highlightMiddle,
+        });
     }
 
-    function getColorEdge(node1, node2) {
-        const edgeKey = node1 < node2 ? `${node1}-${node2}` : `${node2}-${node1}`;
-        if (shortestPathEdges.includes(edgeKey)) {
-            return 'lightgreen';
-        }
-        return 'black';
-    }
+    function drawFrame(frame) {
+        dist = frame.dist.map((row) => [...row]);
+        next = frame.next.map((row) => [...row]);
+        highlightedEdges = [...frame.highlightedEdges];
+        highlightedNodes = [...frame.highlightedNodes];
+        highlightMiddle = frame.highlightMiddle;
 
-    function updateProgressBar() {
-        const progress = (currentFrame / (frames.length - 1)) * 100;
-        progressFill.style.width = `${progress}%`;
+        drawGraphVisualization();
+        updateStepLog();
+        updateProgressBar();
     }
 
     function updateStepLog() {
@@ -147,75 +164,77 @@ window.loadDijkstraPath = function () {
                 stepLog.innerHTML += frames[i].explanation + "<br>";
             }
         }
+
         if (currentFrame === frames.length - 1) {
-            stepLog.innerHTML += "<strong>Final Distances:</strong><br>";
-            distances.forEach((d, i) => {
-                stepLog.innerHTML += `Node ${i}: ${d === Infinity ? 'INF' : d}<br>`;
-            });
+            stepLog.innerHTML += "<strong>Final All-Pairs Shortest Distances:</strong><br>";
+            for (let i = 0; i < graphSize; i++) {
+                for (let j = 0; j < graphSize; j++) {
+                    const val = dist[i][j] === Infinity ? "INF" : dist[i][j];
+                    stepLog.innerHTML += `dist[${i}][${j}] = ${val}<br>`;
+                }
+            }
         }
         stepLog.scrollTop = stepLog.scrollHeight;
     }
 
-    function recordFrame(explanation = "") {
-        frames.push({
-            distances: [...distances],
-            visited: new Set([...visited]),
-            explanation
-        });
+    function updateProgressBar() {
+        const progress = (currentFrame / (frames.length - 1)) * 100;
+        progressFill.style.width = `${progress}%`;
     }
 
-    async function dijkstra(adjList, start) {
-        let pq = new MinPriorityQueue({ priority: x => x.dist });
-        pq.enqueue({ node: start, dist: 0 });
-        recordFrame(`Start at node ${start}`);
+    async function floydWarshall() {
+        // Initialize
+        for (let i = 0; i < graphSize; i++) {
+            dist[i][i] = 0;
+            for (let { node: j, weight } of currentEdges[i]) {
+                dist[i][j] = weight;
+                next[i][j] = j;
+            }
+        }
+        recordFrame("Initialized distance matrix");
 
-        while (!pq.isEmpty()) {
-            let { element: { node }, priority } = pq.dequeue();
-            if (visited.has(node)) continue;
-            visited.add(node);
-            recordFrame(`Visiting node ${node}`);
+        for (let k = 0; k < graphSize; k++) {
+            for (let i = 0; i < graphSize; i++) {
+                for (let j = 0; j < graphSize; j++) {
+                    if (dist[i][k] + dist[k][j] < dist[i][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                        next[i][j] = next[i][k];
 
-            for (let neighbor of adjList[node]) {
-                const { node: nextNode, weight } = neighbor;
-                if (distances[node] + weight < distances[nextNode]) {
-                    distances[nextNode] = distances[node] + weight;
-                    pq.enqueue({ node: nextNode, dist: distances[nextNode] });
-                    recordFrame(`Updating distance of node ${nextNode} to ${distances[nextNode]}`);
+                        highlightedEdges = getPathEdges(i, j, k);
+                        highlightedNodes = [i, j, k];
+                        highlightMiddle = k;
+
+                        recordFrame(`Updating dist[${i}][${j}] via ${k} with new value ${dist[i][j]}`);
+                    }
                 }
             }
         }
+
+        recordFrame("Finished Floyd-Warshall");
     }
 
     async function loadAnimation() {
         frames = [];
         currentFrame = 0;
-        distances = Array(graphSize).fill(Infinity);
-        distances[startingNode] = 0;
-        visited = new Set();
+        dist = Array.from({ length: graphSize }, () => Array(graphSize).fill(Infinity));
+        next = Array.from({ length: graphSize }, () => Array(graphSize).fill(null));
+        highlightedEdges = [];
+        highlightedNodes = [];
+        highlightMiddle = null;
 
-        recordFrame();
-
-        await dijkstra(currentEdges, startingNode);
-
-        recordFrame();
-
-        drawFrame(frames[currentFrame]);
-    }
-
-    function loadControlBar() {
-        progressBar.disabled = false;
-        speedSlider.disabled = false;
+        await floydWarshall();
+        drawFrame(frames[0]);
     }
 
     function playAnimation() {
         if (isPlaying) return;
         isPlaying = true;
 
-        function getSpeed() {
+        const getSpeed = () => {
             const fastest = 50;
             const slowest = 3000;
             return slowest - (speedSlider.value / 100) * (slowest - fastest);
-        }
+        };
 
         function step() {
             if (!isPlaying || currentFrame >= frames.length - 1) {
@@ -229,24 +248,29 @@ window.loadDijkstraPath = function () {
         step();
     }
 
-    function pauseAnimation() { isPlaying = false; }
+    function pauseAnimation() {
+        isPlaying = false;
+    }
+
     function stepForward() {
         if (currentFrame < frames.length - 1) {
             currentFrame++;
             drawFrame(frames[currentFrame]);
         }
     }
+
     function stepBackward() {
         if (currentFrame > 0) {
             currentFrame--;
             drawFrame(frames[currentFrame]);
         }
     }
+
     function moveToFrame(event) {
         const rect = progressBar.getBoundingClientRect();
         const clickX = event.clientX - rect.left;
-        const progressPercent = clickX / rect.width;
-        currentFrame = Math.round(progressPercent * (frames.length - 1));
+        const percent = clickX / rect.width;
+        currentFrame = Math.round(percent * (frames.length - 1));
         drawFrame(frames[currentFrame]);
     }
 
@@ -256,26 +280,11 @@ window.loadDijkstraPath = function () {
         drawFrame(frames[currentFrame]);
     }
 
-    function createWeightedEdges(n) {
-        let adj = Array.from({ length: n }, () => []);
-        for (let i = 0; i < n; i++) {
-            for (let j = i + 1; j < n; j++) {
-                if (Math.random() > 0.5) {
-                    const weight = Math.round(Math.random() * 10);
-                    adj[i].push({ node: j, weight });
-                    adj[j].push({ node: i, weight });
-                }
-            }
-        }
-        return adj;
+    function loadControlBar() {
+        progressBar.disabled = false;
+        speedSlider.disabled = false;
     }
 
-    // Selects a random node as the starting node
-    function selectStartingNode(maxVal){
-        return Math.round(Math.random() * maxVal);
-    }
-    
-    // Ties animation functionality to main page
     window.activeController = new AnimationController(
         loadAnimation,
         loadControlBar,
@@ -284,6 +293,6 @@ window.loadDijkstraPath = function () {
         stepForward,
         stepBackward,
         moveToFrame,
-        resetAnimation,
+        resetAnimation
     );
 };
