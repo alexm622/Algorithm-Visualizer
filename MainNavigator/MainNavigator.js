@@ -160,13 +160,18 @@ function openTab(evt, tabName) {
 }
 
 function checkPanels(){
-    const divCount = middlePanels.querySelectorAll('div').length;
+    const divCount = middlePanels.children.length;
     if (divCount === 4){
         outputArrayPanel = document.getElementById('outputArrayPanel');
         middlePanels.removeChild(outputArrayPanel);
     }
     if (divCount === 2){
         addBoxList();
+    }
+    if (divCount === 1){
+        addStepLog();
+        addBoxList();
+        addGraphCanvas();
     }
 }
 
@@ -178,6 +183,20 @@ function addBoxList(){
     boxListCanvas.id = 'boxListCanvas';
     boxListVisual.appendChild(boxListCanvas);
     middlePanels.insertBefore(boxListVisual, stepLog);
+}
+
+function addStepLog(){
+    const stepLog = document.createElement('div');
+    stepLog.classList.add('panel-log');
+    stepLog.id = 'stepLog';
+    middlePanels.appendChild(stepLog);
+}
+
+function addGraphCanvas(){
+    const graphVisual = document.getElementById('graphVisual');
+    const graphCanvas = document.createElement('canvas');
+    graphCanvas.id = 'graphCanvas';
+    graphVisual.appendChild(graphCanvas);
 }
 
 function isChildElement(parentElement, childId){
@@ -219,14 +238,18 @@ function removeElement(parentElement, elementId){
     }
 }
 
+
 // --- ALGORITHM SELECTOR (cleans up previous content, loads current algorithm content) ---
-function selectAlgorithm(algorithmName) {    
+function selectAlgorithm(algorithmName) {   
     // Stop playing previous animation
     window.activeController.pauseAnimation();
 
+    if (graphVisual.innerHTML.trim().startsWith('<div')){
+        graphVisual.innerHTML = '';
+    }
+
     checkPanels();
 
-    // Clear the graph and boxlist canvases
     const graphCanvas = document.getElementById("graphCanvas");
     const boxListCanvas = document.getElementById("boxListCanvas");
     [graphCanvas, boxListCanvas].forEach(canvas => {

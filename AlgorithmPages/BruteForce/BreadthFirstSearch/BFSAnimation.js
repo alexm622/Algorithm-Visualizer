@@ -21,7 +21,6 @@ window.loadBFS = function () {
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
     graphCanvas.height = graphCanvas.parentElement.clientHeight;
 
-
     // Get 2D drawing contexts for rendering animations
     const graphCtx = graphCanvas.getContext('2d');
 
