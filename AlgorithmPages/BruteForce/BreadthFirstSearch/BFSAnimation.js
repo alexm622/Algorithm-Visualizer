@@ -9,6 +9,7 @@ window.loadBFS = function () {
     const progressBar = document.getElementById("progressBar");
     const progressFill = document.getElementById("progressFill");
     const speedSlider = document.getElementById("speedSlider");
+    const graphVisual = document.getElementById('graphVisual');
     const graphCanvas = document.getElementById('graphCanvas');
     const stepLog = document.getElementById("stepLog");
 
@@ -20,7 +21,6 @@ window.loadBFS = function () {
     // Set canvas dimensions dynamically to fit their parent containers
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
     graphCanvas.height = graphCanvas.parentElement.clientHeight;
-
 
     // Get 2D drawing contexts for rendering animations
     const graphCtx = graphCanvas.getContext('2d');

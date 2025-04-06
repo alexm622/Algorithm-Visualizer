@@ -60,6 +60,8 @@ class AnimationController {
 // --- GLOBAL CONTROLLER INSTANCE ---
 window.activeController;
 
+let previousAlgorithm;
+
 // --- HOME PAGE OPEN BY DEFAULT ---
 document.addEventListener("DOMContentLoaded", function () {
     // initialize activeController & open to home page
@@ -152,19 +154,24 @@ function openTab(evt, tabName) {
     }
 
     // Show the current tab, and add an "active" class to the button that opened the tab
-    let elementChosen = document.getElementById(tabName);
+    // let elementChosen = document.getElementById(tabName);
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 }
 
 function checkPanels(){
-    const divCount = middlePanels.querySelectorAll('div').length;
+    const divCount = middlePanels.children.length;
     if (divCount === 4){
         outputArrayPanel = document.getElementById('outputArrayPanel');
         middlePanels.removeChild(outputArrayPanel);
     }
     if (divCount === 2){
+        addBoxList();    
+    }
+    if (divCount === 1){
+        addStepLog();
         addBoxList();
+        addGraphCanvas();
     }
 }
 
@@ -178,15 +185,72 @@ function addBoxList(){
     middlePanels.insertBefore(boxListVisual, stepLog);
 }
 
+function addStepLog(){
+    const stepLog = document.createElement('div');
+    stepLog.classList.add('panel-log');
+    stepLog.id = 'stepLog';
+    middlePanels.appendChild(stepLog);
+}
+
+function addGraphCanvas(){
+    const graphVisual = document.getElementById('graphVisual');
+    const graphCanvas = document.createElement('canvas');
+    graphCanvas.id = 'graphCanvas';
+    graphVisual.appendChild(graphCanvas);
+}
+
+function isChildElement(parentElement, childId){
+    const children = parentElement.children;
+    for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        if (child.id && child.id === childId){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function addButton(parentElement, className, onClick, name, idName){
+    if (isChildElement(parentElement, idName) === false){
+        const newButton = document.createElement('button');
+        newButton.class = className;
+        newButton.onclick = onClick;
+        newButton.textContent = name;
+        newButton.id = idName;
+        parentElement.appendChild(newButton);
+    }
+}
+
+function addDiv(parentElement, idName, className){
+    if (isChildElement(parentElement, idName) === false){
+        const newDiv = document.createElement('div');
+        newDiv.id = idName;
+        newDiv.class = className;
+        parentElement.appendChild(newDiv);
+    }
+}
+
+function removeElement(parentElement, elementId){
+    if (isChildElement(parentElement, elementId) === true){
+        const elementToRemove = document.getElementById(elementId);
+        parentElement.removeChild(elementToRemove);
+    }
+}
+
+
 // --- ALGORITHM SELECTOR (cleans up previous content, loads current algorithm content) ---
-function selectAlgorithm(algorithmName) {
-    
+function selectAlgorithm(algorithmName) {   
     // Stop playing previous animation
     window.activeController.pauseAnimation();
 
+
+    if (graphVisual.innerHTML.trim().startsWith('<div')){
+        graphVisual.innerHTML = '';
+    }
+
     checkPanels();
 
-    // Clear the graph and boxlist canvases
     const graphCanvas = document.getElementById("graphCanvas");
     const boxListCanvas = document.getElementById("boxListCanvas");
     [graphCanvas, boxListCanvas].forEach(canvas => {
@@ -202,7 +266,7 @@ function selectAlgorithm(algorithmName) {
     document.getElementById('description').innerHTML = '';
     document.getElementById('pseudocode').innerHTML = '';
     document.getElementById('references').innerHTML = '';
-
+    
     // Clear/Reset top control bar 
     document.getElementById('randListSize').value = NaN;
     document.getElementById('randListSize').disabled = true;
@@ -221,6 +285,13 @@ function selectAlgorithm(algorithmName) {
     document.getElementById("speedSlider").disabled = true;
     document.getElementById("speedSlider").value = 50;
 
+    const descriptionButton = document.getElementById('descriptionButton');
+    const pseudocodeButton = document.getElementById('pseudocodeButton');
+    const referencesButton = document.getElementById('referencesButton');
+    descriptionButton.textContent = "Description";
+    pseudocodeButton.textContent = "Pseudocode";
+    referencesButton.textContent = "References";
+
     // Tie top control bar, middle display panels, and right info panel to current algorithm
     // activeController is tied to current algorithm too
     var algorithmPath;
@@ -228,6 +299,9 @@ function selectAlgorithm(algorithmName) {
         // ** Home Page ** //
         case "HomePage":
             algorithmPath = '../HomePage/HomePage.html';
+            descriptionButton.textContent = "User Guide";
+            pseudocodeButton.textContent = "Setup";
+            referencesButton.textContent = "Information";
             window.loadHomePage();            
             break;
         // ** Brute Force ** //
