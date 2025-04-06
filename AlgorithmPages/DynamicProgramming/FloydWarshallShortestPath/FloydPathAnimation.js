@@ -20,11 +20,6 @@ class MinPriorityQueue {
 }
 
 window.loadDijkstraPath = function () {
-    const randListSize = document.getElementById('randListSize');
-    const sizeWarningMessage = document.getElementById('sizeWarningMessage');
-    const randomizeButton = document.getElementById('randomizeButton');
-    const inputElement = document.getElementById('customInput');
-    const customInputToggle = document.getElementById('customInputToggle');
     const progressBar = document.getElementById("progressBar");
     const progressFill = document.getElementById("progressFill");
     const speedSlider = document.getElementById("speedSlider");
@@ -208,11 +203,6 @@ window.loadDijkstraPath = function () {
     }
 
     function loadControlBar() {
-        randListSize.disabled = false;
-        randomizeButton.disabled = false;
-        inputElement.placeholder = "Disabled";
-        inputElement.disabled = true;
-        customInputToggle.disabled = true;
         progressBar.disabled = false;
         speedSlider.disabled = false;
     }
@@ -266,62 +256,6 @@ window.loadDijkstraPath = function () {
         drawFrame(frames[currentFrame]);
     }
 
-    // Generates new graph with user-given size, loads animation for new random graph
-    function randomizeInput() {
-        if (!randListSize.value) {
-            sizeWarningMessage.textContent = "Error: Enter an Integer";
-            sizeWarningMessage.style.color = "red";
-        }
-        else {
-            let inputList = randListSize.value.trim().split(/\s+/); // turns input into a string list
-            inputList = inputList.map(Number); // turns string list into a number list
-            if (checkRandomizeInput(inputList)) {
-                pauseAnimation();
-                graphSize = Math.round(Math.random() * 7 + 3); // Random graph size of at least 3
-                currentEdges = createWeightedEdges(graphSize);
-                startingNode = selectStartingNode(graphSize);
-                loadAnimation();
-            }
-        }
-    }
-
-    // Validates user input for random list size
-    function checkRandomizeInput(inputList) {
-        if (inputList == "") {
-            sizeWarningMessage.textContent = "Error: Enter an integer";
-            sizeWarningMessage.style.color = "red";
-            return false;
-        }
-        if (!isWholeNumbers(inputList)) {
-            sizeWarningMessage.textContent = "Error: Enter integers only";
-            sizeWarningMessage.style.color = "red";
-            return false;
-        }
-        if (inputList.length > 1) {
-            sizeWarningMessage.textContent = "Error: Enter 1 integer only";
-            sizeWarningMessage.style.color = "red";
-            return false;
-        }
-        if (inputList[0] < 3 || inputList[0] > 10) {
-            sizeWarningMessage.textContent = "Error: Enter an integer between 3-10";
-            sizeWarningMessage.style.color = "red";
-            return false;
-        }
-        sizeWarningMessage.textContent = "---";
-        sizeWarningMessage.style.color = "#f4f4f4";
-        return true;
-    }
-
-    // Returns true if all the elements in the given list are whole numbers, else returns false
-    function isWholeNumbers(list) {
-        for (let i = 0; i < list.length; i++) {
-            if (list[i] == NaN || !Number.isInteger(list[i])) {
-                return false;
-            }
-        }
-        return true;     
-    }
-
     function createWeightedEdges(n) {
         let adj = Array.from({ length: n }, () => []);
         for (let i = 0; i < n; i++) {
@@ -340,7 +274,8 @@ window.loadDijkstraPath = function () {
     function selectStartingNode(maxVal){
         return Math.round(Math.random() * maxVal);
     }
-
+    
+    // Ties animation functionality to main page
     window.activeController = new AnimationController(
         loadAnimation,
         loadControlBar,
@@ -350,6 +285,5 @@ window.loadDijkstraPath = function () {
         stepBackward,
         moveToFrame,
         resetAnimation,
-        randomizeInput
     );
 };
