@@ -1,0 +1,34 @@
+<!-- Algorithm Description -->
+<div id="description">
+  <h3 id="descriptionHeader">Sliding Window</h3>
+  <p> <strong>An algorithm that solves problems that involve defining a window or range in the array and then moving that window across to solve some problem within that window.  </strong>
+    <br>
+    <br> <strong> The pseudocode and animation tries to find the sum of three consecutive objects in an array.  </strong><br>
+</div>
+
+<!-- AlgorithmName Psuedocode -->
+<div id="pseudocode">
+  <pre>
+    <code>
+          const maxSumOfThree = arrayInput => {
+            const reducer = (previous, current) => previous + current
+            let currentSum = arrayInput.slice(0,4).reduce(reducer)
+            let highestSum = currentSum
+            for(let i = 1; i =< arrayInput.length - 3; i++){
+              currentSum -= arrayInput[i - 1]
+              currentSum += arrayInput[i + 4]
+              highestSum = Math.max(highestSum, currentSum)
+            }
+            return highestSum
+          };
+    </code>
+  </pre>
+</div>
+
+<!-- AlgorithmName References -->
+<div id="references">
+  <ol id="referencesList">
+    <li><a href="https://medium.com/codex/sliding-window-problems-27d599c6cc13" target="_blank"></a>Problems</li>
+    <li><a href="https://www.geeksforgeeks.org/window-sliding-technique/" target="_blank">Technique</a></li>
+  </ol>
+</div>
