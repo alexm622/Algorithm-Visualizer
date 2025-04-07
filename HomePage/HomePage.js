@@ -13,17 +13,17 @@ window.loadHomePage = function () {
     
     graphVisual.innerHTML = `
     <div style="display: flex; flex-direction: column; height: 100%; width: 100%;">
-        <h1 style="text-align: center; margin-top: 5%; margin-bottom: 10%;">Algorithm Visualizer</h1>
+        <h1 style="text-align: center; margin-top: 5%; margin-bottom: 5%;">Algorithm Visualizer</h1>
         <p style="padding-bottom: 5%; padding-left: 1%; padding-right: 1%;">
-        Welcome to <u>The Algorithm Visualizer Application</u>. This application is an interactive tool that provides visual learning tools for algorithms
-        in the form of animations. These animations are paired with detailed explanations on each algorithm. The premium feature of this application 
+        Welcome to the <u>Algorithm Visualizer</u> web application. This application is an interactive tool that provides visual learning tools for algorithms
+        in the form of interactive animations and detailed explanations. The premium feature of this application 
         is the ability of the user to enter their own custom input for each algorithm or give the algorithm a randomly generated input. Enjoy the learning!
         </p>
 
         <h2>Algorithm Example:</h2>
 
-        <p style="padding-left: 1%; padding-top: 5%; color: darkslategray;">Bubble Sort's Page</p>
-        <img src="../Pictures/Introduction Pictures/Bubble Sort Page.png" alt="Bubble Sort's Page" style="margin-left: 1%; margin-right: 1%; margin-bottom: 5%; width:100%; height: 100%;"> 
+        <p style="padding-left: 1%; padding-top: 3%; color: darkslategray;">Quicksort's Page</p>
+        <img src="../Pictures/Introduction Pictures/Quicksort Page.jpg" alt="Quicksort's Page" style="margin-left: 1%; margin-right: 1%; margin-bottom: 5%; width:98%; height: 100%;"> 
     </div>
     `;
 
