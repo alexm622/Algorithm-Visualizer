@@ -11,7 +11,7 @@ window.loadMaxSumPath = function () {
 
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
     graphCanvas.height = graphCanvas.parentElement.clientHeight;
-    const ctx = graphCanvas.getContext("2d");
+    const graphCtx = graphCanvas.getContext("2d");
 
     let frames = [];
     let currentFrame = 0;
@@ -53,47 +53,47 @@ window.loadMaxSumPath = function () {
     }
 
     function drawTree(node) {
-        ctx.save();
-        ctx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
-        ctx.translate(panX, panY);
-        ctx.scale(zoom, zoom);
+        graphCtx.save();
+        graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+        graphCtx.translate(panX, panY);
+        graphCtx.scale(zoom, zoom);
 
-        ctx.font = "16px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
+        graphCtx.font = "16px Arial";
+        graphCtx.textAlign = "center";
+        graphCtx.textBaseline = "middle";
 
         function drawEdges(n) {
             if (!n) return;
             if (n.left) {
-                ctx.beginPath();
-                ctx.moveTo(n.x, n.y);
-                ctx.lineTo(n.left.x, n.left.y);
-                ctx.strokeStyle = isEdgeHighlighted(n, n.left) ? "orange" : "black";
-                ctx.stroke();
+                graphCtx.beginPath();
+                graphCtx.moveTo(n.x, n.y);
+                graphCtx.lineTo(n.left.x, n.left.y);
+                graphCtx.strokeStyle = isEdgeHighlighted(n, n.left) ? "orange" : "black";
+                graphCtx.stroke();
                 drawEdges(n.left);
             }
             if (n.right) {
-                ctx.beginPath();
-                ctx.moveTo(n.x, n.y);
-                ctx.lineTo(n.right.x, n.right.y);
-                ctx.strokeStyle = isEdgeHighlighted(n, n.right) ? "orange" : "black";
-                ctx.stroke();
+                graphCtx.beginPath();
+                graphCtx.moveTo(n.x, n.y);
+                graphCtx.lineTo(n.right.x, n.right.y);
+                graphCtx.strokeStyle = isEdgeHighlighted(n, n.right) ? "orange" : "black";
+                graphCtx.stroke();
                 drawEdges(n.right);
             }
         }
 
         function drawNodes(n) {
             if (!n) return;
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, 25, 0, 2 * Math.PI);
-            ctx.fillStyle = highlightedNodes.includes(n.id) ? "yellow" : "lightblue";
-            ctx.fill();
-            ctx.strokeStyle = "black";
-            ctx.stroke();
+            graphCtx.beginPath();
+            graphCtx.arc(n.x, n.y, 25, 0, 2 * Math.PI);
+            graphCtx.fillStyle = highlightedNodes.includes(n.id) ? "yellow" : "lightblue";
+            graphCtx.fill();
+            graphCtx.strokeStyle = "black";
+            graphCtx.stroke();
 
-            ctx.fillStyle = "black";
-            ctx.fillText(n.value, n.x, n.y); // inside node value
-            ctx.fillText(`ID ${n.id}`, n.x, n.y - 35); // label outside
+            graphCtx.fillStyle = "black";
+            graphCtx.fillText(n.value, n.x, n.y); // inside node value
+            graphCtx.fillText(`ID ${n.id}`, n.x, n.y - 35); // label outside
             drawNodes(n.left);
             drawNodes(n.right);
         }
@@ -105,7 +105,7 @@ window.loadMaxSumPath = function () {
         drawEdges(node);
         drawNodes(node);
 
-        ctx.restore();
+        graphCtx.restore();
     }
 
     function recordFrame(explanation) {

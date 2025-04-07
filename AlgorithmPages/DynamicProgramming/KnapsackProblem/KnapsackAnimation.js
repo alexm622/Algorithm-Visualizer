@@ -26,7 +26,7 @@ window.loadKnapsack = function () {
     middlePanels.insertBefore(outputArrayPanel, stepLog);
 
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
-    graphCanvas.height = graphCanvas.parentElement.clientHeight / 2;
+    graphCanvas.height = graphCanvas.parentElement.clientHeight + 60;
     boxListCanvas.width = boxListCanvas.parentElement.clientWidth;
     boxListCanvas.height = boxListCanvas.parentElement.clientHeight / 2;
     outputArrayCanvas.width = outputArrayCanvas.parentElement.clientWidth;
@@ -48,14 +48,11 @@ window.loadKnapsack = function () {
     let currentWeightValueIndex = -1;
     let pickIndex = -1;
     let notPickIndex = -1;
-    let zoomScale = 1.0;
-    const minZoom = 0.2;
-    const maxZoom = 5.0;
     let offsetX = 0;
     let offsetY = 0;
+    let panX = 0, panY = 0, zoom = 1;
     let isDragging = false;
-    let dragStartX = 0;
-    let dragStartY = 0;
+    let dragStart = { x: 0, y: 0 };
  
     const VERTICAL_PADDING = 60; // Minimum spacing of graph bars from top and bottom of container
 
@@ -77,10 +74,15 @@ window.loadKnapsack = function () {
     }
 
     function drawTableVisualization(){
+        graphCtx.save();
+        graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+        graphCtx.translate(panX, panY);
+        graphCtx.scale(zoom, zoom);
+
         const numRows = currentTable.length;
         const numColumns = currentTable[0].length;
         const baseBoxSize = Math.min(graphCanvas.width / numColumns, graphCanvas.height / numRows);
-        const boxSize = baseBoxSize * zoomScale;
+        const boxSize = baseBoxSize * zoom;
         const totalWidth = numColumns * boxSize;
         const totalHeight = numRows * boxSize;
 
@@ -110,6 +112,8 @@ window.loadKnapsack = function () {
                 graphCtx.fillText(currentTable[row][col], x + boxSize / 2, y + boxSize / 2);
             }
         }
+
+        graphCtx.restore();
     }
 
     function drawValuesArrayVisualization(){
@@ -443,36 +447,33 @@ window.loadKnapsack = function () {
         return arr.map(row => [...row]);
     }  
 
-    graphCanvas.addEventListener('wheel', (e) => {
+    // Mouse interactions for pan & zoom
+    graphCanvas.addEventListener("wheel", (e) => {
         e.preventDefault();
         const zoomIntensity = 0.1;
-        if (e.deltaY < 0) {
-            zoomScale = Math.min(zoomScale + zoomIntensity, maxZoom);
-        } else {
-            zoomScale = Math.max(zoomScale - zoomIntensity, minZoom);
-        }
-        drawData();
+        zoom += e.deltaY < 0 ? zoomIntensity : -zoomIntensity;
+        zoom = Math.max(0.2, Math.min(3, zoom));
+        drawFrame(frames[currentFrame]);
     });
 
-    graphCanvas.addEventListener('mousedown', (e) => {
+    graphCanvas.addEventListener("mousedown", (e) => {
         isDragging = true;
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
+        dragStart = { x: e.clientX - panX, y: e.clientY - panY };
     });
-    
-    window.addEventListener('mousemove', (e) => {
+
+    graphCanvas.addEventListener("mousemove", (e) => {
         if (isDragging) {
-            const dx = e.clientX - dragStartX;
-            const dy = e.clientY - dragStartY;
-            offsetX += dx;
-            offsetY += dy;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
-            drawData();
+            panX = e.clientX - dragStart.x;
+            panY = e.clientY - dragStart.y;
+            drawFrame(frames[currentFrame]);
         }
     });
-    
-    window.addEventListener('mouseup', () => {
+
+    graphCanvas.addEventListener("mouseup", () => {
+        isDragging = false;
+    });
+
+    graphCanvas.addEventListener("mouseleave", () => {
         isDragging = false;
     });
     
