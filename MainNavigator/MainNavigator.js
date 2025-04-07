@@ -1,13 +1,14 @@
 // --- GLOBAL ANIMATION CONTROLLER ---
 class AnimationController {
-    constructor(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, resetAnimation, 
-    randomizeInput, toggleCustomInput) {
+    constructor(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, moveToFrame, 
+    resetAnimation, randomizeInput, toggleCustomInput) {
         this.loadAlgorithmAnimation = loadAnimation ?? this.emptyFunction;
         this.loadAlgorithmControlBar = loadControlBar ?? this.emptyFunction;
         this.playAlgorithmAnimation = playAnimation ?? this.emptyFunction;
         this.pauseAlgorithmAnimation = pauseAnimation ?? this.emptyFunction;
         this.stepForwardOneFrame = stepForward ?? this.emptyFunction;
         this.stepBackwardOneFrame = stepBackward ?? this.emptyFunction;
+        this.moveToAlgorithmFrame = moveToFrame ?? this.emptyFunction;
         this.resetAlgorithmAnimation = resetAnimation ?? this.emptyFunction;
         this.randomizeAlgorithmInput = randomizeInput ?? this.emptyFunction;
         this.toggleCustomAlgorithmInput = toggleCustomInput ?? this.emptyFunction;
@@ -39,6 +40,10 @@ class AnimationController {
         this.stepBackwardOneFrame();
     }
 
+    moveToFrame(event) {
+        this.moveToAlgorithmFrame(event);
+    }
+
     resetAnimation() {
         this.resetAlgorithmAnimation();
     }
@@ -55,9 +60,6 @@ class AnimationController {
 // --- GLOBAL CONTROLLER INSTANCE ---
 window.activeController;
 
-
-
-
 // --- HOME PAGE OPEN BY DEFAULT ---
 document.addEventListener("DOMContentLoaded", function () {
     // initialize activeController & open to home page
@@ -71,13 +73,35 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("resetButton").addEventListener("click", () => window.activeController.resetAnimation());
     document.getElementById("rightArrow").addEventListener("click", () => window.activeController.stepForward());
     document.getElementById("leftArrow").addEventListener("click", () => window.activeController.stepBackward());
+    document.getElementById("progressBar").addEventListener("click", (event) => window.activeController.moveToFrame(event));
 });
 
+const options = [
+    { name: 'Bubble Sort', algorithmName: 'BubbleSort'},
+    { name: 'Breadth First Search', algorithmName: 'BFS'},
+    { name: 'Depth First Search', algorithmName: 'DFS'},
+    { name: 'Insertion Sort', algorithmName: 'InsertionSort'},
+    { name: 'Selection Sort', algorithmName: 'SelectionSort'},
+    { name: 'Heap Sort', algorithmName: 'Heapsort'},
+    { name: 'Binary Tree Traversal', algorithmName: 'BinaryTree'}, 
+    { name: 'Counting Sort', algorithmName: 'CountingSort'},
+    { name: 'Merge Sort', algorithmName: 'MergeSort'},
+    { name: 'Bucket Sort', algorithmName: 'BucketSort'},
+    { name: 'Page Rank', algorithmName: 'PageRank'},
+    { name: 'Quick Sort', algorithmName: 'Quicksort'},
+    { name: 'Radix Sort', algorithmName: 'RadixSort'},
+    { name: 'Fibonacci', algorithmName: 'Fibonacci'},
+    { name: "Floyd Warshall's Shortest Path", algorithmName: 'FlyodPath'},
+    { name: 'Knapsack', algorithmName: 'Knapsack'},
+    { name: 'Sliding Window', algorithmName: 'SlidingWindow'},
+    { name: "Dijkstra's Shortest Path", algorithmName: 'DijkstraPath'},
+    { name: "Prim's Minimum Spanning Tree", algorithmName: 'PrimMinTree'},
+    { name: 'Maximum Sum Path', algorithmName: 'MaxSumPath'}
+];
 
-
-
-// --- LEFT ACCORDION MENU TAB SELECTING/OPENING ---
+// --- LEFT NAVIGATOR DROPDOWN SELECTING/OPENING & SEARCH FUNCTIONALITY ---
 window.onload = function () {
+    // dropdown functionality
     document.querySelectorAll('.accordion-header').forEach(header => {
         header.addEventListener('click', () => {
             let content = header.nextElementSibling;
@@ -88,8 +112,27 @@ window.onload = function () {
     });
 }
 
-
-
+// Search Bar Functionality
+function filterSearchInput(){
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const dropdown =  document.getElementById('dropdown');
+    dropdown.innerHTML = '';
+    const filtered = options.filter(option => option.name.toLowerCase().includes(input));
+    if (filtered.length > 0 && input !== "") {
+        dropdown.style.display = "block";
+        filtered.forEach(option => {
+            const div = document.createElement("div");
+            div.textContent = option.name;
+            div.onclick = () => {
+                window.selectAlgorithm(option.algorithmName);
+                dropdown.style.display = 'none';
+            };
+            dropdown.appendChild(div);
+        });
+    } else {
+        dropdown.style.display = "none";
+    }
+}
 
 // --- RIGHT INFO PANEL TAB SWITCHING  ---
 function openTab(evt, tabName) {
@@ -114,14 +157,34 @@ function openTab(evt, tabName) {
     evt.currentTarget.className += " active";
 }
 
+function checkPanels(){
+    const divCount = middlePanels.querySelectorAll('div').length;
+    if (divCount === 4){
+        outputArrayPanel = document.getElementById('outputArrayPanel');
+        middlePanels.removeChild(outputArrayPanel);
+    }
+    if (divCount === 2){
+        addBoxList();
+    }
+}
 
-
+function addBoxList(){
+    const boxListVisual = document.createElement('div');
+    const boxListCanvas = document.createElement('canvas');
+    boxListVisual.classList.add('panel');
+    boxListVisual.id = 'boxListVisual';
+    boxListCanvas.id = 'boxListCanvas';
+    boxListVisual.appendChild(boxListCanvas);
+    middlePanels.insertBefore(boxListVisual, stepLog);
+}
 
 // --- ALGORITHM SELECTOR (cleans up previous content, loads current algorithm content) ---
 function selectAlgorithm(algorithmName) {
     
     // Stop playing previous animation
     window.activeController.pauseAnimation();
+
+    checkPanels();
 
     // Clear the graph and boxlist canvases
     const graphCanvas = document.getElementById("graphCanvas");
@@ -153,7 +216,9 @@ function selectAlgorithm(algorithmName) {
     document.getElementById('customInputToggle').disabled = true;
     document.getElementById('inputWarningMessage').textContent= "-";
     document.getElementById('inputWarningMessage').style.color = "#f4f4f4";
+    document.getElementById("progressBar").disabled = true;
     document.getElementById("progressFill").style.width = "0%";
+    document.getElementById("speedSlider").disabled = true;
     document.getElementById("speedSlider").value = 50;
 
     // Tie top control bar, middle display panels, and right info panel to current algorithm

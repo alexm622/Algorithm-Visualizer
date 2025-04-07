@@ -11,7 +11,6 @@ window.loadBucketSort = function () {
     const graphCanvas = document.getElementById('graphCanvas');
     const boxListCanvas = document.getElementById('boxListCanvas');
     const stepLog = document.getElementById("stepLog");
-
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
     graphCanvas.height = graphCanvas.parentElement.clientHeight;
     boxListCanvas.width = boxListCanvas.parentElement.clientWidth;
