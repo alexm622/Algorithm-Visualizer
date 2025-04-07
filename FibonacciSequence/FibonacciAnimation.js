@@ -24,7 +24,7 @@ window.loadFibonacci = function () {
     let defaultData = [0,1];
     let currentData = [...defaultData];
     let data = [...currentData];
-    let n = Number(randListSize.value);
+    let n = parseInt(randListSize.value) || 10;
     let currentFrame = 0;
     let isPlaying = false;
     let frames = [];
@@ -77,7 +77,7 @@ window.loadFibonacci = function () {
             graphCtx.stroke();
 
             // Draw number slightly outside the bar (with buffer)
-            graphCtx.fillStyle = 'black';
+            graphCtx.fillStyle = 'blue';
             const numberOffset = fontSize * 0.6; // Extra buffer for clarity
             const numberY = barHeight >= 0 ? y - numberOffset : y + Math.abs(barHeight) + numberOffset;
             graphCtx.fillText(value, x + barWidth / 2, numberY);
@@ -109,6 +109,11 @@ window.loadFibonacci = function () {
         }
     }
 
+    function getColor(index) {
+                return 'white';
+
+    }
+
     function fibonacci(n) {   //need to fix and adjust to this
 
         let n1 = 0, n2 = 1;
@@ -118,8 +123,13 @@ window.loadFibonacci = function () {
             next = data[i-2] + data[i-1];
             data.push(next);
 
+            
+            appendToExplanation(`${n1} plus ${n2} equals ${next}`);
+
             n1 = n2;
             n2 = next;
+            
+            recordFrame()
             
         }
         return data;
@@ -142,7 +152,7 @@ window.loadFibonacci = function () {
         }
 
         if (currentFrame === frames.length - 1) {
-            stepLog.innerHTML += `Sorted List: ${data.join(", ")}`; // Final list
+            stepLog.innerHTML += `Final sequence: ${data.join(", ")}`; // Final list
         }
 
         stepLog.scrollTop = stepLog.scrollHeight;
@@ -205,6 +215,17 @@ window.loadFibonacci = function () {
         drawFrame(frames[currentFrame]);
     }
 
+    function recordFrame(explanation = "") {
+        frames.push(JSON.parse(JSON.stringify({
+            data: [...data],
+            explanation
+        })));
+    }
+
+    function appendToExplanation(text) {
+        recordFrame(text);
+    }
+
     function loadControlBar() {
         randListSize.disabled = false;
         
@@ -220,7 +241,7 @@ window.loadFibonacci = function () {
 
 
     window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, 
-        resetAnimation);
+        resetAnimation, null, null);
 
 
 
