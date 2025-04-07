@@ -9,15 +9,15 @@ window.loadBucketSort = function () {
     const inputWarningMessage = document.getElementById('inputWarningMessage');
     const progressFill = document.getElementById("progressFill");
     const graphCanvas = document.getElementById('graphCanvas');
-    const boxListCanvas = document.getElementById('boxListCanvas');
+    const bucketSortCanvas = document.getElementById('boxListCanvas');
     const stepLog = document.getElementById("stepLog");
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
     graphCanvas.height = graphCanvas.parentElement.clientHeight;
-    boxListCanvas.width = boxListCanvas.parentElement.clientWidth;
-    boxListCanvas.height = boxListCanvas.parentElement.clientHeight;
+    bucketSortCanvas.width = bucketSortCanvas.parentElement.clientWidth;
+    bucketSortCanvas.height = bucketSortCanvas.parentElement.clientHeight;
 
     const graphCtx = graphCanvas.getContext('2d');
-    const boxListCtx = boxListCanvas.getContext('2d');
+    const buckerSortCtx = bucketSortCanvas.getContext('2d');
 
     let randomDataSize = 0;
     let defaultData = [50, 150, 100, 200, -80, 60, 100, -200, -150, 200, 175, -125, -20, 20, 30, -40, 70, 120, -200, -90];
@@ -42,9 +42,9 @@ window.loadBucketSort = function () {
 
     function drawData() {
         graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
-        boxListCtx.clearRect(0, 0, boxListCanvas.width, boxListCanvas.height);
+        buckerSortCtx.clearRect(0, 0, bucketSortCanvas.width, bucketSortCanvas.height);
         drawGraphVisualization();
-        drawBoxListVisualization();
+        drawBucketSortVisualization();
     }
 
     function drawGraphVisualization() {
@@ -86,28 +86,64 @@ window.loadBucketSort = function () {
         }
     }
 
-    function drawBoxListVisualization() {
+    function drawBucketSortVisualization() {
+        const numBuckets = 5; // You can adjust this based on your needs
         const numBoxes = data.length;
-        const boxSize = Math.min(boxListCanvas.width / numBoxes, boxListCanvas.height);
-        const totalWidth = numBoxes * boxSize;
-        const startX = (boxListCanvas.width - totalWidth) / 2;
-        const y = (boxListCanvas.height - boxSize) / 2;
-
-        const fontSize = Math.max(12, boxSize * 0.3);
-        boxListCtx.font = `${fontSize}px Arial`;
-        boxListCtx.textAlign = 'center';
-        boxListCtx.textBaseline = 'middle';
-
+        const minValue = Math.min(...data);
+        const maxValue = Math.max(...data);
+        const bucketSize = (maxValue - minValue) / numBuckets;
+    
+        // Create empty buckets
+        const buckets = Array.from({ length: numBuckets }, () => []);
+    
+        // Sort the data into buckets
         for (let i = 0; i < numBoxes; i++) {
-            const x = startX + i * boxSize;
-            boxListCtx.fillStyle = getColor(i);
-            boxListCtx.fillRect(x, y, boxSize, boxSize);
-            boxListCtx.strokeStyle = 'black';
-            boxListCtx.strokeRect(x, y, boxSize, boxSize); // Full border
-
-            // Centered text
-            boxListCtx.fillStyle = 'black';
-            boxListCtx.fillText(data[i], x + boxSize / 2, y + boxSize / 2);
+            const bucketIndex = Math.floor((data[i] - minValue) / bucketSize);
+            if (bucketIndex === numBuckets) {
+                // Ensure max value goes into the last bucket
+                buckets[bucketIndex - 1].push(data[i]);
+            } else {
+                buckets[bucketIndex].push(data[i]);
+            }
+        }
+    
+        // Sort the contents of each bucket
+        buckets.forEach(bucket => bucket.sort((a, b) => a - b));
+    
+        // Visualization parameters
+        const boxSize = Math.min(bucketSortCanvas.width / numBuckets, bucketSortCanvas.height);
+        const fontSize = Math.max(12, boxSize * 0.3);
+        buckerSortCtx.font = `${fontSize}px Arial`;
+        buckerSortCtx.textAlign = 'center';
+        buckerSortCtx.textBaseline = 'middle';
+    
+        let currentX = (bucketSortCanvas.width - (numBuckets * boxSize)) / 2; // Center the buckets horizontally
+        const y = (bucketSortCanvas.height - boxSize) / 2; // Center vertically
+    
+        // Draw the buckets and their contents
+        for (let i = 0; i < numBuckets; i++) {
+            const bucket = buckets[i];
+            const bucketWidth = boxSize * bucket.length;
+    
+            buckerSortCtx.fillStyle = getColor(i);
+            buckerSortCtx.fillRect(currentX, y, bucketWidth, boxSize); // Draw the bucket area
+            buckerSortCtx.strokeStyle = 'black';
+            buckerSortCtx.strokeRect(currentX, y, bucketWidth, boxSize); // Draw bucket border
+    
+            // Draw the individual boxes inside the bucket
+            bucket.forEach((value, index) => {
+                const boxX = currentX + index * boxSize;
+                buckerSortCtx.fillStyle = getColor(i); // Use the same color for all boxes in this bucket
+                buckerSortCtx.fillRect(boxX, y, boxSize, boxSize); // Draw box
+                buckerSortCtx.strokeStyle = 'black';
+                buckerSortCtx.strokeRect(boxX, y, boxSize, boxSize); // Box border
+    
+                // Draw text inside the box
+                buckerSortCtx.fillStyle = 'black';
+                buckerSortCtx.fillText(value, boxX + boxSize / 2, y + boxSize / 2); // Center text in the box
+            });
+    
+            currentX += bucketWidth; // Move to the next bucket position
         }
     }
 
