@@ -147,9 +147,6 @@ window.loadHeapsort = function () {
         }
     }
 
-    function appendToExplanation(text) {
-        recordFrame(text);
-    }
 
     function recordFrame(explanation = "") {
         frames.push(JSON.parse(JSON.stringify({
