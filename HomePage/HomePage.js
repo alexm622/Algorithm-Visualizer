@@ -23,7 +23,7 @@ window.loadHomePage = function () {
         <h2>Algorithm Example:</h2>
 
         <p style="padding-left: 1%; padding-top: 5%; color: darkslategray;">Bubble Sort's Page</p>
-        <img src="../Pictures/Introduction Pictures/Bubble Sort Page.png" alt="Bubble Sort's Page" style="padding-left: 1%; padding-right: 1%; padding-bottom: 5%; width:100%; height: 100%;"> 
+        <img src="../Pictures/Introduction Pictures/Bubble Sort Page.png" alt="Bubble Sort's Page" style="margin-left: 1%; margin-right: 1%; margin-bottom: 5%; width:100%; height: 100%;"> 
     </div>
     `;
 

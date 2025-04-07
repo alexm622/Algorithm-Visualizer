@@ -48,6 +48,14 @@ window.loadKnapsack = function () {
     let currentWeightValueIndex = -1;
     let pickIndex = -1;
     let notPickIndex = -1;
+    let zoomScale = 1.0;
+    const minZoom = 0.2;
+    const maxZoom = 5.0;
+    let offsetX = 0;
+    let offsetY = 0;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
  
     const VERTICAL_PADDING = 60; // Minimum spacing of graph bars from top and bottom of container
 
@@ -71,13 +79,14 @@ window.loadKnapsack = function () {
     function drawTableVisualization(){
         const numRows = currentTable.length;
         const numColumns = currentTable[0].length;
-        const boxSize = Math.min(graphCanvas.width / numColumns, graphCanvas.height / numRows);
+        const baseBoxSize = Math.min(graphCanvas.width / numColumns, graphCanvas.height / numRows);
+        const boxSize = baseBoxSize * zoomScale;
         const totalWidth = numColumns * boxSize;
         const totalHeight = numRows * boxSize;
 
         // Centering the grid on the canvas
-        const startX = (graphCanvas.width - totalWidth) / 2;
-        const startY = (graphCanvas.height - totalHeight) / 2;
+        const startX = (graphCanvas.width - totalWidth) / 2 + offsetX;
+        const startY = (graphCanvas.height - totalHeight) / 2 + offsetY;
     
         // Set font size dynamically
         const fontSize = Math.max(12, boxSize * 0.3);
@@ -94,7 +103,7 @@ window.loadKnapsack = function () {
                 graphCtx.fillStyle = getColorTable([row, col]);
                 graphCtx.fillRect(x, y, boxSize, boxSize);
                 graphCtx.strokeStyle = 'black';
-                graphCtx.strokeRect(x, y, boxSize, boxSize); // Full border
+                graphCtx.strokeRect(x, y, boxSize, boxSize); 
     
                 // Centered text inside the box
                 graphCtx.fillStyle = 'black';
@@ -433,6 +442,41 @@ window.loadKnapsack = function () {
     function copy2DArray(arr) {
         return arr.map(row => [...row]);
     }  
+
+    graphCanvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const zoomIntensity = 0.1;
+        if (e.deltaY < 0) {
+            zoomScale = Math.min(zoomScale + zoomIntensity, maxZoom);
+        } else {
+            zoomScale = Math.max(zoomScale - zoomIntensity, minZoom);
+        }
+        drawData();
+    });
+
+    graphCanvas.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+    });
+    
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+            offsetX += dx;
+            offsetY += dy;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            drawData();
+        }
+    });
+    
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+    
+    
 
     window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, 
         moveToFrame, resetAnimation, randomizeInput);
