@@ -24,19 +24,19 @@
   <div id="pseudocode">
     <pre>
       <code>
-      procedure selectionSort(array)
-        for i <- 0; i < length(array); i++ do
-          min_index <- i
+procedure selectionSort(array)
+  for i <- 0; i < length(array); i++ do
+    min_index <- i
 
-          for j <- i + 1; j  < length(array); j++ do
-            if array[j] < arr[min_index] then
-              min_index <- j
-            end if
-          end for
+    for j <- i + 1; j  < length(array); j++ do
+      if array[j] < arr[min_index] then
+        min_index <- j
+      end if
+    end for
 
-          swap array[i] with array[min_index]
-        end for
-      end procedure
+    swap array[i] with array[min_index]
+  end for
+end procedure
       </code>
     </pre>
   </div>

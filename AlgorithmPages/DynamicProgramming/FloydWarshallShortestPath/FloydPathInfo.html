@@ -39,16 +39,16 @@
 <div id="pseudocode">
   <pre>
     <code>
-      Floyd-Warshall(w, n)  // w: weights, n: number of vertices
-        for i = 1 to n do  // initialize, D (0) = [wij]
-          for j = 1 to n do 
-            d[i, j] = w[i, j];
-          for k = 1 to n do  // Compute D (k) from D (k-1)
-            for i = 1 to n do
-              for j = 1 to n do
-                if (d[i, k] + d[k, j] < d[i, j])
-                  d[i, j] = d[i, k] + d[k, j];
-        return d[1..n, 1..n];
+Floyd-Warshall(w, n)  // w: weights, n: number of vertices
+  for i = 1 to n do  // initialize, D (0) = [wij]
+    for j = 1 to n do 
+      d[i, j] = w[i, j];
+    for k = 1 to n do  // Compute D (k) from D (k-1)
+      for i = 1 to n do
+        for j = 1 to n do
+          if (d[i, k] + d[k, j] < d[i, j])
+            d[i, j] = d[i, k] + d[k, j];
+  return d[1..n, 1..n];
     </code>
   </pre>
 </div>

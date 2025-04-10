@@ -37,34 +37,34 @@
   <div id="pseudocode">
     <pre>
       <code>
-      procedure heapify(array, array_length, index):
-        largest <- index
-        left <- 2 * index + 1
-        right <- 2 * i + 2
-        if left < array_length and array[left] > array[largest] then
-          largest <- left
-        end if
-        
-        if right < array_length and array[right] > array[largest] then
-          largest <- right
-        end if
+procedure heapify(array, array_length, index):
+  largest <- index
+  left <- 2 * index + 1
+  right <- 2 * i + 2
+  if left < array_length and array[left] > array[largest] then
+    largest <- left
+  end if
+  
+  if right < array_length and array[right] > array[largest] then
+    largest <- right
+  end if
 
-        if largest is not equal to index
-          swap array[index] and array[largest]
-          heapify(array, array_length, largest)
-        end if
-      end procedure
+  if largest is not equal to index
+    swap array[index] and array[largest]
+    heapify(array, array_length, largest)
+  end if
+end procedure
 
-      procedure heapSort(array)
-        for i <- Math.floor(array_length / 2) - 1; i >= 0; i-- do
-          heapify(array, array_length, i)
-        end for
+procedure heapSort(array)
+  for i <- Math.floor(array_length / 2) - 1; i >= 0; i-- do
+    heapify(array, array_length, i)
+  end for
 
-        for i <- array_length - 1; i > 0; i-- do
-          swap array[0] and array[i]
-          heapify(array, i, 0)
-        end for
-      end procedure
+  for i <- array_length - 1; i > 0; i-- do
+    swap array[0] and array[i]
+    heapify(array, i, 0)
+  end for
+end procedure
       </code>
     </pre>
   </div>
