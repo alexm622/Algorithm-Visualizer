@@ -7,6 +7,7 @@ window.loadBinaryTree = function () {
     const inputElement = document.getElementById('customInput');
     const customInputToggle = document.getElementById('customInputToggle');
     const progressBar = document.getElementById("progressBar");
+    const inputWarningMessage = document.getElementById('inputWarningMessage');
     const progressFill = document.getElementById("progressFill");
     const speedSlider = document.getElementById("speedSlider");
     const graphVisual = document.getElementById('graphVisual');
@@ -26,7 +27,8 @@ window.loadBinaryTree = function () {
     const graphCtx = graphCanvas.getContext('2d');
 
     // Initialize data for visualization
-    let currentData = generateRandomList(Math.floor(Math.random() * (15 - 3 + 1) + 3)); 
+    let defaultData = generateRandomList(Math.floor(Math.random() * (15 - 3 + 1) + 3)); 
+    let currentData = [...defaultData]; 
     let currentEdges = [];
     let frames = []; // Stores animation frames for step-by-step playback
     let currentFrame = 0;
@@ -61,7 +63,6 @@ window.loadBinaryTree = function () {
 
     // Clears and redraws both visualization canvases
     function drawData() {
-        graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
         drawGraphVisualization();
     }
 
@@ -309,9 +310,9 @@ window.loadBinaryTree = function () {
     function loadControlBar() {
         randListSize.disabled = false;
         randomizeButton.disabled = false;
-        inputElement.placeholder = "Disabled";
-        inputElement.disabled = true;
-        customInputToggle.disabled = true;
+        inputElement.placeholder = "Enter values separated by spaces between 1 and 99";
+        inputElement.disabled = false;
+        customInputToggle.disabled = false;
         progressBar.disabled = false;
         speedSlider.disabled = false;
     }
@@ -334,12 +335,54 @@ window.loadBinaryTree = function () {
             inputList = inputList.map(Number); 
             if (checkRandomizeInput(inputList)) {
                 pauseAnimation();
-                currentData = generateRandomList(inputList[0]);
+                defaultData = generateRandomList(inputList[0]);
+                currentData = [...defaultData];
                 root = sortedArrayToBST(currentData);
                 searchedIndices = [];
                 coloredEdges = [];
                 loadAnimation();
             }
+        }
+    }
+
+    // Generates custom user-given list, loads animation for new custom list
+    // Loads back animation for default list when toggled off
+    function toggleCustomInput() {
+        if (customInputToggle.checked) {  
+            if (!inputElement.value) {
+                inputWarningMessage.textContent = "Invalid Input: Enter an input";
+                inputWarningMessage.style.color = "red";
+                customInputToggle.checked = false;
+            }
+            else {
+                let inputList = inputElement.value.trim().split(/\s+/);
+                inputList = inputList.map(Number);
+                if (checkCustomInput(inputList)) {
+                    randListSize.disabled = true;
+                    randomizeButton.disabled = true;
+                    inputElement.disabled = true;
+                    pauseAnimation();
+                    currentData = inputList.sort();
+                    root = sortedArrayToBST(currentData);
+                    searchedIndices = [];
+                    coloredEdges = [];
+                    loadAnimation();
+                }
+                else {
+                    customInputToggle.checked = false;
+                }
+            }
+        }
+        else {
+            pauseAnimation();
+            currentData = [...defaultData];
+            root = sortedArrayToBST(currentData);
+            searchedIndices = [];
+            coloredEdges = [];
+            loadAnimation();
+            randListSize.disabled = false;
+            randomizeButton.disabled = false;
+            inputElement.disabled = false;
         }
     }
 
@@ -370,6 +413,39 @@ window.loadBinaryTree = function () {
         return true;
     }
 
+    // Validates user input for custom list
+    function checkCustomInput(inputList) {
+        if (inputList == "") {
+            inputWarningMessage.textContent = "Error: Enter an input";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        if (!isWholeNumbers(inputList)) {
+            inputWarningMessage.textContent = "Error: Enter integers only";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        if (inputList.length > 15 || inputList.length < 3) {
+            inputWarningMessage.textContent = "Error: Enter 3 to 15 integers only";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        if (isUnique(inputList) === false){
+            console.log(isUnique(inputList));
+            inputWarningMessage.textContent = "Error: only accepts each value once";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        if (checkInputValues(inputList)) {
+            inputWarningMessage.style.color = "#f4f4f4";
+            return true;
+        } else {
+            inputWarningMessage.textContent = "Error: Enter integer values between -200 and 200 only";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+    }
+
     // Returns true if all the elements in the given list are whole numbers, else returns false
     function isWholeNumbers(list) {
         for (let i = 0; i < list.length; i++) {
@@ -378,6 +454,25 @@ window.loadBinaryTree = function () {
             }
         }
         return true;     
+    }
+
+    function isUnique(arr){
+        const arrSet = new Set(arr);
+        if (arrSet.size === arr.length){
+            return true;
+        }
+
+        return false;
+    }
+
+    // Returns true if all the elements in the given list are between 1 & 99, else returns false
+    function checkInputValues(inputList) {
+        for (let i = 0; i < inputList.length; i++) {
+            if (inputList[i] > 99 || inputList[i] < 1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // Randomizes the size and values of the default input list on initialization of the webpage
@@ -407,6 +502,6 @@ window.loadBinaryTree = function () {
 
     // Ties Bubble Sort animation functionality to main page
     window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, 
-        moveToFrame, resetAnimation, randomizeInput);
+        moveToFrame, resetAnimation, randomizeInput, toggleCustomInput);
         
 };
