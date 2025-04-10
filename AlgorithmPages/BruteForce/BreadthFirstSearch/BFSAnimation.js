@@ -128,13 +128,8 @@ window.loadBFS = function () {
 
         if ((searchedIndices.includes(targetEdge[0]) && searchedIndices.includes(targetEdge[1])) || 
         (searchedIndices.includes(reversedTargetEdge[0]) && searchedIndices.includes(reversedTargetEdge[1]))){
-            console.log('yes');
-            console.log(coloredEdges);
-            console.log(targetEdge);
             for (edge of coloredEdges){
                 if ((edge[0] === targetEdge[0] && edge[1] === targetEdge[1]) || (edge[0] === reversedTargetEdge[0] && edge[1] === reversedTargetEdge[1])) {
-                    console.log('this');
-                    console.log(searchedIndices);
                     return 'red';
                 }
             }
