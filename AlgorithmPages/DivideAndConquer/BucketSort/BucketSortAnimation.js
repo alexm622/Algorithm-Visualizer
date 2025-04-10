@@ -9,15 +9,15 @@ window.loadBucketSort = function () {
     const inputWarningMessage = document.getElementById('inputWarningMessage');
     const progressFill = document.getElementById("progressFill");
     const graphCanvas = document.getElementById('graphCanvas');
-    const boxListCanvas = document.getElementById('boxListCanvas');
+    const bucketSortCanvas = document.getElementById('boxListCanvas');
     const stepLog = document.getElementById("stepLog");
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
     graphCanvas.height = graphCanvas.parentElement.clientHeight;
-    boxListCanvas.width = boxListCanvas.parentElement.clientWidth;
-    boxListCanvas.height = boxListCanvas.parentElement.clientHeight;
+    bucketSortCanvas.width = bucketSortCanvas.parentElement.clientWidth;
+    bucketSortCanvas.height = bucketSortCanvas.parentElement.clientHeight;
 
     const graphCtx = graphCanvas.getContext('2d');
-    const boxListCtx = boxListCanvas.getContext('2d');
+    const bucketSortCtx = bucketSortCanvas.getContext('2d');
 
     let randomDataSize = 0;
     let defaultData = [50, 150, 100, 200, -80, 60, 100, -200, -150, 200, 175, -125, -20, 20, 30, -40, 70, 120, -200, -90];
@@ -35,16 +35,25 @@ window.loadBucketSort = function () {
     function drawFrame(frame) {
         if (!frame) return;
         ({ data, currentIndex, pivotIndex, swapIndices } = frame);
+    
+        // Ensure frame.buckets is defined
+        if (!frame.buckets) {
+            console.error("Buckets are undefined in the current frame.");
+            return;
+        }
+    
         drawData();
+        drawBucketSortVisualization(frame.buckets); // Pass the current frame's buckets
         updateProgressBar();
         updateStepLog();
     }
 
+    // Corrected typo: Changed 'buckerSortCtx' to 'bucketSortCtx'
     function drawData() {
         graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
-        boxListCtx.clearRect(0, 0, boxListCanvas.width, boxListCanvas.height);
+        bucketSortCtx.clearRect(0, 0, bucketSortCanvas.width, bucketSortCanvas.height); // Fixed typo here
         drawGraphVisualization();
-        drawBoxListVisualization();
+        drawBucketSortVisualization();
     }
 
     function drawGraphVisualization() {
@@ -86,28 +95,66 @@ window.loadBucketSort = function () {
         }
     }
 
-    function drawBoxListVisualization() {
-        const numBoxes = data.length;
-        const boxSize = Math.min(boxListCanvas.width / numBoxes, boxListCanvas.height);
-        const totalWidth = numBoxes * boxSize;
-        const startX = (boxListCanvas.width - totalWidth) / 2;
-        const y = (boxListCanvas.height - boxSize) / 2;
-
-        const fontSize = Math.max(12, boxSize * 0.3);
-        boxListCtx.font = `${fontSize}px Arial`;
-        boxListCtx.textAlign = 'center';
-        boxListCtx.textBaseline = 'middle';
-
-        for (let i = 0; i < numBoxes; i++) {
-            const x = startX + i * boxSize;
-            boxListCtx.fillStyle = getColor(i);
-            boxListCtx.fillRect(x, y, boxSize, boxSize);
-            boxListCtx.strokeStyle = 'black';
-            boxListCtx.strokeRect(x, y, boxSize, boxSize); // Full border
-
-            // Centered text
-            boxListCtx.fillStyle = 'black';
-            boxListCtx.fillText(data[i], x + boxSize / 2, y + boxSize / 2);
+    function drawBucketSortVisualization(frameBuckets) {
+        if (!frameBuckets || frameBuckets.length === 0) {
+            console.error("Invalid frameBuckets passed to drawBucketSortVisualization.");
+            return;
+        }
+    
+        const numBuckets = frameBuckets.length;
+        const spacing = 20; // Add spacing between buckets
+        const totalSpacing = (numBuckets - 1) * spacing; // Total spacing between buckets
+        const bucketWidth = Math.min((bucketSortCanvas.width - totalSpacing) / numBuckets, 150); // Adjust bucket width
+        const boxHeight = Math.min(bucketSortCanvas.height * 0.1, 50); // Adjust box height
+        const fontSize = Math.max(12, bucketWidth * 0.15);
+        bucketSortCtx.font = `${fontSize}px Arial`;
+        bucketSortCtx.textAlign = 'center';
+        bucketSortCtx.textBaseline = 'middle';
+    
+        // Adjust the starting Y position to shift everything down
+        const startY = bucketSortCanvas.height * 0.2; // Start drawing boxes further down (20% from the top)
+        let currentX = (bucketSortCanvas.width - (numBuckets * bucketWidth + totalSpacing)) / 2; // Center the buckets horizontally
+    
+        // Draw the buckets and their contents
+        for (let i = 0; i < numBuckets; i++) {
+            const bucket = frameBuckets[i];
+    
+            // Label the partition with the bucket number
+            bucketSortCtx.fillStyle = 'black';
+            bucketSortCtx.fillText(i, currentX + bucketWidth / 2, startY - fontSize * 1.5); // Label above the partition
+    
+            // Draw dividing line between buckets
+            if (i > 0) {
+                bucketSortCtx.strokeStyle = 'black';
+                bucketSortCtx.lineWidth = 2;
+                bucketSortCtx.beginPath();
+                bucketSortCtx.moveTo(currentX - spacing / 2, startY);
+                bucketSortCtx.lineTo(currentX - spacing / 2, bucketSortCanvas.height);
+                bucketSortCtx.stroke();
+            }
+    
+            // Draw the individual boxes in the bucket
+            bucket.forEach((value, index) => {
+                const boxX = currentX; // Align boxes horizontally
+                const boxY = startY + index * (boxHeight + 10); // Stack boxes vertically with spacing
+    
+                // Ensure boxes fit within the canvas height
+                if (boxY + boxHeight > bucketSortCanvas.height) {
+                    console.warn(`Bucket ${i} has too many entries to fit.`);
+                    return;
+                }
+    
+                bucketSortCtx.fillStyle = 'white'; // Box background
+                bucketSortCtx.fillRect(boxX, boxY, bucketWidth, boxHeight); // Draw box
+                bucketSortCtx.strokeStyle = 'black';
+                bucketSortCtx.strokeRect(boxX, boxY, bucketWidth, boxHeight); // Box border
+    
+                // Draw text inside the box
+                bucketSortCtx.fillStyle = 'black';
+                bucketSortCtx.fillText(value, boxX + bucketWidth / 2, boxY + boxHeight / 2); // Center text in the box
+            });
+    
+            currentX += bucketWidth + spacing; // Add spacing between buckets
         }
     }
 
@@ -120,29 +167,27 @@ window.loadBucketSort = function () {
     async function bucketSort(arr) {
         const max = Math.max(...arr);
         const min = Math.min(...arr);
-        const bucketCount = Math.floor((max - min) / arr.length) + 1; // Number of buckets
-
-        // Step 1: Create empty buckets
+        const bucketCount = Math.floor((max - min) / arr.length) + 1;
+    
         const buckets = Array.from({ length: bucketCount }, () => []);
-
-        // Step 2: Distribute elements into buckets
+        recordFrame("Initialized empty buckets", buckets);
+    
         for (let i = 0; i < arr.length; i++) {
             const index = Math.floor((arr[i] - min) / arr.length);
             buckets[index].push(arr[i]);
-            appendToExplanation(`Placed ${arr[i]} in bucket ${index}`);
+            recordFrame(`Placed ${arr[i]} in bucket ${index}`, buckets);
         }
-
-        // Step 3: Sort each bucket (using Insertion Sort for simplicity)
+    
         for (let i = 0; i < buckets.length; i++) {
             await insertionSort(buckets[i], `Sorting bucket ${i}`);
+            recordFrame(`Sorted bucket ${i}`, buckets);
         }
-
-        // Step 4: Concatenate all sorted buckets into the original array
+    
         let index = 0;
         for (let i = 0; i < buckets.length; i++) {
             for (let j = 0; j < buckets[i].length; j++) {
                 arr[index++] = buckets[i][j];
-                appendToExplanation(`Placed ${buckets[i][j]} in position ${index - 1}`);
+                recordFrame(`Placed ${buckets[i][j]} in position ${index - 1}`, buckets);
             }
         }
     }
@@ -163,15 +208,16 @@ window.loadBucketSort = function () {
         }
     }
 
-    function recordFrame(explanation = "") {
+    function recordFrame(explanation = "", buckets = []) {
         frames.push(JSON.parse(JSON.stringify({
-            data: [...data],  // Assuming `data` is the array you are sorting
+            data: [...data],  // Current data array
             currentIndex,
+            pivotIndex,
             swapIndices: [...swapIndices],
+            buckets: buckets ? buckets.map(bucket => [...bucket]) : [], // Deep copy of buckets
             explanation
         })));
     }
-
     function appendToExplanation(text) {
         recordFrame(text);
     }
@@ -238,7 +284,7 @@ window.loadBucketSort = function () {
         frames = [];
         currentFrame = 0;
         data = [...currentData];
-
+    
         // First frame: initial array, no highlights
         frames.push({
             data: [...data],
@@ -247,10 +293,10 @@ window.loadBucketSort = function () {
             swapIndices: [],
             explanation: ""
         });
-
+    
         // Middle frames: has highlights
-        await bucketSort(data, 0, data.length - 1);
-
+        await bucketSort(data);
+    
         // Last frame: final sorted array, no highlights
         frames.push({
             data: [...data],
@@ -259,8 +305,8 @@ window.loadBucketSort = function () {
             swapIndices: [],
             explanation: ""
         });
-
-        drawFrame(frames[currentFrame]);
+    
+        drawFrame(frames[currentFrame]); // Draw the first frame
     }
 
     function loadControlBar() {
