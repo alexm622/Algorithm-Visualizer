@@ -6,21 +6,29 @@
       When we traverse an adjacent vertex, we completely finish the traversal of all vertices reachable through that adjacent vertex. 
       This is similar to a tree, where we first completely traverse the left subtree and then move to the right subtree. 
       The key difference is that, unlike trees, graphs may contain cycles (a node may be visited more than once). 
-      To avoid processing a node multiple times, we use a boolean visited array.
-    </p>
+      To avoid processing a node multiple times, we use a boolean visited array. Its basically like exploring a maze by picking a 
+      path and going as far as you can until you hit a dead end, then backtracking to the last intersection to try another path.
+    </p> <br> <br>
+
+    <p>1. Choose a starting vertex</p> <br> <br>
+    <p>2. Mark the starting vertex as visited</p> <br> <br>
+    <p>3. Explore an unvisited neighbor vertex</p> <br> <br>
+    <p>4. Move to that neighbor and repeat steps 2 and 3</p> <br> <br>
+    <p>5. Backtrack once you reach a dead end</p> <br> <br>
+    <p>6. Continue this process until all reachable vertices from the starting vertext have been visited</p>
   </div>
   
   <!-- AlgorithmName Psuedocode -->
   <div id="pseudocode">
     <pre>
       <code>
-      procedure dfs(adj, visited, start)
-        visited[start] <- true
+procedure dfs(adj, visited, start)
+  visited[start] <- true
 
-        for i <- adj[start] do
-          if not visited[i] then
-            dfs(adj, visited, i)
-      end procedure
+  for i <- adj[start] do
+    if not visited[i] then
+      dfs(adj, visited, i)
+end procedure
       </code>
     </pre>
   </div>

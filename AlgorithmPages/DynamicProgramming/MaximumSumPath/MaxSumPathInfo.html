@@ -58,18 +58,18 @@
 <div id="pseudocode">
   <pre>
     <code>
-      function maxPathSum(root):
-          global maxPathSum = -infinity
-          function findMaxPathSum(node):
-              if node is null:  // Base case
-                  return 0
-              leftSum = findMaxPathSum(node.left)
-              rightSum = findMaxPathSum(node.right)
-              currentPathSum = node.value + max(leftSum, rightSum)
-              maxPathSum = max(maxPathSum, node.value + leftSum + rightSum)
-              return max(0, currentPathSum)  // Ensure we don't return a negative value
-          findMaxPathSum(root)
-          return maxPathSum
+function maxPathSum(root):
+    global maxPathSum = -infinity
+    function findMaxPathSum(node):
+        if node is null:  // Base case
+            return 0
+        leftSum = findMaxPathSum(node.left)
+        rightSum = findMaxPathSum(node.right)
+        currentPathSum = node.value + max(leftSum, rightSum)
+        maxPathSum = max(maxPathSum, node.value + leftSum + rightSum)
+        return max(0, currentPathSum)  // Ensure we don't return a negative value
+    findMaxPathSum(root)
+    return maxPathSum
     </code>
   </pre>
 </div>
