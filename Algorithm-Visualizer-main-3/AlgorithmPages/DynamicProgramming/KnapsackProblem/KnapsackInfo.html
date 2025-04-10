@@ -1,0 +1,43 @@
+<!-- Algorithm Description -->
+<div id="description">
+    <h3 id="descriptionHeader">Knapsack Problem</h3>
+    <p>A problem where the user is given n items and each item has its own
+      weight and value. The user is also given a bag with a weight capacity. The 
+      goal is to put the given items into the bag such that the total value of all
+      items in the bag is the highest it can possible be without the total weight
+      of the items exceeding the bag's weight capacity.</p>
+  </div>
+  
+  <!-- AlgorithmName Psuedocode -->
+  <div id="pseudocode">
+    <pre>
+      <code>
+/* 
+table represents the best value for each item at each capacity, 
+W is capacity, v is values, w is weights, and n is number of items
+/*
+procedure knapsack(table, W, v, w, n)
+  for i <- 0; i <= n; i++ do
+      for j <-0; j <= W; j++ do
+          if i == 0 or j == 0 then
+              table[i][j] <- 0
+          else then
+              pick <- 0
+              if w[i - 1] <= j then
+                  pick <- v[i - 1] + table[i - 1][j - w[i - 1]]
+              
+              notPick <- table[i - 1][j]
+              table[i][j] <- max(pick, notPick)
+  
+  return table[table.length - 1][table[0].length - 1]
+end procedure
+      </code>
+    </pre>
+  </div>
+  
+  <!-- AlgorithmName References -->
+  <div id="references">
+    <ol id="referencesList">
+      <li><a href="https://www.geeksforgeeks.org/0-1-knapsack-problem-dp-10/" target="_blank">GeeksforGeeks: 0/1 Knapsack Problem</a></li>
+    </ol>
+  </div>
