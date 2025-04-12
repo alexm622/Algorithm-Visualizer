@@ -119,21 +119,17 @@ window.loadFibonacci = function () {
 
     }
 
-    function fibonacci(n) {   
+    function fibonacci(number) {   
 
-        let n1 = 0, n2 = 1;
+        let n1 = 0, n2 = 1, nextTerm;
 
-        next = n1 + n2;
-        for (let i = 2; i <= n; i++) {
-            next = data[i-2] + data[i-1];
-            data.push(next);
-
-            
-            appendToExplanation(`${n1} plus ${n2} equals ${next}`, i-2, i-1);
-
+        //next = n1 + n2;
+        for (let i = 2; i <= number; i++) {
+            nextTerm = data[i-2] + data[i-1];
+            data.push(nextTerm);
+            appendToExplanation(`${n1} plus ${n2} equals ${nextTerm}`, i-2, i-1);
             n1 = n2;
-            n2 = next;
-            
+            n2 = nextTerm;
             recordFrame()
             
         }
