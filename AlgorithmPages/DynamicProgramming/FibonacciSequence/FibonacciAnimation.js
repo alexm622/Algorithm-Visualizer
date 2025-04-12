@@ -175,7 +175,6 @@ window.loadFibonacci = function () {
             }
             currentFrame++;
             drawFrame(frames[currentFrame]);
-            setTimeout(step, 100);
             setTimeout(step, getAnimationSpeed());
         }
         step();
