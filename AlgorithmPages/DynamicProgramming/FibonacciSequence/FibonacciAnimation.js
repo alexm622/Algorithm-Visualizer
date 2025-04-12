@@ -218,7 +218,7 @@ window.loadFibonacci = function () {
         });
 
         // Middle frames: has highlights
-        await fibonacci(n);
+        await fibonacci(number);
             
 
         // Last frame: final sorted array, no highlights
