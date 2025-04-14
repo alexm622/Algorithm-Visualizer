@@ -123,7 +123,7 @@ window.loadFibonacci = function () {
 
         let n1 = 0, n2 = 1, nextTerm;
 
-        //next = n1 + n2;
+        
         for (let i = 2; i <= number; i++) {
             nextTerm = data[i-2] + data[i-1];
             data.push(nextTerm);
