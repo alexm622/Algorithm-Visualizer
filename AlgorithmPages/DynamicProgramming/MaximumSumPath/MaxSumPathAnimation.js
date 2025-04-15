@@ -1,8 +1,14 @@
 window.loadMaxSumPath = function () {
+    const randListSize = document.getElementById('randListSize');
+    const sizeWarningMessage = document.getElementById('sizeWarningMessage');
+    const randomizeButton = document.getElementById('randomizeButton');
+    const inputElement = document.getElementById('customInput');
+    const customInputToggle = document.getElementById('customInputToggle');
     const progressBar = document.getElementById("progressBar");
+    const inputWarningMessage = document.getElementById('inputWarningMessage');
     const progressFill = document.getElementById("progressFill");
     const speedSlider = document.getElementById("speedSlider");
-    const graphCanvas = document.getElementById("graphCanvas");
+    const graphCanvas = document.getElementById('graphCanvas');
     const stepLog = document.getElementById("stepLog");
 
     const boxListVisual = document.getElementById("boxListVisual");
@@ -12,18 +18,6 @@ window.loadMaxSumPath = function () {
     graphCanvas.width = graphCanvas.parentElement.clientWidth;
     graphCanvas.height = graphCanvas.parentElement.clientHeight;
     const graphCtx = graphCanvas.getContext("2d");
-
-    let frames = [];
-    let currentFrame = 0;
-    let isPlaying = false;
-
-    let treeRoot = null;
-    let highlightedNodes = [];
-    let highlightedEdges = [];
-    let maxSum = -Infinity;
-    let panX = 318, panY = 50, zoom = .7;
-    let isDragging = false;
-    let dragStart = { x: 0, y: 0 };
 
     class TreeNode {
         constructor(id, value) {
@@ -35,15 +29,63 @@ window.loadMaxSumPath = function () {
             this.y = 0;
         }
     }
-
-    function createRandomTree(depth = 4, id = 0, x = 0, y = 0) {
-        if (depth === 0 || id > 20) return null;
-        const node = new TreeNode(id, Math.floor(Math.random() * 40 - 10));
-        if (Math.random() < 0.8) node.left = createRandomTree(depth - 1, id * 2 + 1);
-        if (Math.random() < 0.8) node.right = createRandomTree(depth - 1, id * 2 + 2);
+    
+    // Function to create a binary tree from a list of integers
+    function createTreeFromList(values = [], index = 0) {
+        if (index >= values.length) return null;  // If index is out of bounds, stop recursion
+    
+        const node = new TreeNode(index, values[index]);
+        
+        // Recursively create left and right children
+        node.left = createTreeFromList(values, index * 2 + 1);
+        node.right = createTreeFromList(values, index * 2 + 2);
+    
         return node;
     }
+    
+    function createTreeWithNumNodes(numNodes = 10) {
+        if (numNodes <= 0) return null;
+    
+        let idCounter = 0;
+        const root = new TreeNode(idCounter++, Math.floor(Math.random() * 40 - 10));
+        const queue = [root];
+    
+        while (idCounter < numNodes) {
+            const current = queue.shift();
+    
+            // Add left child if we haven't reached the node limit
+            if (idCounter < numNodes) {
+                const left = new TreeNode(idCounter++, Math.floor(Math.random() * 40 - 10));
+                current.left = left;
+                queue.push(left);
+            }
+    
+            // Add right child if we still haven't reached the node limit
+            if (idCounter < numNodes) {
+                const right = new TreeNode(idCounter++, Math.floor(Math.random() * 40 - 10));
+                current.right = right;
+                queue.push(right);
+            }
+        }
+    
+        return root;
+    }
 
+    let frames = [];
+    let currentFrame = 0;
+    let isPlaying = false;
+
+    let defaultTreeRoot = createTreeWithNumNodes(7);
+    let treeRoot = new TreeNode(defaultTreeRoot.id, defaultTreeRoot.value);
+    treeRoot.left = defaultTreeRoot.left;
+    treeRoot.right = defaultTreeRoot.right;
+    let highlightedNodes = [];
+    let highlightedEdges = [];
+    let maxSum = -Infinity;
+    let panX = 318, panY = 50, zoom = .7;
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    
     function setNodePositions(node, x, y, spacing) {
         if (!node) return;
         node.x = x;
@@ -68,7 +110,7 @@ window.loadMaxSumPath = function () {
                 graphCtx.beginPath();
                 graphCtx.moveTo(n.x, n.y);
                 graphCtx.lineTo(n.left.x, n.left.y);
-                graphCtx.strokeStyle = isEdgeHighlighted(n, n.left) ? "orange" : "black";
+                graphCtx.strokeStyle = isEdgeHighlighted(n, n.left) ? "red" : "black";
                 graphCtx.stroke();
                 drawEdges(n.left);
             }
@@ -76,7 +118,7 @@ window.loadMaxSumPath = function () {
                 graphCtx.beginPath();
                 graphCtx.moveTo(n.x, n.y);
                 graphCtx.lineTo(n.right.x, n.right.y);
-                graphCtx.strokeStyle = isEdgeHighlighted(n, n.right) ? "orange" : "black";
+                graphCtx.strokeStyle = isEdgeHighlighted(n, n.right) ? "red" : "black";
                 graphCtx.stroke();
                 drawEdges(n.right);
             }
@@ -86,7 +128,7 @@ window.loadMaxSumPath = function () {
             if (!n) return;
             graphCtx.beginPath();
             graphCtx.arc(n.x, n.y, 25, 0, 2 * Math.PI);
-            graphCtx.fillStyle = highlightedNodes.includes(n.id) ? "yellow" : "lightblue";
+            graphCtx.fillStyle = highlightedNodes.includes(n.id) ? "red" : "lightblue";
             graphCtx.fill();
             graphCtx.strokeStyle = "black";
             graphCtx.stroke();
@@ -140,28 +182,45 @@ window.loadMaxSumPath = function () {
         progressFill.style.width = `${percent}%`;
     }
 
-    function maxPathSumHelper(node, path = []) {
+    function maxPathSumHelper(node, path = [], parentId = null) {
         if (!node) return 0;
-
+    
         highlightedNodes = [node.id];
         recordFrame(`Visiting node ${node.id} (${node.value}), current path: [${[...path, node.id].join(" → ")}]`);
-
+    
         path.push(node.id);
-
-        const left = maxPathSumHelper(node.left, path);
-        if (node.left) highlightedEdges.push([node.id, node.left.id]);
-
-        const right = maxPathSumHelper(node.right, path);
-        if (node.right) highlightedEdges.push([node.id, node.right.id]);
-
+    
+        const left = node.left ? (() => {
+            highlightedEdges.push([node.id, node.left.id]);
+            recordFrame(`Moving to left child of node ${node.id} → node ${node.left.id}`);
+            return maxPathSumHelper(node.left, path, node.id);
+        })() : 0;
+    
+        const right = node.right ? (() => {
+            highlightedEdges.push([node.id, node.right.id]);
+            recordFrame(`Moving to right child of node ${node.id} → node ${node.right.id}`);
+            return maxPathSumHelper(node.right, path, node.id);
+        })() : 0;
+    
         const currentMax = node.value + Math.max(0, left) + Math.max(0, right);
-        maxSum = Math.max(maxSum, currentMax);
-
+        if (currentMax > maxSum) {
+            maxSum = currentMax;
+            recordFrame(`Updated Maximum Path Sum to ${maxSum} at node ${node.id}`);
+        }
+    
         path.pop();
-
+    
+        // Backtracking frame: highlight the parent node we're returning to
+        if (parentId !== null) {
+            highlightedNodes = [parentId];
+        } else {
+            highlightedNodes = [];
+        }
+        recordFrame(`Backtracking from node ${node.id}, returning to ${parentId !== null ? "node " + parentId : "null"}`);
+    
         return node.value + Math.max(0, Math.max(left, right));
     }
-
+    
     async function loadAnimation() {
         frames = [];
         currentFrame = 0;
@@ -169,13 +228,12 @@ window.loadMaxSumPath = function () {
         highlightedNodes = [];
         highlightedEdges = [];
 
-        treeRoot = createRandomTree();
         setNodePositions(treeRoot, 0, 0, 220);
+        
         recordFrame("Initialized binary tree");
 
         maxPathSumHelper(treeRoot);
 
-        recordFrame("Finished Maximum Path Sum traversal");
         drawFrame(frames[0]);
     }
 
@@ -234,11 +292,15 @@ window.loadMaxSumPath = function () {
     }
 
     function loadControlBar() {
+        randListSize.disabled = false;
+        randomizeButton.disabled = false;
+        inputElement.placeholder = "Enter a list of 3-15 integers between 1 & 99 (ex. 99 1 24 59 34)";
+        inputElement.disabled = false;
+        customInputToggle.disabled = false;
         progressBar.disabled = false;
         speedSlider.disabled = false;
     }
 
-    // Mouse interactions for pan & zoom
     // Mouse interactions for pan & zoom
     window.mouseZoom = function (e) {
         e.preventDefault();
@@ -268,6 +330,135 @@ window.loadMaxSumPath = function () {
     graphCanvas.addEventListener("mouseup", window.mouseRelease);
     graphCanvas.addEventListener("mouseleave", window.mouseRelease);
 
+    // Generates new list with user given size, loads animation for new random list
+    function randomizeInput() {
+        if (!randListSize.value) {
+            sizeWarningMessage.textContent = "Error: Enter an integer";
+            sizeWarningMessage.style.color = "red";
+        }
+        else {
+            let inputList = randListSize.value.trim().split(/\s+/); 
+            inputList = inputList.map(Number); 
+            if (checkRandomizeInput(inputList)) {
+                pauseAnimation();
+                defaultTreeRoot = createTreeWithNumNodes(inputList[0]);
+                treeRoot = new TreeNode(defaultTreeRoot.id, defaultTreeRoot.value);
+                treeRoot.left = defaultTreeRoot.left;
+                treeRoot.right = defaultTreeRoot.right;
+                loadAnimation();
+            }
+        }
+    }
+
+    // Generates custom user-given list, loads animation for new custom list
+    // Loads back animation for default list when toggled off
+    function toggleCustomInput() {
+        if (customInputToggle.checked) {  
+            if (!inputElement.value) {
+                inputWarningMessage.textContent = "Invalid Input: Enter an input";
+                inputWarningMessage.style.color = "red";
+                customInputToggle.checked = false;
+            }
+            else {
+                let inputList = inputElement.value.trim().split(/\s+/);
+                inputList = inputList.map(Number);
+                if (checkCustomInput(inputList)) {
+                    randListSize.disabled = true;
+                    randomizeButton.disabled = true;
+                    inputElement.disabled = true;
+                    pauseAnimation();
+                    treeRoot = createTreeFromList(inputList);
+                    loadAnimation();
+                }
+                else {
+                    customInputToggle.checked = false;
+                }
+            }
+        }
+        else {
+            pauseAnimation();
+            treeRoot = defaultTreeRoot;
+            loadAnimation();
+            randListSize.disabled = false;
+            randomizeButton.disabled = false;
+            inputElement.disabled = false;
+        }
+    }
+
+    // Validates user input for random list size
+    function checkRandomizeInput(inputList) {
+        if (inputList == "") {
+            sizeWarningMessage.textContent = "Error: Enter an integer";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        if (!isWholeNumbers(inputList)) {
+            sizeWarningMessage.textContent = "Error: Enter integers only";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        if (inputList.length > 1) {
+            sizeWarningMessage.textContent = "Error: Enter 1 integer only";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        if (inputList[0] < 3 || inputList[0] > 15) {
+            sizeWarningMessage.textContent = "Error: Enter an integer between 3-15";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        sizeWarningMessage.textContent = "---";
+        sizeWarningMessage.style.color = "#f4f4f4";
+        return true;
+    }
+
+    // Validates user input for custom list
+    function checkCustomInput(inputList) {
+        if (inputList == "") {
+            inputWarningMessage.textContent = "Error: Enter an input";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        if (!isWholeNumbers(inputList)) {
+            inputWarningMessage.textContent = "Error: Enter integers only";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        if (inputList.length > 15 || inputList.length < 3) {
+            inputWarningMessage.textContent = "Error: Enter 3 to 15 integers only";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+        if (checkInputValues(inputList)) {
+            inputWarningMessage.style.color = "#f4f4f4";
+            return true;
+        } else {
+            inputWarningMessage.textContent = "Error: Enter integer values between 1 and 99 only";
+            inputWarningMessage.style.color = "red";
+            return false;
+        }
+    }
+
+    // Returns true if all the elements in the given list are whole numbers, else returns false
+    function isWholeNumbers(list) {
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] == NaN || !Number.isInteger(list[i])) {
+                return false;
+            }
+        }
+        return true;     
+    }
+
+    // Returns true if all the elements in the given list are between 1 & 99, else returns false
+    function checkInputValues(inputList) {
+        for (let i = 0; i < inputList.length; i++) {
+            if (inputList[i] > 99 || inputList[i] < 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     window.activeController = new AnimationController(
         loadAnimation,
         loadControlBar,
@@ -276,6 +467,8 @@ window.loadMaxSumPath = function () {
         stepForward,
         stepBackward,
         moveToFrame,
-        resetAnimation
+        resetAnimation,
+        randomizeInput,
+        toggleCustomInput
     );
 };

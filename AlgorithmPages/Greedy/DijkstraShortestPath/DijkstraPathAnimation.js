@@ -40,7 +40,7 @@ window.loadDijkstraPath = function () {
 
     const graphCtx = graphCanvas.getContext('2d');
 
-    let graphSize = Math.round(Math.random() * 7 + 3); // Random graph size of at least 3
+    let graphSize = Math.round(Math.random() * 4 + 3); // Random graph size of at least 3
     let currentEdges = createWeightedEdges(graphSize);
     let startingNode = selectStartingNode(graphSize);
     let distances = Array(graphSize).fill(Infinity);
@@ -127,15 +127,15 @@ window.loadDijkstraPath = function () {
     function getColorNode(index) {
         const log = `Updating distance of node ${index} to ${distances[index]}`;
         if (frames[currentFrame].explanation.includes(log)) {
-            return 'yellow';
+            return 'red';
         } 
-        return visited.has(index) ? 'lightgreen' : 'lightblue';
+        return visited.has(index) ? 'CornflowerBlue' : 'lightblue';
     }
 
     function getColorEdge(node1, node2) {
         const edgeKey = node1 < node2 ? `${node1}-${node2}` : `${node2}-${node1}`;
         if (shortestPathEdges.includes(edgeKey)) {
-            return 'lightgreen';
+            return 'CornflowerBlue';
         }
         return 'black';
     }
@@ -301,8 +301,8 @@ window.loadDijkstraPath = function () {
             sizeWarningMessage.style.color = "red";
             return false;
         }
-        if (inputList[0] < 3 || inputList[0] > 10) {
-            sizeWarningMessage.textContent = "Error: Enter an integer between 3-10";
+        if (inputList[0] < 3 || inputList[0] > 7) {
+            sizeWarningMessage.textContent = "Error: Enter an integer between 3-7";
             sizeWarningMessage.style.color = "red";
             return false;
         }

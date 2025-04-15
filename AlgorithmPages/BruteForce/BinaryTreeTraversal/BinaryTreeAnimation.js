@@ -10,7 +10,6 @@ window.loadBinaryTree = function () {
     const inputWarningMessage = document.getElementById('inputWarningMessage');
     const progressFill = document.getElementById("progressFill");
     const speedSlider = document.getElementById("speedSlider");
-    const graphVisual = document.getElementById('graphVisual');
     const graphCanvas = document.getElementById('graphCanvas');
     const stepLog = document.getElementById("stepLog");
 

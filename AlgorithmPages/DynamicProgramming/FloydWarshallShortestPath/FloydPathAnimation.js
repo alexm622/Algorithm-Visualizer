@@ -1,4 +1,7 @@
 window.loadFloydPath = function () {
+    const randListSize = document.getElementById('randListSize');
+    const sizeWarningMessage = document.getElementById('sizeWarningMessage');
+    const randomizeButton = document.getElementById('randomizeButton');
     const progressBar = document.getElementById("progressBar");
     const progressFill = document.getElementById("progressFill");
     const speedSlider = document.getElementById("speedSlider");
@@ -14,7 +17,7 @@ window.loadFloydPath = function () {
     const graphCtx = graphCanvas.getContext("2d");
 
     const radius = 30;
-    let graphSize = Math.round(Math.random() * 7 + 3);
+    let graphSize = Math.round(Math.random() * 4 + 3);
     let currentEdges = createWeightedEdges(graphSize);
     let dist = Array.from({ length: graphSize }, () => Array(graphSize).fill(Infinity));
     let next = Array.from({ length: graphSize }, () => Array(graphSize).fill(null));
@@ -96,7 +99,7 @@ window.loadFloydPath = function () {
                         ([a, b]) =>
                             (a === i && b === j) || (a === j && b === i)
                     )
-                        ? "yellow"
+                        ? "red"
                         : "black";
 
                     graphCtx.beginPath();
@@ -118,7 +121,7 @@ window.loadFloydPath = function () {
             const { x, y } = nodePositions[i];
             let color = "lightblue";
             if (highlightedNodes.includes(i)) {
-                color = i === highlightMiddle ? "orange" : "yellow";
+                color = i === highlightMiddle ? "CornflowerBlue" : "red";
             }
 
             graphCtx.fillStyle = color;
@@ -166,11 +169,11 @@ window.loadFloydPath = function () {
         }
 
         if (currentFrame === frames.length - 1) {
-            stepLog.innerHTML += "<strong>Final All-Pairs Shortest Distances:</strong><br>";
+            stepLog.innerHTML += "<strong>Shortest Path Between All Node Pairs:</strong><br>";
             for (let i = 0; i < graphSize; i++) {
                 for (let j = 0; j < graphSize; j++) {
                     const val = dist[i][j] === Infinity ? "INF" : dist[i][j];
-                    stepLog.innerHTML += `dist[${i}][${j}] = ${val}<br>`;
+                    stepLog.innerHTML += `Node ${i} to Node ${j} = ${val}<br>`;
                 }
             }
         }
@@ -193,6 +196,7 @@ window.loadFloydPath = function () {
         }
         recordFrame("Initialized distance matrix");
 
+        let space = ' ';
         for (let k = 0; k < graphSize; k++) {
             for (let i = 0; i < graphSize; i++) {
                 for (let j = 0; j < graphSize; j++) {
@@ -204,13 +208,15 @@ window.loadFloydPath = function () {
                         highlightedNodes = [i, j, k];
                         highlightMiddle = k;
 
-                        recordFrame(`Updating dist[${i}][${j}] via ${k} with new value ${dist[i][j]}`);
+                        recordFrame(`Shortest path between Node ${i} and Node ${j} using Node ${k} intermediate = ${dist[i][j]}`);
                     }
                 }
             }
         }
 
-        recordFrame("Finished Floyd-Warshall");
+        highlightedNodes = [];
+        highlightedEdges = [];
+        recordFrame("");
     }
 
     async function loadAnimation() {
@@ -281,8 +287,67 @@ window.loadFloydPath = function () {
     }
 
     function loadControlBar() {
+        randListSize.disabled = false;
+        randomizeButton.disabled = false;
         progressBar.disabled = false;
         speedSlider.disabled = false;
+    }
+
+    // Generates new list with user given size, loads animation for new random list
+    function randomizeInput() {
+        if (!randListSize.value) {
+            sizeWarningMessage.textContent = "Error: Enter an integer";
+            sizeWarningMessage.style.color = "red";
+        }
+        else {
+            let inputList = randListSize.value.trim().split(/\s+/); // turns input into a string list
+            inputList = inputList.map(Number); // turns string list into a number list
+            if (checkRandomizeInput(inputList)) {
+                pauseAnimation();
+                graphSize = inputList[0];
+                currentEdges = createWeightedEdges(graphSize);
+                dist = Array.from({ length: graphSize }, () => Array(graphSize).fill(Infinity));
+                next = Array.from({ length: graphSize }, () => Array(graphSize).fill(null));
+                loadAnimation();
+            }
+        }
+    }
+
+    // Validates user input for random list size
+    function checkRandomizeInput(inputList) {
+        if (inputList == "") {
+            sizeWarningMessage.textContent = "Error: Enter an integer";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        if (!isWholeNumbers(inputList)) {
+            sizeWarningMessage.textContent = "Error: Enter integers only";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        if (inputList.length > 1) {
+            sizeWarningMessage.textContent = "Error: Enter 1 integer only";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        if (inputList[0] < 3 || inputList[0] > 7) {
+            sizeWarningMessage.textContent = "Error: Enter an integer between 3-7";
+            sizeWarningMessage.style.color = "red";
+            return false;
+        }
+        sizeWarningMessage.textContent = "---";
+        sizeWarningMessage.style.color = "#f4f4f4";
+        return true;
+    }
+
+    // Returns true if all the elements in the given list are whole numbers, else returns false
+    function isWholeNumbers(list) {
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] == NaN || !Number.isInteger(list[i])) {
+              return false;
+            }
+        }
+        return true;     
     }
 
     window.activeController = new AnimationController(
@@ -293,6 +358,7 @@ window.loadFloydPath = function () {
         stepForward,
         stepBackward,
         moveToFrame,
-        resetAnimation
+        resetAnimation,
+        randomizeInput
     );
 };
