@@ -1,11 +1,4 @@
-window.loadSlidingWindow = function () {
-    // TODO:
-    // Implement algorithm logic
-    // Implement top bar controls
-    // Implement AnimationController functions
-
-
-    
+window.loadSlidingWindow = function () {    
     const randListSize = document.getElementById('randListSize');
     const sizeWarningMessage = document.getElementById('sizeWarningMessage');
     const randomizeButton = document.getElementById('randomizeButton');
@@ -84,7 +77,7 @@ window.loadSlidingWindow = function () {
             graphCtx.stroke();
 
             // Draw number slightly outside the bar (with buffer)
-            graphCtx.fillStyle = 'blue';
+            graphCtx.fillStyle = 'black';
             const numberOffset = fontSize * 0.6; // Extra buffer for clarity
             const numberY = barHeight >= 0 ? y - numberOffset : y + Math.abs(barHeight) + numberOffset;
             graphCtx.fillText(value, x + barWidth / 2, numberY);
@@ -419,17 +412,6 @@ window.loadSlidingWindow = function () {
         return randomArray;
     }
 
-
-
     window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, 
         moveToFrame, resetAnimation, randomizeInput, toggleCustomInput);
-
-
-
-
-
-
-
-
-
 }

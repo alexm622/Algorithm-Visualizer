@@ -1,11 +1,4 @@
 window.loadFibonacci = function () {
-    // TODO:
-    // Implement algorithm logic
-    // Implement top bar controls
-    // Implement AnimationController functions
-
-
-    
     const progressBar = document.getElementById("progressBar");
     const progressFill = document.getElementById("progressFill");
     const speedSlider = document.getElementById("speedSlider");
@@ -233,7 +226,6 @@ window.loadFibonacci = function () {
     function loadControlBar() {
         progressBar.disabled = false;
         speedSlider.disabled = false;
-        inputElement.placeholder = "Disabled";
         inputElement.disabled = true;
     }
 
@@ -253,8 +245,6 @@ window.loadFibonacci = function () {
     function loadControlBar() {
         progressBar.disabled = false;
         speedSlider.disabled = false;
-        
-        
     }
 
     function resetAnimation() {
@@ -263,18 +253,6 @@ window.loadFibonacci = function () {
         drawFrame(frames[currentFrame]);
     }
 
-
-
-
     window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, moveToFrame,
         resetAnimation, null, null);
-
-
-
-
-
-
-
-
-
 }

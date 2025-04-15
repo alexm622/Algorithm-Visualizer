@@ -277,14 +277,14 @@ function selectAlgorithm(algorithmName) {
     document.getElementById('pseudocode').innerHTML = '';
     document.getElementById('references').innerHTML = '';
     
-    // Clear/Reset top control bar 
+    // Clear & Reset top control bar 
     document.getElementById('randListSize').value = NaN;
     document.getElementById('randListSize').disabled = true;
     document.getElementById('randomizeButton').disabled = true;
     document.getElementById('sizeWarningMessage').textContent = "-";
     document.getElementById('sizeWarningMessage').style.color = "#f4f4f4";
     document.getElementById('customInput').value = "";
-    document.getElementById('customInput').placeholder = "";
+    document.getElementById('customInput').placeholder = "Disabled";
     document.getElementById('customInput').disabled = true;
     document.getElementById('customInputToggle').checked = false;
     document.getElementById('customInputToggle').disabled = true;

@@ -210,7 +210,6 @@ window.loadDijkstraPath = function () {
     function loadControlBar() {
         randListSize.disabled = false;
         randomizeButton.disabled = false;
-        inputElement.placeholder = "Disabled";
         inputElement.disabled = true;
         customInputToggle.disabled = true;
         progressBar.disabled = false;
