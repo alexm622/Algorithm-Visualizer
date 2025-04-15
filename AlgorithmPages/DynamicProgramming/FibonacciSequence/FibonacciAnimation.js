@@ -2,7 +2,6 @@ window.loadFibonacci = function () {
     const progressBar = document.getElementById("progressBar");
     const progressFill = document.getElementById("progressFill");
     const speedSlider = document.getElementById("speedSlider");
-    const inputElement = document.getElementById('customInput');
     const graphCanvas = document.getElementById('graphCanvas');
     const boxListCanvas = document.getElementById('boxListCanvas');
     const stepLog = document.getElementById("stepLog");
@@ -19,7 +18,7 @@ window.loadFibonacci = function () {
     let defaultData = [0,1];
     let currentData = [...defaultData];
     let data = [...currentData];
-    let n = 10;
+    let n = 15;
     let currentFrame = 0;
     let isPlaying = false;
     let frames = [];
@@ -47,37 +46,37 @@ window.loadFibonacci = function () {
         graphCtx.font = `${fontSize}px Arial`;
         graphCtx.textAlign = 'center';
         graphCtx.textBaseline = 'middle';
-
+    
         const maxAbsValue = Math.max(...data.map(Math.abs));
-        const centerY = graphCanvas.height / 2;
         const graphHeight = graphCanvas.height - VERTICAL_PADDING * 2;
-
+        const baseY = graphCanvas.height - VERTICAL_PADDING; // Bottom anchor for bars
+    
         for (let i = 0; i < data.length; i++) {
             const value = data[i];
-            const barHeight = (value / maxAbsValue) * (graphHeight / 2);
+            const barHeight = (value / maxAbsValue) * graphHeight;
             const x = i * barWidth;
-            const y = barHeight >= 0 ? centerY - barHeight : centerY;
-
+            const y = baseY - barHeight; // Bar grows upward from the bottom
+    
             graphCtx.fillStyle = getColor(i);
-            graphCtx.fillRect(x, y, barWidth, Math.abs(barHeight));
-
+            graphCtx.fillRect(x, y, barWidth, barHeight);
+    
             // Draw bar outline (skip bottom edge)
             graphCtx.strokeStyle = 'black';
             graphCtx.beginPath();
             graphCtx.moveTo(x, y);
             graphCtx.lineTo(x + barWidth, y);
-            graphCtx.lineTo(x + barWidth, y + Math.abs(barHeight));
-            graphCtx.lineTo(x, y + Math.abs(barHeight));
+            graphCtx.lineTo(x + barWidth, y + barHeight);
+            graphCtx.lineTo(x, y + barHeight);
             graphCtx.closePath();
             graphCtx.stroke();
-
-            // Draw number slightly outside the bar (with buffer)
-            graphCtx.fillStyle = 'blue';
-            const numberOffset = fontSize * 0.6; // Extra buffer for clarity
-            const numberY = barHeight >= 0 ? y - numberOffset : y + Math.abs(barHeight) + numberOffset;
+    
+            // Draw number slightly above the bar (with buffer)
+            graphCtx.fillStyle = 'black';
+            const numberOffset = fontSize * 0.6;
+            const numberY = y - numberOffset;
             graphCtx.fillText(value, x + barWidth / 2, numberY);
         }
-    }
+    }    
 
     function drawBoxListVisualization() {
         const numBoxes = data.length;
@@ -226,7 +225,6 @@ window.loadFibonacci = function () {
     function loadControlBar() {
         progressBar.disabled = false;
         speedSlider.disabled = false;
-        inputElement.disabled = true;
     }
 
     function recordFrame(explanation = "", n1,n2) {

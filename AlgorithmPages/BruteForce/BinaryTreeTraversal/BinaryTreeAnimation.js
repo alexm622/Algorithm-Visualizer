@@ -310,7 +310,7 @@ window.loadBinaryTree = function () {
     function loadControlBar() {
         randListSize.disabled = false;
         randomizeButton.disabled = false;
-        inputElement.placeholder = "Enter values separated by spaces between 1 and 99";
+        inputElement.placeholder = "Enter a list of 3-15 integers between 1 & 99 (ex. 99 1 24 59 34)";
         inputElement.disabled = false;
         customInputToggle.disabled = false;
         progressBar.disabled = false;
