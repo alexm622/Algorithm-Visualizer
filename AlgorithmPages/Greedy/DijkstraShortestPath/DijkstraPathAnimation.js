@@ -46,9 +46,12 @@ window.loadDijkstraPath = function () {
     let distances = Array(graphSize).fill(Infinity);
     distances[startingNode] = 0;
     let visited = new Set();
+    let prev = Array(graphSize).fill(null);
     let frames = [];
     let currentFrame = 0;
     let isPlaying = false;
+
+    let highlightedEdges = {}; // edgeKey => 'red' or 'blue'
 
     const radius = 30;
 
@@ -90,10 +93,13 @@ window.loadDijkstraPath = function () {
                 const { node, weight } = currentEdges[i][j];
                 const start = nodePositions[i];
                 const end = nodePositions[node];
+                const edgeKey = i < node ? `${i}-${node}` : `${node}-${i}`;
+                const color = getColorEdge(edgeKey);
+
                 graphCtx.beginPath();
                 graphCtx.moveTo(start.x, start.y);
                 graphCtx.lineTo(end.x, end.y);
-                graphCtx.strokeStyle = 'black';
+                graphCtx.strokeStyle = color;
                 graphCtx.stroke();
 
                 const midX = (start.x + end.x) / 2;
@@ -114,12 +120,9 @@ window.loadDijkstraPath = function () {
             graphCtx.strokeStyle = 'black';
             graphCtx.stroke();
 
-            // Label inside node: distance
-            graphCtx.fillStyle = 'black';
             const distText = distances[i] === Infinity ? 'INF' : distances[i];
+            graphCtx.fillStyle = 'black';
             graphCtx.fillText(distText, x, y);
-
-            // Label below node: index
             graphCtx.fillText(`(${i})`, x, y + radius + 12);
         }
     }
@@ -128,14 +131,14 @@ window.loadDijkstraPath = function () {
         const log = `Updating distance of node ${index} to ${distances[index]}`;
         if (frames[currentFrame].explanation.includes(log)) {
             return 'red';
-        } 
+        }
         return visited.has(index) ? 'CornflowerBlue' : 'lightblue';
     }
 
-    function getColorEdge(node1, node2) {
-        const edgeKey = node1 < node2 ? `${node1}-${node2}` : `${node2}-${node1}`;
-        if (shortestPathEdges.includes(edgeKey)) {
-            return 'CornflowerBlue';
+    function getColorEdge(edgeKey) {
+        const frame = frames[currentFrame];
+        if (frame && frame.highlightedEdges && frame.highlightedEdges[edgeKey]) {
+            return frame.highlightedEdges[edgeKey] === 'red' ? 'red' : 'blue';
         }
         return 'black';
     }
@@ -153,7 +156,8 @@ window.loadDijkstraPath = function () {
             }
         }
         if (currentFrame === frames.length - 1) {
-            stepLog.innerHTML += "<strong>Final Distances:</strong><br>";
+            stepLog.innerHTML += `<strong>Shortest Paths From Node ${startingNode}:</strong><br>`;
+            startingNode
             distances.forEach((d, i) => {
                 stepLog.innerHTML += `Node ${i}: ${d === Infinity ? 'INF' : d}<br>`;
             });
@@ -165,27 +169,41 @@ window.loadDijkstraPath = function () {
         frames.push({
             distances: [...distances],
             visited: new Set([...visited]),
+            highlightedEdges: { ...highlightedEdges },
             explanation
         });
+        highlightedEdges = {}; // clear after saving
     }
 
     async function dijkstra(adjList, start) {
         let pq = new MinPriorityQueue({ priority: x => x.dist });
         pq.enqueue({ node: start, dist: 0 });
-        recordFrame(`Start at node ${start}`);
+        recordFrame(`<strong>Source Vertex: node ${start}</strong>`);
 
         while (!pq.isEmpty()) {
             let { element: { node }, priority } = pq.dequeue();
             if (visited.has(node)) continue;
             visited.add(node);
+            if (prev[node] !== null) {
+                const edgeKey = node < prev[node] ? `${node}-${prev[node]}` : `${prev[node]}-${node}`;
+                highlightedEdges[edgeKey] = 'blue';
+            }
             recordFrame(`Visiting node ${node}`);
+
 
             for (let neighbor of adjList[node]) {
                 const { node: nextNode, weight } = neighbor;
+                const edgeKey = node < nextNode ? `${node}-${nextNode}` : `${nextNode}-${node}`;
+
                 if (distances[node] + weight < distances[nextNode]) {
                     distances[nextNode] = distances[node] + weight;
+                    prev[nextNode] = node;
                     pq.enqueue({ node: nextNode, dist: distances[nextNode] });
+                    highlightedEdges[edgeKey] = 'red';
                     recordFrame(`Updating distance of node ${nextNode} to ${distances[nextNode]}`);
+                } else {
+                    highlightedEdges[edgeKey] = 'blue';
+                    recordFrame(`Visited node ${nextNode} from node ${node}, no update`);
                 }
             }
         }
@@ -337,7 +355,7 @@ window.loadDijkstraPath = function () {
 
     // Selects a random node as the starting node
     function selectStartingNode(maxVal){
-        return Math.round(Math.random() * maxVal);
+        return Math.floor(Math.random() * maxVal);
     }
 
     window.activeController = new AnimationController(
