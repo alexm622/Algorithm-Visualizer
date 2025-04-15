@@ -21,7 +21,7 @@ window.loadMaxSumPath = function () {
     let highlightedNodes = [];
     let highlightedEdges = [];
     let maxSum = -Infinity;
-    let panX = 310, panY = 50, zoom = 1;
+    let panX = 318, panY = 50, zoom = .7;
     let isDragging = false;
     let dragStart = { x: 0, y: 0 };
 
