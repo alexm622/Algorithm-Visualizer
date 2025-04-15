@@ -19,7 +19,6 @@ window.loadQuicksort = function () {
     graphCanvas.height = graphCanvas.parentElement.clientHeight;
     boxListCanvas.width = boxListCanvas.parentElement.clientWidth;
     boxListCanvas.height = boxListCanvas.parentElement.clientHeight;
-    console.log(graphCanvas.height);
 
     // Get 2D drawing contexts for rendering animations
     const graphCtx = graphCanvas.getContext('2d');

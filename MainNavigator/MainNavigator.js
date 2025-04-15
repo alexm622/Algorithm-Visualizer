@@ -76,6 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("rightArrow").addEventListener("click", () => window.activeController.stepForward());
     document.getElementById("leftArrow").addEventListener("click", () => window.activeController.stepBackward());
     document.getElementById("progressBar").addEventListener("click", (event) => window.activeController.moveToFrame(event));
+    // --- TOP PANEL ZOOM FUNCTIONALITIES ---
 });
 
 const options = [
@@ -84,15 +85,15 @@ const options = [
     { name: 'Depth First Search', algorithmName: 'DFS'},
     { name: 'Insertion Sort', algorithmName: 'InsertionSort'},
     { name: 'Selection Sort', algorithmName: 'SelectionSort'},
-    { name: 'Heap Sort', algorithmName: 'Heapsort'},
+    { name: 'Heapsort', algorithmName: 'Heapsort'},
     { name: 'Binary Tree Traversal', algorithmName: 'BinaryTree'}, 
     { name: 'Counting Sort', algorithmName: 'CountingSort'},
     { name: 'Merge Sort', algorithmName: 'MergeSort'},
     { name: 'Bucket Sort', algorithmName: 'BucketSort'},
     { name: 'Page Rank', algorithmName: 'PageRank'},
-    { name: 'Quick Sort', algorithmName: 'Quicksort'},
+    { name: 'Quicksort', algorithmName: 'Quicksort'},
     { name: 'Radix Sort', algorithmName: 'RadixSort'},
-    { name: 'Fibonacci', algorithmName: 'Fibonacci'},
+    { name: 'Fibonacci Sequence', algorithmName: 'Fibonacci'},
     { name: "Floyd Warshall's Shortest Path", algorithmName: 'FlyodPath'},
     { name: 'Knapsack', algorithmName: 'Knapsack'},
     { name: 'Sliding Window', algorithmName: 'SlidingWindow'},
@@ -238,18 +239,27 @@ function removeElement(parentElement, elementId){
     }
 }
 
+function removeZoomFunctionality() {
+    const graphCanvas = document.getElementById("graphCanvas");
+    graphCanvas.removeEventListener("wheel", window.mouseZoom);
+    graphCanvas.removeEventListener("mousedown", window.mouseHold);
+    graphCanvas.removeEventListener("mousemove", window.mouseDrag);
+    graphCanvas.removeEventListener("mouseup", window.mouseRelease);
+    graphCanvas.removeEventListener("mouseleave", window.mouseRelease);
+}
+
+
 
 // --- ALGORITHM SELECTOR (cleans up previous content, loads current algorithm content) ---
-function selectAlgorithm(algorithmName) {   
+function selectAlgorithm(algorithmName) {  
     // Stop playing previous animation
     window.activeController.pauseAnimation();
-
 
     if (graphVisual.innerHTML.trim().startsWith('<div')){
         graphVisual.innerHTML = '';
     }
-
     checkPanels();
+    removeZoomFunctionality();
 
     const graphCanvas = document.getElementById("graphCanvas");
     const boxListCanvas = document.getElementById("boxListCanvas");

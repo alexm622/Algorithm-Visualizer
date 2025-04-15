@@ -21,7 +21,7 @@ window.loadMaxSumPath = function () {
     let highlightedNodes = [];
     let highlightedEdges = [];
     let maxSum = -Infinity;
-    let panX = 0, panY = 0, zoom = 1;
+    let panX = 310, panY = 50, zoom = 1;
     let isDragging = false;
     let dragStart = { x: 0, y: 0 };
 
@@ -93,7 +93,7 @@ window.loadMaxSumPath = function () {
 
             graphCtx.fillStyle = "black";
             graphCtx.fillText(n.value, n.x, n.y); // inside node value
-            graphCtx.fillText(`ID ${n.id}`, n.x, n.y - 35); // label outside
+            graphCtx.fillText(`${n.id}`, n.x, n.y - 35); // label outside
             drawNodes(n.left);
             drawNodes(n.right);
         }
@@ -239,34 +239,34 @@ window.loadMaxSumPath = function () {
     }
 
     // Mouse interactions for pan & zoom
-    graphCanvas.addEventListener("wheel", (e) => {
+    // Mouse interactions for pan & zoom
+    window.mouseZoom = function (e) {
         e.preventDefault();
         const zoomIntensity = 0.1;
         zoom += e.deltaY < 0 ? zoomIntensity : -zoomIntensity;
         zoom = Math.max(0.2, Math.min(3, zoom));
         drawFrame(frames[currentFrame]);
-    });
-
-    graphCanvas.addEventListener("mousedown", (e) => {
+    };
+    window.mouseHold = function (e) {
         isDragging = true;
         dragStart = { x: e.clientX - panX, y: e.clientY - panY };
-    });
-
-    graphCanvas.addEventListener("mousemove", (e) => {
+    };
+    window.mouseDrag = function (e) { 
         if (isDragging) {
             panX = e.clientX - dragStart.x;
             panY = e.clientY - dragStart.y;
             drawFrame(frames[currentFrame]);
         }
-    });
-
-    graphCanvas.addEventListener("mouseup", () => {
+    };
+    window.mouseRelease = function () {
         isDragging = false;
-    });
+     };
 
-    graphCanvas.addEventListener("mouseleave", () => {
-        isDragging = false;
-    });
+    graphCanvas.addEventListener("wheel", window.mouseZoom);
+    graphCanvas.addEventListener("mousedown", window.mouseHold);
+    graphCanvas.addEventListener("mousemove", window.mouseDrag);
+    graphCanvas.addEventListener("mouseup", window.mouseRelease);
+    graphCanvas.addEventListener("mouseleave", window.mouseRelease);
 
     window.activeController = new AnimationController(
         loadAnimation,

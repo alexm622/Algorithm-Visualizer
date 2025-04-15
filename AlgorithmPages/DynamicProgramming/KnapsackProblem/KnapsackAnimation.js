@@ -448,36 +448,33 @@ window.loadKnapsack = function () {
     }  
 
     // Mouse interactions for pan & zoom
-    graphCanvas.addEventListener("wheel", (e) => {
+    window.mouseZoom = function (e) {
         e.preventDefault();
         const zoomIntensity = 0.1;
         zoom += e.deltaY < 0 ? zoomIntensity : -zoomIntensity;
         zoom = Math.max(0.2, Math.min(3, zoom));
         drawFrame(frames[currentFrame]);
-    });
-
-    graphCanvas.addEventListener("mousedown", (e) => {
+    };
+    window.mouseHold = function (e) {
         isDragging = true;
         dragStart = { x: e.clientX - panX, y: e.clientY - panY };
-    });
-
-    graphCanvas.addEventListener("mousemove", (e) => {
+    };
+    window.mouseDrag = function (e) { 
         if (isDragging) {
             panX = e.clientX - dragStart.x;
             panY = e.clientY - dragStart.y;
             drawFrame(frames[currentFrame]);
         }
-    });
-
-    graphCanvas.addEventListener("mouseup", () => {
+    };
+    window.mouseRelease = function () {
         isDragging = false;
-    });
+     };
 
-    graphCanvas.addEventListener("mouseleave", () => {
-        isDragging = false;
-    });
-    
-    
+    graphCanvas.addEventListener("wheel", window.mouseZoom);
+    graphCanvas.addEventListener("mousedown", window.mouseHold);
+    graphCanvas.addEventListener("mousemove", window.mouseDrag);
+    graphCanvas.addEventListener("mouseup", window.mouseRelease);
+    graphCanvas.addEventListener("mouseleave", window.mouseRelease);
 
     window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward, 
         moveToFrame, resetAnimation, randomizeInput);
