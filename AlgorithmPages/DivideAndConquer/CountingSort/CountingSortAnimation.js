@@ -349,7 +349,7 @@ window.loadCountingSort = function () {
     function loadControlBar() {
         randListSize.disabled = false;
         randomizeButton.disabled = false;
-        inputElement.placeholder = "Enter a list of integers (ex. 184 -23 14 -75 198)";
+        inputElement.placeholder = "Enter a list of 2-20 integers between 0 & 30 (ex. 30 10 25 0 17)";
         inputElement.disabled = false;
         customInputToggle.disabled = false;
         progressBar.disabled = false;
