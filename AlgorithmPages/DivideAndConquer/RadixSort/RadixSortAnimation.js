@@ -44,7 +44,7 @@ window.loadRadixSort = function () {
     let currentIndex = -1;
     let buckets = [];
 
-    const VERTICAL_PADDING = 60; // Minimum spacing of graph bars from top and bottom of container
+    const VERTICAL_PADDING = 40; // Minimum spacing of graph bars from top and bottom of container
 
     // Draws current animation frame based on stored frame data
     function drawFrame(frame) {
@@ -65,35 +65,34 @@ window.loadRadixSort = function () {
         drawBuckets();
     }
 
-    // Draws the bar-graph representation of the data array
     function drawGraphVisualization() {
         const barWidth = graphCanvas.width / data.length;
         const fontSize = Math.min(24, Math.max(12, barWidth * 0.3));
         graphCtx.font = `${fontSize}px Arial`;
         graphCtx.textAlign = 'center';
         graphCtx.textBaseline = 'middle';
-
-        const maxAbsValue = Math.max(...data.map(Math.abs));
-        const centerY = graphCanvas.height / 2;
-        const graphHeight = graphCanvas.height - VERTICAL_PADDING;
-
+    
+        const maxValue = Math.max(...data);
+        const availableHeight = graphCanvas.height - VERTICAL_PADDING; // Full height minus bottom padding
+    
         for (let i = 0; i < data.length; i++) {
             const value = data[i];
-            const barHeight = (value / maxAbsValue) * (graphHeight / 2);
+            const barHeight = (value / maxValue) * availableHeight;
             const x = i * barWidth;
-            const y = barHeight >= 0 ? centerY - barHeight : centerY;
-
+            const y = graphCanvas.height - barHeight; // Start at the bottom and go up
+    
             graphCtx.fillStyle = getColor(i);
-            graphCtx.fillRect(x, y, barWidth, Math.abs(barHeight));
-
+            graphCtx.fillRect(x, y, barWidth, barHeight);
+    
             graphCtx.strokeStyle = 'black';
-            graphCtx.strokeRect(x, y, barWidth, Math.abs(barHeight));
-
+            graphCtx.strokeRect(x, y, barWidth, barHeight);
+    
             graphCtx.fillStyle = 'black';
-            const numberY = barHeight >= 0 ? y - fontSize * 0.6 : y + Math.abs(barHeight) + fontSize * 0.6;
+            const numberY = y - fontSize * 0.6;
             graphCtx.fillText(value, x + barWidth / 2, numberY);
         }
     }
+    
 
     // Draws the box-list representation of the data array
     function drawBoxListVisualization() {
@@ -126,11 +125,11 @@ window.loadRadixSort = function () {
         const bucketHeight = bucketCanvas.height;
         const fontSize = 14;
 
-        bucketCtx.font = `${fontSize}px Arial`;
         bucketCtx.textAlign = 'center';
         bucketCtx.textBaseline = 'top';
 
         for (let i = 0; i < bucketCount; i++) {
+            bucketCtx.font = `bold ${fontSize}px Arial`;
             const x = i * bucketWidth;
             const y = 0;
 
@@ -141,6 +140,7 @@ window.loadRadixSort = function () {
             bucketCtx.fillStyle = 'black';
             bucketCtx.fillText(i.toString(), x + bucketWidth / 2, y + 2);
 
+            bucketCtx.font = `${fontSize}px Arial`;
             if (buckets[i]) {
                 for (let j = 0; j < buckets[i].length; j++) {
                     bucketCtx.fillText(
