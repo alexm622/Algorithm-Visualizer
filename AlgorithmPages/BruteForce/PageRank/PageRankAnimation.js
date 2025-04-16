@@ -4,9 +4,6 @@ window.loadPageRank = function () {
     const randListSize = document.getElementById('randListSize');
     const sizeWarningMessage = document.getElementById('sizeWarningMessage');
     const randomizeButton = document.getElementById('randomizeButton');
-    const inputElement = document.getElementById('customInput');
-    const customInputToggle = document.getElementById('customInputToggle');
-    const inputWarningMessage = document.getElementById('inputWarningMessage');
     const progressBar = document.getElementById("progressBar");
     const progressFill = document.getElementById("progressFill");
     const speedSlider = document.getElementById("speedSlider");
@@ -26,23 +23,20 @@ window.loadPageRank = function () {
     const boxListCtx = boxListCanvas.getContext('2d');
 
     // Initialize data for visualization
-    let defaultData = generateRandomList(Math.round(Math.random() * 10 + 10)); // Generates random list of at least size 10
-    let currentData = [...defaultData];
-    let data = [...currentData];
+    let randNum = Math.round(Math.random() * 2 + 2);
+    let adjacencyMatrix = generateRandomAdjacencyMatrix(randNum);
+    let data = Array(randNum).fill(1 / randNum);
     let frames = []; // Stores animation frames for step-by-step playback
     let currentFrame = 0;
     let isPlaying = false;
     let currentIndex = -1;
-    let pivotIndex = -1;
-    let swapIndices = [];
-    let adjacencyMatrix = [];
 
     const VERTICAL_PADDING = 60; // Minimum spacing of graph bars from top and bottom of container
 
     // Draws current animation frame based on stored frame data
     function drawFrame(frame) {
         if (!frame) return;
-        ({ data, currentIndex, pivotIndex, swapIndices, adjacencyMatrix } = frame);
+        ({ data, currentIndex, adjacencyMatrix } = frame);
         drawData();
         updateProgressBar();
         updateStepLog();
@@ -56,8 +50,6 @@ window.loadPageRank = function () {
         drawBoxListVisualization();
     }
 
-    // Draws the node graph representation of the PageRank algorithm
-    // Draws the node graph representation of the PageRank algorithm
     // Draws the node graph representation of the PageRank algorithm
     function drawGraphVisualization() {
         graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
@@ -119,79 +111,88 @@ window.loadPageRank = function () {
     }
 
     // Draws the adjacency matrix representation of the PageRank algorithm
-    // Draws the adjacency matrix representation of the PageRank algorithm
     function drawBoxListVisualization() {
         boxListCtx.clearRect(0, 0, boxListCanvas.width, boxListCanvas.height);
-
+    
         const numNodes = data.length;
         const cellSize = Math.min(boxListCanvas.width / numNodes, boxListCanvas.height / numNodes);
-
-        // Draw matrix cells
+        const gridWidth = cellSize * numNodes;
+        const xOffset = (boxListCanvas.width - gridWidth) / 2;
+    
         for (let i = 0; i < numNodes; i++) {
             for (let j = 0; j < numNodes; j++) {
-                const x = j * cellSize;
+                const x = j * cellSize + xOffset;
                 const y = i * cellSize;
-
-                // Highlight the current cell being processed in red
+    
+                // Highlight logic
                 if (i === currentIndex || j === currentIndex) {
                     boxListCtx.fillStyle = 'red';
                 }
-                // Highlight related cells in yellow
                 else if (adjacencyMatrix[currentIndex]?.[j] > 0 || adjacencyMatrix[i]?.[currentIndex] > 0) {
                     boxListCtx.fillStyle = 'yellow';
                 } else {
                     boxListCtx.fillStyle = adjacencyMatrix[i][j] > 0 ? 'lightblue' : 'white';
                 }
-
-                // Draw cell background
+    
                 boxListCtx.fillRect(x, y, cellSize, cellSize);
-
-                // Draw cell border
                 boxListCtx.strokeStyle = 'black';
                 boxListCtx.strokeRect(x, y, cellSize, cellSize);
-
-                // Draw cell value
+    
                 boxListCtx.fillStyle = 'black';
                 boxListCtx.font = `${Math.min(14, cellSize * 0.5)}px Arial`;
                 boxListCtx.textAlign = 'center';
                 boxListCtx.textBaseline = 'middle';
+                
+                // OPTIONAL: To show PageRank values in the grid instead of matrix:
+                // boxListCtx.fillText(data[j].toFixed(2), x + cellSize / 2, y + cellSize / 2);
+                
+                // Current: keep adjacency matrix values
                 boxListCtx.fillText(adjacencyMatrix[i][j].toFixed(2), x + cellSize / 2, y + cellSize / 2);
             }
         }
     }
 
     // Updates the PageRank values and adjacency matrix for visualization
-    // Updates the PageRank values and adjacency matrix for visualization
     async function calculatePageRank() {
         const dampingFactor = 0.85;
         const numNodes = data.length;
         const tolerance = 1e-6;
-
+    
         let ranks = Array(numNodes).fill(1 / numNodes);
         let newRanks = Array(numNodes).fill(0);
-
+    
+        // Record initial values
+        data = [...ranks];
+        recordFrame(`Initial PageRank values: ${data.map(v => v.toFixed(2)).join(", ")}`);
+    
         let converged = false;
         while (!converged) {
+            newRanks = Array(numNodes).fill((1 - dampingFactor) / numNodes); // Reset and initialize base rank
+    
             for (let i = 0; i < numNodes; i++) {
-                currentIndex = i; // Highlight the current node being processed
-                newRanks[i] = (1 - dampingFactor) / numNodes;
                 for (let j = 0; j < numNodes; j++) {
                     if (adjacencyMatrix[j][i] > 0) {
                         const outDegree = adjacencyMatrix[j].reduce((sum, val) => sum + val, 0);
                         newRanks[i] += dampingFactor * (ranks[j] / outDegree);
                     }
                 }
+            }
+    
+            // Record each node update frame by frame
+            for (let i = 0; i < numNodes; i++) {
+                data = [...ranks]; // Keep previous state
+                data[i] = newRanks[i]; // Only update current node value for animation
+                currentIndex = i;
                 recordFrame(`Updated PageRank value for node ${i}: ${newRanks[i].toFixed(2)}`);
             }
-
+    
             converged = newRanks.every((rank, i) => Math.abs(rank - ranks[i]) < tolerance);
             ranks = [...newRanks];
         }
-
-        data = ranks; // Update the data array with final PageRank values
-        currentIndex = -1; // Reset currentIndex after calculation
+    
+        data = ranks;
+        currentIndex = -1;
     }
-
 
     // Records a snapshot of the current PageRank step, adds frame to animation
     function recordFrame(explanation = "") {
@@ -201,31 +202,6 @@ window.loadPageRank = function () {
             currentIndex, // Current node being processed (if applicable)
             explanation // Explanation of the current step
         });
-    }
-
-    // Initializes and starts animation playback
-    function playAnimation() {
-        if (isPlaying) return; // Prevent multiple play calls
-        isPlaying = true;
-
-        // Sets animation play speed based on speedSlider value
-        function getAnimationSpeed() {
-            const fastestSpeed = 50;  // (ms)
-            const slowestSpeed = 3000; // (ms)
-            return slowestSpeed - (speedSlider.value / 100) * (slowestSpeed - fastestSpeed);
-        }
-
-        // Replaces current frame with the next frame at a set speed
-        function step() {
-            if (!isPlaying || currentFrame >= frames.length - 1) {
-                isPlaying = false;
-                return;
-            }
-            currentFrame++;
-            drawFrame(frames[currentFrame]); // Draw the next frame
-            setTimeout(step, getAnimationSpeed()); // Recursively calls step function
-        }
-        step();
     }
 
     // Generates a random adjacency matrix for the graph
@@ -256,7 +232,6 @@ window.loadPageRank = function () {
     // Adds, into step log, all steps up to current frame (clears before adding)
     function updateStepLog() {
         stepLog.innerHTML = ""; // Reset log
-        stepLog.innerHTML += `Initial List: ${currentData.join(", ")}<br>`; // Initial list
 
         for (let i = 1; i <= currentFrame; i++) {
             if (frames[i].explanation) {
@@ -271,9 +246,8 @@ window.loadPageRank = function () {
         stepLog.scrollTop = stepLog.scrollHeight;
     }
 
-    // Initializes and starts animation playback
-    // Initializes and starts animation playback
-    function playAnimation() {
+     // Initializes and starts animation playback
+     function playAnimation() {
         if (isPlaying) return; // Prevent multiple play calls
         isPlaying = true;
 
@@ -331,9 +305,6 @@ window.loadPageRank = function () {
     function loadControlBar() {
         randListSize.disabled = false;
         randomizeButton.disabled = false;
-        inputElement.placeholder = "Enter a list of 2-20 integers between -200 & 200 (ex. 184 -23 14 -75 198)";
-        inputElement.disabled = false;
-        customInputToggle.disabled = false;
         progressBar.disabled = false;
         speedSlider.disabled = false;
     }
@@ -343,6 +314,22 @@ window.loadPageRank = function () {
         pauseAnimation();
         currentFrame = 0;
         drawFrame(frames[currentFrame]);
+    }
+
+    // Initializes and prepares the animation frames for playback
+    function loadAnimation() {
+        frames = []; // Clear any existing frames
+        currentFrame = 0; // Reset to the first frame
+
+        // Record the initial state
+        recordFrame("Initial state of the graph and PageRank values.");
+
+        // Calculate PageRank and record frames
+        calculatePageRank().then(() => {
+            // Record the final state
+            recordFrame("");
+            drawFrame(frames[currentFrame]); // Draw the first frame
+        });
     }
 
     // Generates new list with user given size, loads animation for new random list
@@ -356,45 +343,11 @@ window.loadPageRank = function () {
             inputList = inputList.map(Number); // turns string list into a number list
             if (checkRandomizeInput(inputList)) {
                 pauseAnimation();
-                defaultData = generateRandomList(inputList[0]);
-                currentData = [...defaultData];
+                randNum = inputList[0];
+                adjacencyMatrix = generateRandomAdjacencyMatrix(randNum);
+                data = Array(randNum).fill(1 / randNum);
                 loadAnimation();
             }
-        }
-    }
-
-    // Generates custom user-given list, loads animation for new custom list
-    // Loads back animation for default list when toggled off
-    function toggleCustomInput() {
-        if (customInputToggle.checked) {
-            if (!inputElement.value) {
-                inputWarningMessage.textContent = "Invalid Input: Enter an input";
-                inputWarningMessage.style.color = "red";
-                customInputToggle.checked = false;
-            }
-            else {
-                let inputList = inputElement.value.trim().split(/\s+/);
-                inputList = inputList.map(Number);
-                if (checkCustomInput(inputList)) {
-                    randListSize.disabled = true;
-                    randomizeButton.disabled = true;
-                    inputElement.disabled = true;
-                    pauseAnimation();
-                    currentData = inputList;
-                    loadAnimation();
-                }
-                else {
-                    customInputToggle.checked = false;
-                }
-            }
-        }
-        else {
-            pauseAnimation();
-            currentData = [...defaultData];
-            loadAnimation();
-            randListSize.disabled = false;
-            randomizeButton.disabled = false;
-            inputElement.disabled = false;
         }
     }
 
@@ -425,33 +378,6 @@ window.loadPageRank = function () {
         return true;
     }
 
-    // Validates user input for custom list
-    function checkCustomInput(inputList) {
-        if (inputList == "") {
-            inputWarningMessage.textContent = "Error: Enter an input";
-            inputWarningMessage.style.color = "red";
-            return false;
-        }
-        if (!isWholeNumbers(inputList)) {
-            inputWarningMessage.textContent = "Error: Enter integers only";
-            inputWarningMessage.style.color = "red";
-            return false;
-        }
-        if (inputList.length > 4 || inputList.length < 2) { // Restrict size to a maximum of 4
-            inputWarningMessage.textContent = "Error: Enter 2 to 4 integers only";
-            inputWarningMessage.style.color = "red";
-            return false;
-        }
-        if (checkInputValues(inputList)) {
-            inputWarningMessage.style.color = "#f4f4f4";
-            return true;
-        } else {
-            inputWarningMessage.textContent = "Error: Enter integer values between -200 and 200 only";
-            inputWarningMessage.style.color = "red";
-            return false;
-        }
-    }
-
     // Returns true if all the elements in the given list are whole numbers, else returns false
     function isWholeNumbers(list) {
         for (let i = 0; i < list.length; i++) {
@@ -462,46 +388,7 @@ window.loadPageRank = function () {
         return true;
     }
 
-    // Returns true if all the elements in the given list are between -200 & 200, else returns false
-    function checkInputValues(inputList) {
-        for (let i = 0; i < inputList.length; i++) {
-            if (inputList[i] > 200 || inputList[i] < -200) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // Generates random list of given size
-    function generateRandomList(size = 4) {
-        let randomArray = new Array(size);
-        for (let i = 0; i < size; i++) {
-            const randomSeed = 0.5 - Math.random(); // used to generate random signage
-            randomArray[i] = Math.round(randomSeed / Math.abs(randomSeed) * Math.random() * 200);
-        }
-        return randomArray;
-    }
-    // Initializes and prepares the animation frames for playback
-    function loadAnimation() {
-        frames = []; // Clear any existing frames
-        currentFrame = 0; // Reset to the first frame
-
-        // Generate a random adjacency matrix for 4 nodes
-        adjacencyMatrix = generateRandomAdjacencyMatrix(4);
-        data = Array(4).fill(1 / 4); // Initialize PageRank values for 4 nodes
-
-        // Record the initial state
-        recordFrame("Initial state of the graph and PageRank values.");
-
-        // Calculate PageRank and record frames
-        calculatePageRank().then(() => {
-            // Record the final state
-            recordFrame("Final PageRank values calculated.");
-            drawFrame(frames[currentFrame]); // Draw the first frame
-        });
-    }
-
-    // Ties Quicksort animation functionality to main page
+    // Ties PageRank animation functionality to main page
     window.activeController = new AnimationController(loadAnimation, loadControlBar, playAnimation, pauseAnimation, stepForward, stepBackward,
-        moveToFrame, resetAnimation, randomizeInput, toggleCustomInput);
+        moveToFrame, resetAnimation, randomizeInput);
 };
